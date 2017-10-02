@@ -3,5 +3,4 @@
 .RData
 .Ruserdata
 dataset.zip
-./data/*.*
-./data
+data
