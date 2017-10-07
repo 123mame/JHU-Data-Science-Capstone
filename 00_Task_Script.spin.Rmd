@@ -1,26 +1,35 @@
-#' ---
-#' title: "Task 0: understanding the Problem"
-#' author: "Mark Blackmore"
-#' date: "`r format(Sys.Date())`"
-#' output: github_document
-#' ---
+---
+title: "Task 0: understanding the Problem"
+author: "Mark Blackmore"
+date: "`r format(Sys.Date())`"
+output: github_document
+---
 
-
+```{r }
 library(downloader)
 library(tm)
+```
 
-#' Create a data directory  
+Create a data directory  
+
+```{r }
 if (!file.exists("data")) {
     dir.create("data")
 }
+```
 
-#' Download the data
-#+ eval = FALSE
+Download the data
+eval = FALSE
+
+```{r }
 # url <- "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
 # download(url, dest="dataset.zip", mode="wb") 
 # unzip ("dataset.zip", exdir = "./data")
+```
 
-#' Explore the data using `tm` package
+Explore the data using `tm` package
+
+```{r }
 de_files <- "./data/final/de_DE/"
 us_files <- "./data/final/en_US/"
 fi_files <- "./data/final/fi_FI/"
@@ -32,3 +41,11 @@ us_blogs <- us_txts[[1]]
 us_blogs[[1]] # corpus
 us_blogs[[2]]  # metadata
 # lapply(us_blogs[1], as.character)
+```
+
+
+---
+title: "00_Task_Script.R"
+author: "Mark"
+date: "Sat Oct 07 09:01:51 2017"
+---

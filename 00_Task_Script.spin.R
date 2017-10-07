@@ -15,7 +15,7 @@ if (!file.exists("data")) {
 }
 
 #' Download the data
-#+ eval = FALSE
+#' eval = FALSE
 # url <- "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
 # download(url, dest="dataset.zip", mode="wb") 
 # unzip ("dataset.zip", exdir = "./data")
