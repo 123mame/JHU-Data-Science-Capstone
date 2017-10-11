@@ -17,8 +17,11 @@ readLines(con, 1)
 readLines(con, 1) 
 
 #' Read in the next 5 lines of text 
-readLines(con, 5) 
+readLines(con, 50) 
 
 #' It's important to close the connection when you are done
 close(con) 
+
+?readLines
+
 

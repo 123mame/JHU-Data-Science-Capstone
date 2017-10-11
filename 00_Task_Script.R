@@ -27,8 +27,19 @@ fi_files <- "./data/final/fi_FI/"
 ru_files <- "./data/final/ru_RU/"
 
 us_txts <- VCorpus(DirSource(us_files), 
-                 readerControl = list(language = "en"))
+                   readerControl = list(language = "en"))
+inspect(us_txts)
+meta(us_txts[[1]])
+
 us_blogs <- us_txts[[1]]
 us_blogs[[1]] # corpus
 us_blogs[[2]]  # metadata
 # lapply(us_blogs[1], as.character)
+
+txts <- tm_map(us_txts, stripWhitespace)
+txts <- tm_map(txts, content_transformer(tolower))
+txts <- tm_map(txts, removeWords, stopwords("english"))
+#tm_map(txts, stemDocument)
+dtm <- DocumentTermMatrix(txts)
+
+
