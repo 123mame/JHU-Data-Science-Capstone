@@ -25,6 +25,6 @@ We have compiled some basic natural language processing resources below. You are
 
 Here are a few resources that might be good places to start as you tackle this ambitious project.
 
--   Text mining infrastucture in R
--   CRAN Task View: Natural Language Processing
--   Videos and Slides from Stanford Natural Language Processing course
+-   [Text mining infrastucture in R](%22http://www.jstatsoft.org/v25/i05/%22)
+-   [CRAN Task View: Natural Language Processing](%22http://cran.r-project.org/web/views/NaturalLanguageProcessing.html%22)
+-   [Videos](%22https://www.youtube.com/user/OpenCourseOnline/search?query=NLP%22) and [Slides](%22https://web.stanford.edu/~jurafsky/NLPCourseraSlides.html%22) from Stanford Natural Language Processing course

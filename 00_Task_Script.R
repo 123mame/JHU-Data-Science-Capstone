@@ -4,42 +4,29 @@
 #' date: "`r format(Sys.Date())`"
 #' output: github_document
 #' ---
-
-
-library(downloader)
+#'
+#' ## Exploring the `tm` package
+#'
 library(tm)
 
-#' Create a data directory  
-if (!file.exists("data")) {
-    dir.create("data")
-}
+#' Find the sample corpus
+txt <- system.file("texts", "txt", package = "tm")
 
-#' Download the data
-#+ eval = FALSE
-# url <- "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
-# download(url, dest="dataset.zip", mode="wb") 
-# unzip ("dataset.zip", exdir = "./data")
+#' Load the corpus
+(ovid <- Corpus(DirSource(txt),
+                readerControl = list(reader = readPlain,
+                                     language = "la",
+                                     load = TRUE)))
 
-#' Explore the data using `tm` package
-de_files <- "./data/final/de_DE/"
-us_files <- "./data/final/en_US/"
-fi_files <- "./data/final/fi_FI/"
-ru_files <- "./data/final/ru_RU/"
+#' Examine metadata from first document and update the author's name
+meta(ovid[[1]])
+meta(ovid[[1]])$author <- "Publius Ovidius Naso"
+meta(ovid[[1]])
+# same result
+ovid[[1]][2]
 
-us_txts <- VCorpus(DirSource(us_files), 
-                   readerControl = list(language = "en"))
-inspect(us_txts)
-meta(us_txts[[1]])
+#' Examine the first document's text
+ovid[[1]][1]
 
-us_blogs <- us_txts[[1]]
-us_blogs[[1]] # corpus
-us_blogs[[2]]  # metadata
-# lapply(us_blogs[1], as.character)
-
-txts <- tm_map(us_txts, stripWhitespace)
-txts <- tm_map(txts, content_transformer(tolower))
-txts <- tm_map(txts, removeWords, stopwords("english"))
-#tm_map(txts, stemDocument)
-dtm <- DocumentTermMatrix(txts)
-
-
+#' Concatenates several text collections to a single one
+c(ovid[1:2], ovid[3:4])
