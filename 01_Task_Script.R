@@ -22,7 +22,7 @@ if (!file.exists("data")) {
 #' English Repository Files
 blogs_file   <- "./data/final/en_US/en_US.blogs.txt"
 news_file    <- "./data/final/en_US/en_US.news.txt"
-twitter_file <- "./data/final/en_US/en_US.news.txt"
+twitter_file <- "./data/final/en_US/en_US.twitter.txt"
 
 
 #' Reading pieces of the file at a time will require the use of a file connection
@@ -30,17 +30,10 @@ twitter_file <- "./data/final/en_US/en_US.news.txt"
 #' Twitter dataset:  
 #' 
 #' Read the first line of text  
-con <- file(twitter_file, "r") 
-twitter <-  readLines(con, 1) 
+twitter <-  readLines(twitter_file, skipNul = TRUE) 
 
-#' Read the next line of text 
-readLines(con, 1) 
 
-#' Read in the next 5 lines of text 
-readLines(con, 5) 
 
-#' It's important to close the connection when you are done
-close(con) 
 
 
 
