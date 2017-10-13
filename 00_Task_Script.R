@@ -110,5 +110,5 @@ inspect(removeSparseTerms(dtm, 0.4))
 inspect(DocumentTermMatrix(reuters,
                            list(dictionary = c("prices", "crude", "oil"))))
 
-#' 
+
 
