@@ -1,7 +1,7 @@
 Task 0: Understanding the Problem
 ================
 Mark Blackmore
-October 2, 2017
+2017-10-12
 
 The first step in analyzing any new data set is figuring out: (a) what data you have and (b) what are the standard tools and models used for that type of data. Make sure you have downloaded the data from Coursera before heading for the exercises. This exercise uses the files named LOCALE.blogs.txt where LOCALE is the each of the four locales en\_US, de\_DE, ru\_RU and fi\_FI. The data is from a corpus called HC Corpora. See the About the Corpora reading for more details. The files have been language filtered but may still contain some foreign text.
 

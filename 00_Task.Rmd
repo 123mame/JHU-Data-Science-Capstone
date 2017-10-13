@@ -1,7 +1,7 @@
 ---
 title: "Task 0: Understanding the Problem"
 author: "Mark Blackmore"
-date: "October 2, 2017"
+date: "`r format(Sys.Date())`"
 output: github_document
 ---
 

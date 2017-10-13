@@ -1,7 +1,7 @@
 Task 1: Getting and Cleaning the Data
 ================
 Mark Blackmore
-October 7, 2017
+2017-10-12
 
 Large databases comprising of text in a target language are commonly used when generating language models for various purposes. In this exercise, you will use the **English database** but may consider three other databases in German, Russian and Finnish.
 
