@@ -127,10 +127,13 @@ clean_sample <- tm_map(clean_sample, stripWhitespace)
 
 #' Create Term-Document Matrix
 dtm <- TermDocumentMatrix(clean_sample)
-m <- as.matrix(dtm)
-v <- sort(rowSums(m),decreasing=TRUE)
-d <- data.frame(word = names(v),freq=v)
-head(d, 10)
+# m <- as.matrix(dtm)
+# v <- sort(rowSums(m),decreasing=TRUE)
+# d <- data.frame(word = names(v),freq=v)
+# head(d, 10)
 
 #' ### Operations on Document-Term Matrices
 findFreqTerms(dtm, 5)
+
+saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.RData" )
+
