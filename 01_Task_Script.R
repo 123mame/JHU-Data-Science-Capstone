@@ -8,8 +8,7 @@
 library(downloader)
 library(tm)
 library(knitr)
-library(tidyverse)
-library(wordcloud)
+library(dplyr)
 
 #' ## 1. Download and explore the data
 #'
@@ -68,7 +67,7 @@ blogs_nchar_sum <- sum(blogs_nchar)
 news_nchar_sum  <- sum(news_nchar)
 twitter_nchar_sum <- sum(twitter_nchar)
 
-
+#' Create summary of repo stats
 repo_summary <- data.frame(file_names = c("blogs", "news", "twitter"),
                            file_size  = c(blogs_size, news_size, twitter_size),
                            file_lines = c(blogs_lines, news_lines, twitter_lines),
@@ -84,7 +83,7 @@ kable(repo_summary)
 #' ## 2. Sample the data and save the sample
 #' 
 #' Compute sample sizes in terms of lines
-sample_pct = 0.10
+sample_pct = 0.01
 blogs_size <- blogs_lines * sample_pct
 news_size  <- news_lines * sample_pct
 twitter_size <- twitter_lines * sample_pct
@@ -100,7 +99,10 @@ writeLines(repo_sample, "./data/final/en_US/en_US.repo_sample.txt")
 
 #' ## 3.  Clean the sample data
 #' Use `tm` to create and clean the corpus
-clean_sample <- Corpus(VectorSource(repo_sample))
+clean_sample <- Corpus(VectorSource(repo_sample),
+                       readerControl = list(readPlain, 
+                                            language = "en",
+                                            load = TRUE))
 #' 
 #' Create filter for profanity...
 #' Source: [List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words]("List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/en")
@@ -145,8 +147,10 @@ dtm <- TermDocumentMatrix(clean_sample)
 findFreqTerms(dtm, 5)
 
 saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.RData" )
+saveRDS(dtm, file = "./data/final/en_US/dtm.RData")
 
 #########################
-
+# library(stringi)
+# clean_sample <- stringi::stri_trans_general(clean_sample, "latin-ascii")
 
 
