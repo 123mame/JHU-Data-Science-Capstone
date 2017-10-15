@@ -84,7 +84,7 @@ kable(repo_summary)
 #' ## 2. Sample the data and save the sample
 #' 
 #' Compute sample sizes in terms of lines
-sample_pct = 0.25
+sample_pct = 0.10
 blogs_size <- blogs_lines * sample_pct
 news_size  <- news_lines * sample_pct
 twitter_size <- twitter_lines * sample_pct
@@ -109,15 +109,24 @@ profanity <- read.table("./data/final/en_US/profanity.txt", header = FALSE, sep 
 #' Transform sample to all lower case
 clean_sample <- tm_map(clean_sample, content_transformer(tolower))
 
+#' Remove URL's
+#' Source: [R and Data Mining]("http://www.rdatamining.com/books/rdm/faq/removeurlsfromtext")
+removeURL <- function(x) gsub("http[^[:space:]]*", "", x)
+clean_sample <- tm_map(clean_sample, content_transformer(removeURL))
+
+# Remove anything other than English letters or space
+removeNumPunct <- function(x) gsub("[^[:alpha:][:space:]]*", "", x)
+clean_sample <- tm_map(clean_sample, content_transformer(removeNumPunct))
+
+# #' Remove punctuaton and numbers (replaced by last call)
+# clean_sample <- tm_map(clean_sample, removePunctuation)
+#' clean_sample <- tm_map(clean_sample, removeNumbers)
+
 #' Remove profanity
 clean_sample <- tm_map(clean_sample, removeWords, profanity[,1])
 
 #' Remove stopwords
 clean_sample <- tm_map(clean_sample, removeWords, stopwords("english"))
-
-#' Remove punctuaton and numbers
-clean_sample <- tm_map(clean_sample, removePunctuation)
-clean_sample <- tm_map(clean_sample, removeNumbers)
 
 #' Stem the document
 clean_sample <- tm_map(clean_sample, stemDocument)
@@ -136,4 +145,8 @@ dtm <- TermDocumentMatrix(clean_sample)
 findFreqTerms(dtm, 5)
 
 saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.RData" )
+
+#########################
+
+
 
