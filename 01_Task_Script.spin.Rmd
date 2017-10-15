@@ -1,39 +1,24 @@
-Task 1: Getting and Cleaning the Data
-================
-Mark Blackmore
-2017-10-14
+---
+title: "Task 1: Getting and Cleaning the Data"
+author: "Mark Blackmore"
+date: "`r format(Sys.Date())`"
+output: github_document
+---
 
-``` r
+
+```{r }
 library(downloader)
 library(tm)
-```
-
-    ## Loading required package: NLP
-
-``` r
 library(knitr)
 library(tidyverse)
+library(wordcloud)
 ```
 
-    ## Loading tidyverse: ggplot2
-    ## Loading tidyverse: tibble
-    ## Loading tidyverse: tidyr
-    ## Loading tidyverse: readr
-    ## Loading tidyverse: purrr
-    ## Loading tidyverse: dplyr
+## 1. Download and explore the data
 
-    ## Conflicts with tidy packages ----------------------------------------------
+Create a data directory  
 
-    ## annotate(): ggplot2, NLP
-    ## filter():   dplyr, stats
-    ## lag():      dplyr, stats
-
-1. Download and explore the data
---------------------------------
-
-Create a data directory
-
-``` r
+```{r }
 if (!file.exists("data")) {
   dir.create("data")
 }
@@ -41,7 +26,7 @@ if (!file.exists("data")) {
 
 Download the data
 
-``` r
+```{r }
 # url <- "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
 # download(url, dest="dataset.zip", mode="wb") 
 # unzip ("dataset.zip", exdir = "./data")
@@ -49,7 +34,7 @@ Download the data
 
 English Repository Files
 
-``` r
+```{r }
 blogs_file   <- "./data/final/en_US/en_US.blogs.txt"
 news_file    <- "./data/final/en_US/en_US.news.txt"
 twitter_file <- "./data/final/en_US/en_US.twitter.txt"  
@@ -57,7 +42,7 @@ twitter_file <- "./data/final/en_US/en_US.twitter.txt"
 
 File Sizes (Mb)
 
-``` r
+```{r }
 blogs_size <- file.size(blogs_file) / (2^20)
 news_size  <- file.size(news_file) / (2^20)
 twitter_size <- file.size(twitter_file) / (2^20)
@@ -65,21 +50,15 @@ twitter_size <- file.size(twitter_file) / (2^20)
 
 Read the data files
 
-``` r
+```{r }
 blogs   <- readLines(blogs_file, skipNul = TRUE)
 news    <- readLines(news_file, skipNul = TRUE)
-```
-
-    ## Warning in readLines(news_file, skipNul = TRUE): incomplete final line
-    ## found on './data/final/en_US/en_US.news.txt'
-
-``` r
 twitter <- readLines(twitter_file, skipNul = TRUE) 
 ```
 
 Number of Lines per file
 
-``` r
+```{r }
 blogs_lines <- length(blogs)
 news_lines  <- length(news)
 twitter_lines <- length(twitter)
@@ -88,7 +67,7 @@ total_lines  <- blogs_lines + news_lines + twitter_lines
 
 Distibution of characters per line, by file
 
-``` r
+```{r }
 blogs_nchar <- nchar(blogs)
 news_nchar  <- nchar(news)
 twitter_nchar <- nchar(twitter)
@@ -98,11 +77,9 @@ boxplot(blogs_nchar, news_nchar, twitter_nchar, log = "y",
 title("Comparing Distributions of Chracters per Line")
 ```
 
-![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-1.png)
-
 Max characters in a line, by file (longest line)
 
-``` r
+```{r }
 blogs_nchar_max <- max(blogs_nchar)
 news_nchar_max  <- max(news_nchar)
 twitter_nchar_max <- max(twitter_nchar)
@@ -110,7 +87,7 @@ twitter_nchar_max <- max(twitter_nchar)
 
 Median characters per file
 
-``` r
+```{r }
 blogs_nchar_med <- median(blogs_nchar)
 news_nchar_med  <- median(news_nchar)
 twitter_nchar_med <- median(twitter_nchar)
@@ -118,7 +95,7 @@ twitter_nchar_med <- median(twitter_nchar)
 
 Total characters per file
 
-``` r
+```{r }
 blogs_nchar_sum <- sum(blogs_nchar)
 news_nchar_sum  <- sum(news_nchar)
 twitter_nchar_sum <- sum(twitter_nchar)
@@ -137,18 +114,11 @@ repo_summary <- repo_summary %>% mutate(pct_lines = round(file_lines/sum(file_li
 kable(repo_summary)
 ```
 
-| file\_names |  file\_size|  file\_lines|  nchar\_sum|  pct\_nchar|  pct\_lines|
-|:------------|-----------:|------------:|-----------:|-----------:|-----------:|
-| blogs       |    200.4242|       899288|   208361438|        0.54|        0.27|
-| news        |    196.2775|        77259|    15683765|        0.04|        0.02|
-| twitter     |    159.3641|      2360148|   162385035|        0.42|        0.71|
-
-2. Sample the data and save the sample
---------------------------------------
+## 2. Sample the data and save the sample
 
 Compute sample sizes in terms of lines
 
-``` r
+```{r }
 sample_pct = 0.25
 blogs_size <- blogs_lines * sample_pct
 news_size  <- news_lines * sample_pct
@@ -157,7 +127,7 @@ twitter_size <- twitter_lines * sample_pct
 
 Create samples
 
-``` r
+```{r }
 blogs_sample <- sample(blogs, blogs_size)
 news_sample  <- sample(news, news_size)
 twitter_sample <- sample(twitter, twitter_size)
@@ -166,9 +136,81 @@ repo_sample = c(blogs_sample, news_sample, twitter_sample)
 
 Save sample
 
-``` r
+```{r }
 writeLines(repo_sample, "./data/final/en_US/en_US.repo_sample.txt")
 ```
 
-Clean the sample data
----------------------
+## 3.  Clean the sample data
+Use `tm` to create and clean the corpus
+
+```{r }
+clean_sample <- Corpus(VectorSource(repo_sample))
+```
+
+
+Create filter for profanity...
+Source: [List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words]("List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/en")
+
+```{r }
+profanity <- read.table("./data/final/en_US/profanity.txt", header = FALSE, sep ="\n")
+```
+
+Transform sample to all lower case
+
+```{r }
+clean_sample <- tm_map(clean_sample, content_transformer(tolower))
+```
+
+Remove profanity
+
+```{r }
+clean_sample <- tm_map(clean_sample, removeWords, profanity[,1])
+```
+
+Remove stopwords
+
+```{r }
+clean_sample <- tm_map(clean_sample, removeWords, stopwords("english"))
+```
+
+Remove punctuaton and numbers
+
+```{r }
+clean_sample <- tm_map(clean_sample, removePunctuation)
+clean_sample <- tm_map(clean_sample, removeNumbers)
+```
+
+Stem the document
+
+```{r }
+clean_sample <- tm_map(clean_sample, stemDocument)
+```
+
+Remove Whitespace
+
+```{r }
+clean_sample <- tm_map(clean_sample, stripWhitespace)
+```
+
+Create Term-Document Matrix
+
+```{r }
+dtm <- TermDocumentMatrix(clean_sample)
+m <- as.matrix(dtm)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+head(d, 10)
+```
+
+### Operations on Document-Term Matrices
+
+```{r }
+findFreqTerms(dtm, 5)
+```
+
+
+---
+title: "01_Task_Script.R"
+author: "Mark"
+date: "Sat Oct 14 20:35:44 2017"
+---
