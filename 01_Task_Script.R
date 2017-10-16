@@ -10,7 +10,7 @@ library(tm)
 library(knitr)
 library(tidyverse)
 library(dplyr)
-library(data.table)
+library(dtplyr)
 library(ggthemes)
 
 #' ## 1. Download and explore the data
@@ -36,8 +36,8 @@ news_size    <- file.size(news_file) / (2^20)
 twitter_size <- file.size(twitter_file) / (2^20)
  
 #' Read the data files
-blogs   <- readLines(blogs_file, skipNul = TRUE)
-news    <- readLines(news_file, skipNul = TRUE)
+blogs   <- readLines(blogs_file,   skipNul = TRUE)
+news    <- readLines(news_file,    skipNul = TRUE)
 twitter <- readLines(twitter_file, skipNul = TRUE) 
 
 #' Number of Lines per file
@@ -53,7 +53,7 @@ twitter_nchar <- nchar(twitter)
 
 boxplot(blogs_nchar, news_nchar, twitter_nchar, log = "y",
         names = c("blogs", "news", "twitter"),
-        ylab = "log(Number of Characters)", xlab = "File Name")
+        ylab = "log(Number of Characters)", xlab = "File Name") 
         title("Comparing Distributions of Chracters per Line")
 
 #' Max characters in a line, by file (longest line)
@@ -89,15 +89,15 @@ kable(repo_summary)
 #' Compute sample sizes in terms of lines
 sample_pct = 0.05
 set.seed(1001)
-blogs_size <- blogs_lines * sample_pct
-news_size  <- news_lines * sample_pct
+blogs_size   <- blogs_lines * sample_pct
+news_size    <- news_lines * sample_pct
 twitter_size <- twitter_lines * sample_pct
  
 #' Create samples
-blogs_sample <- sample(blogs, blogs_size)
-news_sample  <- sample(news, news_size)
+blogs_sample   <- sample(blogs, blogs_size)
+news_sample    <- sample(news, news_size)
 twitter_sample <- sample(twitter, twitter_size)
-repo_sample = c(blogs_sample, news_sample, twitter_sample)
+repo_sample    <- c(blogs_sample, news_sample, twitter_sample)
 
 #' Save sample
 writeLines(repo_sample, "./data/final/en_US/en_US.repo_sample.txt")
@@ -145,6 +145,9 @@ print(as.character(clean_sample[[1]]))
 
 #' Save clean corpus
 saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.RData" )
+
+
+###### CONSIDER SPLIT TO 02 HERE
 
 #' Convert to text document
 text_corpus <- tm_map(clean_sample, PlainTextDocument)
