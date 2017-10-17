@@ -12,6 +12,7 @@ library(tidyverse)
 library(dplyr)
 library(dtplyr)
 library(ggthemes)
+library(wordcloud)
 
 #' ## 1. Download and explore the data
 #'
@@ -103,10 +104,6 @@ repo_sample    <- c(blogs_sample, news_sample, twitter_sample)
 writeLines(repo_sample, "./data/final/en_US/en_US.repo_sample.txt")
 saveRDS(repo_sample, file = "./data/final/en_US/repo_sample.RData" )
 
-########################## START HERE ############### SEE LAST TAB
-#' [Test Mining Tutorial]("https://www.hackerearth.com/fr/practice/machine-learning/advanced-techniques/text-mining-feature-engineering-r/tutorial/")
-#'
-
 #' ## 3.  Clean the sample data
 #' Use `tm` to create and clean the corpus
 clean_sample <- Corpus(VectorSource(repo_sample),
@@ -131,60 +128,55 @@ clean_sample <- tm_map(clean_sample, content_transformer(removeNumPunct))
 #' Source: [List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words]("List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/en")
 profanity <- read.table("./data/final/en_US/profanity.txt", header = FALSE, sep ="\n")
 
-#' Remove profanity
+#' Remove profanity  
 clean_sample <- tm_map(clean_sample, removeWords, profanity[,1])
 
-#' Remove stopwords
+#' Remove stopwords  
 clean_sample <- tm_map(clean_sample, removeWords, stopwords("english"))
 clean_sample <- tm_map(clean_sample, removeWords, stopwords("SMART"))
 print(as.character(clean_sample[[1]]))
 
-#' Remove Whitespace
+#' Remove Whitespace  
 clean_sample <- tm_map(clean_sample, stripWhitespace)
 print(as.character(clean_sample[[1]]))
 
-#' Save clean corpus
+#' Save clean corpus  
 saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.RData" )
 
+#' ## Initial Exploratory Data Analysis
 
-###### CONSIDER SPLIT TO 02 HERE
-
-#' Convert to text document
+#' Convert to text document  
+#' Source: [Test Mining Tutorial]("https://www.hackerearth.com/fr/practice/machine-learning/advanced-techniques/text-mining-feature-engineering-r/tutorial/")
 text_corpus <- tm_map(clean_sample, PlainTextDocument)
 
-#perform stemming - this should always be performed after text doc conversion
+#' Perform stemming
 text_corpus <- tm_map(text_corpus, stemDocument,language = "english")
 print(as.character(text_corpus[[1]]))
 text_corpus[[1]]$content
 
-#convert to document term matrix
+#' Convert to document term matrix
 docterm_corpus <- DocumentTermMatrix(text_corpus)
 dim(docterm_corpus)
 
 new_docterm_corpus <- removeSparseTerms(docterm_corpus,sparse = 0.99)
 dim(new_docterm_corpus)
 
-#find frequent terms
+#' Find frequent terms
 colS <- colSums(as.matrix(new_docterm_corpus))
 length(colS)
 doc_features <- data.table(name = attributes(colS)$names, count = colS)
 
-#most frequent and least frequent words
+#' Most frequent and least frequent words
 doc_features[order(-count)][1:10] #top 10 most frequent words
 doc_features[order(count)][1:10] #least 10 frequent words
 
-
+#' Plot most frequent terms
 ggplot(doc_features[count>5000],aes(name, count)) +
   geom_bar(stat = "identity",fill='lightblue',color='black') +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   theme_economist() + scale_color_economist() 
 
-# #check association of terms of top features
-# findAssocs(new_docterm_corpus, "time", corlimit = 0.5)
-# findAssocs(new_docterm_corpus, "love", corlimit = 0.5)
-# findAssocs(new_docterm_corpus, "day",  corlimit = 0.5)
-
-library(wordcloud)
+#' Create word cloud
 wordcloud(names(colS), colS, min.freq = 500, 
           colors = brewer.pal(6, 'Dark2'), random.order = FALSE)  
 

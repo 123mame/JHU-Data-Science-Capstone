@@ -1,6 +1,7 @@
 library(tidytext)
 library(tidyverse)
 library(stringr)
+library(knitr)
 library(wordcloud)
 data("stop_words")
 
@@ -14,18 +15,29 @@ blogs   <- readLines(blogs_file,   skipNul = TRUE)
 news    <- readLines(news_file,    skipNul = TRUE)
 twitter <- readLines(twitter_file, skipNul = TRUE) 
 
+replace_reg <- "[^[:alpha:][:space:]]*"
+replace_url <- "http[^[:space:]]*"
+
 tidy_blogs <- data_frame(text = blogs) %>%
+  mutate(text = str_replace_all(text, replace_reg, "")) %>%
+  mutate(text = str_replace_all(text, replace_url, "")) %>%
+  mutate(text = iconv(text, "ASCII//TRANSLIT")) %>%
   unnest_tokens(word, text) %>%
-  anti_join(stop_words) %>%
+  anti_join(stop_words)
 
 tidy_news <- data_frame(text = news) %>%
+  mutate(text = str_replace_all(text, replace_reg, "")) %>%
+  mutate(text = str_replace_all(text, replace_url, "")) %>%
+  mutate(text = iconv(text, "ASCII//TRANSLIT")) %>%
   unnest_tokens(word, text) %>%
   anti_join(stop_words)
 
 tidy_twitter <- data_frame(text = twitter) %>%
+  mutate(text = str_replace_all(text, replace_reg, "")) %>%
+  mutate(text = str_replace_all(text, replace_url, "")) %>%
+  mutate(text = iconv(text, "ASCII//TRANSLIT")) %>%
   unnest_tokens(word, text) %>%
   anti_join(stop_words) 
-
   
 tidy_repo <- bind_rows(mutate(tidy_blogs, source = "blogs"),
                        mutate(tidy_news,  source = "news"),
@@ -41,10 +53,10 @@ frequncey <- tidy_repo %>%
   gather(source, proportion, `blogs`:`twitter`) %>%
   arrange(desc(proportion), desc(n))
 frequncey
-head(frequncey, 20)
+kable(head(frequncey, 10))
 
 # Word cloud
-tidy_repo %>%
+tidy_blogs %>%
   count(word) %>%
-  with(wordcloud(word, n, max.words = 100))
+  with(wordcloud(word, n, max.words = 100, random.order = FALSE))
 
