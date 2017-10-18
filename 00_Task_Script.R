@@ -6,7 +6,7 @@
 #' ---
 #'
 #' This document works through several examples in the article:  
-#' * [Text mining infrastucture in R](http://www.jstatsoft.org/v25/i05/)  
+#' [Text mining infrastucture in R](http://www.jstatsoft.org/v25/i05/)  
 #'
 #' This is one of the references cited in the course document:   
 #' *Task 0: Understanding the Problem* 
@@ -54,11 +54,11 @@ ovid[[1]][1]
 
 #' #### Remove numbers
 ovid <- tm_map(ovid, FUN = removeNumbers)
-ovid[[2]][1]
+ovid[[1]][1]
 
 #' #### Change to all lower case
 ovid <- tm_map(ovid, FUN = content_transformer(tolower))
-ovid[[5]][1]
+ovid[[1]][1]
 
 #' #### Stem the corpus
 # ovid <- tm_map(ovid, FUN = stemDocument)
@@ -67,11 +67,11 @@ ovid[[5]][1]
 #' #### Remove words
 axe_words <- c("mater", "seu", "annis", "")
 ovid <- tm_map(ovid, FUN = removeWords, axe_words)
-ovid[[5]][1]
+ovid[[1]][1]
 
 #' #### Remove whitespace
 ovid <- tm_map(ovid, FUN = stripWhitespace)
-ovid[[3]][1]
+ovid[[1]][1]
 
 #' ## Example with `Reuters-21578` 
 reut21578 <- system.file("texts", "crude", package = "tm")
@@ -111,4 +111,8 @@ inspect(DocumentTermMatrix(reuters,
                            list(dictionary = c("prices", "crude", "oil"))))
 
 
-
+#' -------------
+#'  
+#' #### Session info:
+#+ show-sessionInfo
+sessionInfo()

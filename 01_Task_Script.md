@@ -1,57 +1,7 @@
 Task 1: Getting and Cleaning the Data
 ================
 Mark Blackmore
-2017-10-17
-
-``` r
-library(downloader)
-library(tm)
-```
-
-    ## Loading required package: NLP
-
-``` r
-library(knitr)
-library(tidyverse)
-```
-
-    ## Loading tidyverse: ggplot2
-    ## Loading tidyverse: tibble
-    ## Loading tidyverse: tidyr
-    ## Loading tidyverse: readr
-    ## Loading tidyverse: purrr
-    ## Loading tidyverse: dplyr
-
-    ## Conflicts with tidy packages ----------------------------------------------
-
-    ## annotate(): ggplot2, NLP
-    ## filter():   dplyr, stats
-    ## lag():      dplyr, stats
-
-``` r
-library(dplyr)
-library(dtplyr)
-library(data.table)
-```
-
-    ## 
-    ## Attaching package: 'data.table'
-
-    ## The following objects are masked from 'package:dplyr':
-    ## 
-    ##     between, first, last
-
-    ## The following object is masked from 'package:purrr':
-    ## 
-    ##     transpose
-
-``` r
-library(ggthemes)
-
-library(wordcloud)
-```
-
-    ## Loading required package: RColorBrewer
+2017-10-18
 
 1. Download and explore the data
 --------------------------------
@@ -124,7 +74,7 @@ boxplot(blogs_nchar, news_nchar, twitter_nchar, log = "y",
         title("Comparing Distributions of Chracters per Line")
 ```
 
-![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-1.png)
+![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-7-1.png)
 
 Max characters in a line, by file (longest line)
 
@@ -347,7 +297,7 @@ ggplot(doc_features[count>5000],aes(name, count)) +
   theme_economist() + scale_color_economist() 
 ```
 
-![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-27-1.png)
+![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-26-1.png)
 
 Create word cloud
 
@@ -356,11 +306,57 @@ wordcloud(names(colS), colS, min.freq = 500,
           colors = brewer.pal(6, 'Dark2'), random.order = FALSE)  
 ```
 
-![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-28-1.png)
+![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-27-1.png)
 
 ``` r
 wordcloud(names(colS), colS, min.freq = 2000, 
           colors = brewer.pal(6, 'Dark2'), random.order = FALSE)  
 ```
 
-![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-28-2.png)
+![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-27-2.png)
+
+------------------------------------------------------------------------
+
+#### Session info:
+
+``` r
+sessionInfo()
+```
+
+    ## R version 3.4.2 (2017-09-28)
+    ## Platform: x86_64-w64-mingw32/x64 (64-bit)
+    ## Running under: Windows 10 x64 (build 15063)
+    ## 
+    ## Matrix products: default
+    ## 
+    ## locale:
+    ## [1] LC_COLLATE=English_United States.1252 
+    ## [2] LC_CTYPE=English_United States.1252   
+    ## [3] LC_MONETARY=English_United States.1252
+    ## [4] LC_NUMERIC=C                          
+    ## [5] LC_TIME=English_United States.1252    
+    ## 
+    ## attached base packages:
+    ## [1] stats     graphics  grDevices utils     datasets  methods   base     
+    ## 
+    ## other attached packages:
+    ##  [1] bindrcpp_0.2        wordcloud_2.5       RColorBrewer_1.1-2 
+    ##  [4] ggthemes_3.4.0      data.table_1.10.4-2 dtplyr_0.0.2       
+    ##  [7] dplyr_0.7.4         purrr_0.2.3         readr_1.1.1        
+    ## [10] tidyr_0.7.1         tibble_1.3.4        ggplot2_2.2.1      
+    ## [13] tidyverse_1.1.1     knitr_1.17          tm_0.7-1           
+    ## [16] NLP_0.1-11          downloader_0.4     
+    ## 
+    ## loaded via a namespace (and not attached):
+    ##  [1] slam_0.1-40      reshape2_1.4.2   haven_1.1.0      lattice_0.20-35 
+    ##  [5] colorspace_1.3-2 htmltools_0.3.6  yaml_2.1.14      rlang_0.1.2     
+    ##  [9] foreign_0.8-69   glue_1.1.1       modelr_0.1.1     readxl_1.0.0    
+    ## [13] bindr_0.1        plyr_1.8.4       stringr_1.2.0    munsell_0.4.3   
+    ## [17] gtable_0.2.0     cellranger_1.1.0 rvest_0.3.2      psych_1.7.8     
+    ## [21] evaluate_0.10.1  labeling_0.3     forcats_0.2.0    parallel_3.4.2  
+    ## [25] highr_0.6        broom_0.4.2      Rcpp_0.12.13     backports_1.1.1 
+    ## [29] scales_0.5.0     jsonlite_1.5     mnormt_1.5-5     hms_0.3         
+    ## [33] digest_0.6.12    stringi_1.1.5    grid_3.4.2       rprojroot_1.2   
+    ## [37] tools_3.4.2      magrittr_1.5     lazyeval_0.2.0   pkgconfig_2.0.1 
+    ## [41] xml2_1.1.1       lubridate_1.6.0  assertthat_0.2.0 rmarkdown_1.6   
+    ## [45] httr_1.3.1       R6_2.2.2         nlme_3.1-131     compiler_3.4.2

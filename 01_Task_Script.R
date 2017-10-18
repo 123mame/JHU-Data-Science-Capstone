@@ -5,16 +5,18 @@
 #' output: github_document
 #' ---
 #'
-library(downloader)
-library(tm)
-library(knitr)
-library(tidyverse)
-library(dplyr)
-library(dtplyr)
-library(data.table)
-library(ggthemes)
-
-library(wordcloud)
+#+ startup, echo = FALSE
+suppressPackageStartupMessages({
+ library(downloader)
+ library(tm)
+ library(knitr)
+ library(tidyverse)
+ library(dplyr)
+ library(dtplyr)
+ library(data.table)
+ library(ggthemes)
+ library(wordcloud)
+})  
 
 #' ## 1. Download and explore the data
 #'
@@ -175,4 +177,8 @@ wordcloud(names(colS), colS, min.freq = 500,
 wordcloud(names(colS), colS, min.freq = 2000, 
           colors = brewer.pal(6, 'Dark2'), random.order = FALSE)  
 
-
+#' -------------
+#'  
+#' #### Session info:
+#+ show-sessionInfo
+sessionInfo()

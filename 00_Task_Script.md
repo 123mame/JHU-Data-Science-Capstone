@@ -1,10 +1,10 @@
 Exploring the `tm` Package
 ================
 Mark Blackmore
-2017-10-12
+2017-10-18
 
 This document works through several examples in the article:
-\* [Text mining infrastucture in R](http://www.jstatsoft.org/v25/i05/)
+[Text mining infrastucture in R](http://www.jstatsoft.org/v25/i05/)
 
 This is one of the references cited in the course document:
 *Task 0: Understanding the Problem*
@@ -33,8 +33,8 @@ txt <- system.file("texts", "txt", package = "tm")
                                      load = TRUE)))
 ```
 
-    ## <<VCorpus>>
-    ## Metadata:  corpus specific: 0, document level (indexed): 0
+    ## <<SimpleCorpus>>
+    ## Metadata:  corpus specific: 1, document level (indexed): 0
     ## Content:  documents: 5
 
 ### Examine metadata
@@ -46,7 +46,7 @@ meta(ovid[[1]])
 ```
 
     ##   author       : character(0)
-    ##   datetimestamp: 2017-10-13 02:09:40
+    ##   datetimestamp: 2017-10-18 17:38:19
     ##   description  : character(0)
     ##   heading      : character(0)
     ##   id           : ovid_1.txt
@@ -58,11 +58,11 @@ meta(ovid[[1]])$author <- "Publius Ovidius Naso"
 meta(ovid[[1]])
 ```
 
-    ##   author       : Publius Ovidius Naso
-    ##   datetimestamp: 2017-10-13 02:09:40
+    ##   author       : character(0)
+    ##   datetimestamp: 2017-10-18 17:38:19
     ##   description  : character(0)
     ##   heading      : character(0)
-    ##   id           : ovid_1.txt
+    ##   id           : content
     ##   language     : lat
     ##   origin       : character(0)
 
@@ -72,11 +72,11 @@ ovid[[1]][2]
 ```
 
     ## $meta
-    ##   author       : Publius Ovidius Naso
-    ##   datetimestamp: 2017-10-13 02:09:40
+    ##   author       : character(0)
+    ##   datetimestamp: 2017-10-18 17:38:19
     ##   description  : character(0)
     ##   heading      : character(0)
-    ##   id           : ovid_1.txt
+    ##   id           : content
     ##   language     : lat
     ##   origin       : character(0)
 
@@ -87,22 +87,7 @@ ovid[[1]][1]
 ```
 
     ## $content
-    ##  [1] "    Si quis in hoc artem populo non novit amandi,"    
-    ##  [2] "         hoc legat et lecto carmine doctus amet."     
-    ##  [3] "    arte citae veloque rates remoque moventur,"       
-    ##  [4] "         arte leves currus: arte regendus amor."      
-    ##  [5] ""                                                     
-    ##  [6] "    curribus Automedon lentisque erat aptus habenis," 
-    ##  [7] "         Tiphys in Haemonia puppe magister erat:"     
-    ##  [8] "    me Venus artificem tenero praefecit Amori;"       
-    ##  [9] "         Tiphys et Automedon dicar Amoris ego."       
-    ## [10] "    ille quidem ferus est et qui mihi saepe repugnet:"
-    ## [11] ""                                                     
-    ## [12] "         sed puer est, aetas mollis et apta regi."    
-    ## [13] "    Phillyrides puerum cithara perfecit Achillem,"    
-    ## [14] "         atque animos placida contudit arte feros."   
-    ## [15] "    qui totiens socios, totiens exterruit hostes,"    
-    ## [16] "         creditur annosum pertimuisse senem."
+    ## [1] "    Si quis in hoc artem populo non novit amandi,\n         hoc legat et lecto carmine doctus amet.\n    arte citae veloque rates remoque moventur,\n         arte leves currus: arte regendus amor.\n\n    curribus Automedon lentisque erat aptus habenis,\n         Tiphys in Haemonia puppe magister erat:\n    me Venus artificem tenero praefecit Amori;\n         Tiphys et Automedon dicar Amoris ego.\n    ille quidem ferus est et qui mihi saepe repugnet:\n\n         sed puer est, aetas mollis et apta regi.\n    Phillyrides puerum cithara perfecit Achillem,\n         atque animos placida contudit arte feros.\n    qui totiens socios, totiens exterruit hostes,\n         creditur annosum pertimuisse senem."
 
 ### Concatenate several text collections to a single one
 
@@ -110,9 +95,47 @@ ovid[[1]][1]
 c(ovid[1:2], ovid[3:4])
 ```
 
-    ## <<VCorpus>>
-    ## Metadata:  corpus specific: 0, document level (indexed): 0
-    ## Content:  documents: 4
+    ## $content
+    ## $content$content
+    ## [1] "    Si quis in hoc artem populo non novit amandi,\n         hoc legat et lecto carmine doctus amet.\n    arte citae veloque rates remoque moventur,\n         arte leves currus: arte regendus amor.\n\n    curribus Automedon lentisque erat aptus habenis,\n         Tiphys in Haemonia puppe magister erat:\n    me Venus artificem tenero praefecit Amori;\n         Tiphys et Automedon dicar Amoris ego.\n    ille quidem ferus est et qui mihi saepe repugnet:\n\n         sed puer est, aetas mollis et apta regi.\n    Phillyrides puerum cithara perfecit Achillem,\n         atque animos placida contudit arte feros.\n    qui totiens socios, totiens exterruit hostes,\n         creditur annosum pertimuisse senem."
+    ## 
+    ## $content$meta
+    ##   author       : Publius Ovidius Naso
+    ##   datetimestamp: 2017-10-18 17:38:19
+    ##   description  : character(0)
+    ##   heading      : character(0)
+    ##   id           : ovid_1.txt
+    ##   language     : lat
+    ##   origin       : character(0)
+    ## 
+    ## 
+    ## $meta
+    ## $language
+    ## [1] "lat"
+    ## 
+    ## attr(,"class")
+    ## [1] "CorpusMeta"
+    ## 
+    ## $dmeta
+    ## data frame with 0 columns and 2 rows
+    ## 
+    ## $content
+    ## $content$<NA>
+    ## NULL
+    ## 
+    ## $content$<NA>
+    ## NULL
+    ## 
+    ## 
+    ## $meta
+    ## $language
+    ## [1] "lat"
+    ## 
+    ## attr(,"class")
+    ## [1] "CorpusMeta"
+    ## 
+    ## $dmeta
+    ## data frame with 0 columns and 2 rows
 
 ### Show the number of documents in the corpus
 
@@ -120,7 +143,7 @@ c(ovid[1:2], ovid[3:4])
 length(ovid)
 ```
 
-    ## [1] 5
+    ## [1] 2
 
 ### Show detailed summary of the text document collection
 
@@ -128,12 +151,9 @@ length(ovid)
 summary(ovid)
 ```
 
-    ##            Length Class             Mode
-    ## ovid_1.txt 2      PlainTextDocument list
-    ## ovid_2.txt 2      PlainTextDocument list
-    ## ovid_3.txt 2      PlainTextDocument list
-    ## ovid_4.txt 2      PlainTextDocument list
-    ## ovid_5.txt 2      PlainTextDocument list
+    ##         Length Class             Mode
+    ## content 2      PlainTextDocument list
+    ## meta    2      PlainTextDocument list
 
 ### Show predefined transformations
 
@@ -154,75 +174,27 @@ ovid[[1]][1]
 ```
 
     ## $content
-    ##  [1] "    Si quis in hoc artem populo non novit amandi"    
-    ##  [2] "         hoc legat et lecto carmine doctus amet"     
-    ##  [3] "    arte citae veloque rates remoque moventur"       
-    ##  [4] "         arte leves currus arte regendus amor"       
-    ##  [5] ""                                                    
-    ##  [6] "    curribus Automedon lentisque erat aptus habenis" 
-    ##  [7] "         Tiphys in Haemonia puppe magister erat"     
-    ##  [8] "    me Venus artificem tenero praefecit Amori"       
-    ##  [9] "         Tiphys et Automedon dicar Amoris ego"       
-    ## [10] "    ille quidem ferus est et qui mihi saepe repugnet"
-    ## [11] ""                                                    
-    ## [12] "         sed puer est aetas mollis et apta regi"     
-    ## [13] "    Phillyrides puerum cithara perfecit Achillem"    
-    ## [14] "         atque animos placida contudit arte feros"   
-    ## [15] "    qui totiens socios totiens exterruit hostes"     
-    ## [16] "         creditur annosum pertimuisse senem"
+    ## [1] "    Si quis in hoc artem populo non novit amandi\n         hoc legat et lecto carmine doctus amet\n    arte citae veloque rates remoque moventur\n         arte leves currus arte regendus amor\n\n    curribus Automedon lentisque erat aptus habenis\n         Tiphys in Haemonia puppe magister erat\n    me Venus artificem tenero praefecit Amori\n         Tiphys et Automedon dicar Amoris ego\n    ille quidem ferus est et qui mihi saepe repugnet\n\n         sed puer est aetas mollis et apta regi\n    Phillyrides puerum cithara perfecit Achillem\n         atque animos placida contudit arte feros\n    qui totiens socios totiens exterruit hostes\n         creditur annosum pertimuisse senem"
 
 #### Remove numbers
 
 ``` r
 ovid <- tm_map(ovid, FUN = removeNumbers)
-ovid[[2]][1]
+ovid[[1]][1]
 ```
 
     ## $content
-    ##  [1] "    quas Hector sensurus erat poscente magistro" 
-    ##  [2] "         verberibus iussas praebuit ille manus"  
-    ##  [3] "    Aeacidae Chiron ego sum praeceptor Amoris"   
-    ##  [4] "         saevus uterque puer natus uterque dea"  
-    ##  [5] "    sed tamen et tauri cervix oneratur aratro"   
-    ##  [6] ""                                                
-    ##  [7] "         frenaque magnanimi dente teruntur equi" 
-    ##  [8] "    et mihi cedet Amor quamvis mea vulneret arcu"
-    ##  [9] "         pectora iactatas excutiatque faces"     
-    ## [10] "    quo me fixit Amor quo me violentius ussit"   
-    ## [11] "         hoc melior facti vulneris ultor ero"    
-    ## [12] ""                                                
-    ## [13] "    non ego Phoebe datas a te mihi mentiar artes"
-    ## [14] "         nec nos aëriae voce monemur avis"       
-    ## [15] "    nec mihi sunt visae Clio Cliusque sorores"   
-    ## [16] "         servanti pecudes vallibus Ascra tuis"   
-    ## [17] "    usus opus movet hoc vati parete perito"
+    ## [1] "    Si quis in hoc artem populo non novit amandi\n         hoc legat et lecto carmine doctus amet\n    arte citae veloque rates remoque moventur\n         arte leves currus arte regendus amor\n\n    curribus Automedon lentisque erat aptus habenis\n         Tiphys in Haemonia puppe magister erat\n    me Venus artificem tenero praefecit Amori\n         Tiphys et Automedon dicar Amoris ego\n    ille quidem ferus est et qui mihi saepe repugnet\n\n         sed puer est aetas mollis et apta regi\n    Phillyrides puerum cithara perfecit Achillem\n         atque animos placida contudit arte feros\n    qui totiens socios totiens exterruit hostes\n         creditur annosum pertimuisse senem"
 
 #### Change to all lower case
 
 ``` r
 ovid <- tm_map(ovid, FUN = content_transformer(tolower))
-ovid[[5]][1]
+ovid[[1]][1]
 ```
 
     ## $content
-    ##  [1] "    mater in aeneae constitit urbe sui"             
-    ##  [2] "    seu caperis primis et adhuc crescentibus annis" 
-    ##  [3] "         ante oculos veniet vera puella tuos"       
-    ##  [4] "    sive cupis iuvenem iuvenes tibi mille placebunt"
-    ##  [5] "         cogeris voti nescius esse tui"             
-    ##  [6] ""                                                   
-    ##  [7] "    seu te forte iuvat sera et sapientior aetas"    
-    ##  [8] "         hoc quoque crede mihi plenius agmen erit"  
-    ##  [9] "    tu modo pompeia lentus spatiare sub umbra"      
-    ## [10] "         cum sol herculei terga leonis adit"        
-    ## [11] "    aut ubi muneribus nati sua munera mater"        
-    ## [12] ""                                                   
-    ## [13] "         addidit externo marmore dives opus"        
-    ## [14] "    nec tibi vitetur quae priscis sparsa tabellis"  
-    ## [15] "         porticus auctoris livia nomen habet"       
-    ## [16] "    quaque parare necem miseris patruelibus ausae"  
-    ## [17] "         belides et stricto stat ferus ense pater"  
-    ## [18] ""
+    ## [1] "    si quis in hoc artem populo non novit amandi\n         hoc legat et lecto carmine doctus amet\n    arte citae veloque rates remoque moventur\n         arte leves currus arte regendus amor\n\n    curribus automedon lentisque erat aptus habenis\n         tiphys in haemonia puppe magister erat\n    me venus artificem tenero praefecit amori\n         tiphys et automedon dicar amoris ego\n    ille quidem ferus est et qui mihi saepe repugnet\n\n         sed puer est aetas mollis et apta regi\n    phillyrides puerum cithara perfecit achillem\n         atque animos placida contudit arte feros\n    qui totiens socios totiens exterruit hostes\n         creditur annosum pertimuisse senem"
 
 #### Stem the corpus
 
@@ -236,54 +208,21 @@ ovid[[5]][1]
 ``` r
 axe_words <- c("mater", "seu", "annis", "")
 ovid <- tm_map(ovid, FUN = removeWords, axe_words)
-ovid[[5]][1]
+ovid[[1]][1]
 ```
 
     ## $content
-    ##  [1] "     in aeneae constitit urbe sui"                  
-    ##  [2] "     caperis primis et adhuc crescentibus "         
-    ##  [3] "         ante oculos veniet vera puella tuos"       
-    ##  [4] "    sive cupis iuvenem iuvenes tibi mille placebunt"
-    ##  [5] "         cogeris voti nescius esse tui"             
-    ##  [6] ""                                                   
-    ##  [7] "     te forte iuvat sera et sapientior aetas"       
-    ##  [8] "         hoc quoque crede mihi plenius agmen erit"  
-    ##  [9] "    tu modo pompeia lentus spatiare sub umbra"      
-    ## [10] "         cum sol herculei terga leonis adit"        
-    ## [11] "    aut ubi muneribus nati sua munera "             
-    ## [12] ""                                                   
-    ## [13] "         addidit externo marmore dives opus"        
-    ## [14] "    nec tibi vitetur quae priscis sparsa tabellis"  
-    ## [15] "         porticus auctoris livia nomen habet"       
-    ## [16] "    quaque parare necem miseris patruelibus ausae"  
-    ## [17] "         belides et stricto stat ferus ense pater"  
-    ## [18] ""
+    ## [1] "    si quis in hoc artem populo non novit amandi\n         hoc legat et lecto carmine doctus amet\n    arte citae veloque rates remoque moventur\n         arte leves currus arte regendus amor\n\n    curribus automedon lentisque erat aptus habenis\n         tiphys in haemonia puppe magister erat\n    me venus artificem tenero praefecit amori\n         tiphys et automedon dicar amoris ego\n    ille quidem ferus est et qui mihi saepe repugnet\n\n         sed puer est aetas mollis et apta regi\n    phillyrides puerum cithara perfecit achillem\n         atque animos placida contudit arte feros\n    qui totiens socios totiens exterruit hostes\n         creditur annosum pertimuisse senem"
 
 #### Remove whitespace
 
 ``` r
 ovid <- tm_map(ovid, FUN = stripWhitespace)
-ovid[[3]][1]
+ovid[[1]][1]
 ```
 
     ## $content
-    ##  [1] " vera canam coeptis amoris ades"                  
-    ##  [2] " este procul vittae tenues insigne pudoris"       
-    ##  [3] " quaeque tegis medios instita longa pedes"        
-    ##  [4] " nos venerem tutam concessaque furta canemus"     
-    ##  [5] " inque meo nullum carmine crimen erit"            
-    ##  [6] ""                                                 
-    ##  [7] " principio quod amare velis reperire labora"      
-    ##  [8] " qui nova nunc primum miles in arma venis"        
-    ##  [9] " proximus huic labor est placitam exorare puellam"
-    ## [10] " tertius ut longo tempore duret amor"             
-    ## [11] " hic modus haec nostro signabitur area curru"     
-    ## [12] ""                                                 
-    ## [13] " haec erit admissa meta terenda rota"             
-    ## [14] " dum licet et loris passim potes ire solutis"     
-    ## [15] " elige cui dicas tu mihi sola places"             
-    ## [16] " haec tibi non tenues veniet delapsa per auras"   
-    ## [17] " quaerenda est oculis apta puella tuis"
+    ## [1] " si quis in hoc artem populo non novit amandi hoc legat et lecto carmine doctus amet arte citae veloque rates remoque moventur arte leves currus arte regendus amor curribus automedon lentisque erat aptus habenis tiphys in haemonia puppe magister erat me venus artificem tenero praefecit amori tiphys et automedon dicar amoris ego ille quidem ferus est et qui mihi saepe repugnet sed puer est aetas mollis et apta regi phillyrides puerum cithara perfecit achillem atque animos placida contudit arte feros qui totiens socios totiens exterruit hostes creditur annosum pertimuisse senem"
 
 Example with `Reuters-21578`
 ----------------------------
@@ -342,7 +281,7 @@ inspect(dtm[5:10, 740:743])
     ## Sparsity           : 67%
     ## Maximal term length: 6
     ## Weighting          : term frequency (tf)
-    ## 
+    ## Sample             :
     ##      Terms
     ## Docs  one, opec opec's opec"s
     ##   211    0    0      0      0
@@ -405,29 +344,19 @@ inspect(removeSparseTerms(dtm, 0.4))
     ## Sparsity           : 3%
     ## Maximal term length: 6
     ## Weighting          : term frequency (tf)
-    ## 
+    ## Sample             :
     ##      Terms
     ## Docs  oil reuter said
     ##   127   5      1    1
     ##   144  11      1    9
-    ##   191   2      1    1
-    ##   194   1      1    1
-    ##   211   1      1    3
     ##   236   7      1    6
-    ##   237   3      1    0
     ##   242   3      1    3
     ##   246   4      1    4
     ##   248   9      1    5
     ##   273   5      1    5
-    ##   349   3      1    1
     ##   352   5      1    1
-    ##   353   4      1    1
-    ##   368   3      1    2
     ##   489   4      1    2
     ##   502   4      1    2
-    ##   543   2      1    2
-    ##   704   3      1    3
-    ##   708   1      1    0
 
 ### Dictionary: Terms to Text Mine
 
@@ -441,26 +370,50 @@ inspect(DocumentTermMatrix(reuters,
     ## Sparsity           : 32%
     ## Maximal term length: 6
     ## Weighting          : term frequency (tf)
-    ## 
+    ## Sample             :
     ##      Terms
     ## Docs  crude oil prices
-    ##   127     2   5      3
-    ##   144     0  11      3
-    ##   191     2   2      0
-    ##   194     3   1      0
-    ##   211     0   1      0
-    ##   236     1   7      2
-    ##   237     0   3      0
-    ##   242     0   3      1
-    ##   246     0   4      0
-    ##   248     0   9      7
-    ##   273     5   5      4
-    ##   349     2   3      0
-    ##   352     0   5      4
-    ##   353     2   4      1
-    ##   368     0   3      0
-    ##   489     0   4      2
-    ##   502     0   4      2
-    ##   543     2   2      2
-    ##   704     0   3      2
-    ##   708     1   1      0
+    ##   127     1   1      1
+    ##   144     0   1      1
+    ##   191     1   1      0
+    ##   194     1   1      0
+    ##   236     1   1      1
+    ##   242     0   1      1
+    ##   248     0   1      1
+    ##   273     1   1      1
+    ##   353     1   1      1
+    ##   543     1   1      1
+
+------------------------------------------------------------------------
+
+#### Session info:
+
+``` r
+sessionInfo()
+```
+
+    ## R version 3.4.2 (2017-09-28)
+    ## Platform: x86_64-w64-mingw32/x64 (64-bit)
+    ## Running under: Windows 10 x64 (build 15063)
+    ## 
+    ## Matrix products: default
+    ## 
+    ## locale:
+    ## [1] LC_COLLATE=English_United States.1252 
+    ## [2] LC_CTYPE=English_United States.1252   
+    ## [3] LC_MONETARY=English_United States.1252
+    ## [4] LC_NUMERIC=C                          
+    ## [5] LC_TIME=English_United States.1252    
+    ## 
+    ## attached base packages:
+    ## [1] stats     graphics  grDevices utils     datasets  methods   base     
+    ## 
+    ## other attached packages:
+    ## [1] tm_0.7-1   NLP_0.1-11
+    ## 
+    ## loaded via a namespace (and not attached):
+    ##  [1] Rcpp_0.12.13    XML_3.98-1.9    digest_0.6.12   rprojroot_1.2  
+    ##  [5] SnowballC_0.5.1 slam_0.1-40     backports_1.1.1 magrittr_1.5   
+    ##  [9] evaluate_0.10.1 stringi_1.1.5   rmarkdown_1.6   tools_3.4.2    
+    ## [13] stringr_1.2.0   yaml_2.1.14     parallel_3.4.2  compiler_3.4.2 
+    ## [17] htmltools_0.3.6 knitr_1.17
