@@ -148,7 +148,7 @@ Save sample
 
 ``` r
 writeLines(repo_sample, "./data/final/en_US/en_US.repo_sample.txt")
-saveRDS(repo_sample, file = "./data/final/en_US/repo_sample.RData" )
+saveRDS(repo_sample, file = "./data/final/en_US/repo_sample.rds" )
 ```
 
 3. Clean the sample data
@@ -219,7 +219,7 @@ print(as.character(clean_sample[[1]]))
 Save clean corpus
 
 ``` r
-saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.RData" )
+saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.rds" )
 ```
 
 4. Initial Exploratory Data Analysis

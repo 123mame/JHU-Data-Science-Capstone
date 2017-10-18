@@ -106,7 +106,7 @@ repo_sample    <- c(blogs_sample, news_sample, twitter_sample)
 
 #' Save sample
 writeLines(repo_sample, "./data/final/en_US/en_US.repo_sample.txt")
-saveRDS(repo_sample, file = "./data/final/en_US/repo_sample.RData" )
+saveRDS(repo_sample, file = "./data/final/en_US/repo_sample.rds" )
 
 #' ## 3.  Clean the sample data
 #' Use `tm` to create and clean the corpus
@@ -145,7 +145,7 @@ clean_sample <- tm_map(clean_sample, stripWhitespace)
 print(as.character(clean_sample[[1]]))
 
 #' Save clean corpus  
-saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.RData" )
+saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.rds" )
 
 #' ## 4. Initial Exploratory Data Analysis
 #' Convert to document term matrix
