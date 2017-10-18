@@ -61,9 +61,9 @@ tidy_blogs <- clean_blogs  %>%
   anti_join(stop_words)
 
 ## ngrams
-tidy_blogs <- clean_blogs  %>%
-  unnest_tokens(ngram, text, token = "ngrams", n = 2)
-tidy_blogs
+tidy_blogs_bigrams <- clean_blogs  %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+tidy_blogs_bigrams
 
 ################
 
