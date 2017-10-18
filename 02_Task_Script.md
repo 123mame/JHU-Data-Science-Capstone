@@ -62,11 +62,19 @@ replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"
 Create clean & tidy dataframes for each source and a clean & tidy repository
 
 ``` r
-tidy_blogs <- data_frame(text = blogs) %>%
+clean_blogs <- data_frame(text = blogs) %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
-  mutate(text = iconv(text, "ASCII//TRANSLIT")) %>%
+  mutate(text = iconv(text, "ASCII//TRANSLIT"))
+```
+
+############ 
+
+SPLIT CLEANING FROM TIDYING, this allows use of unnest\_tokens for ngrams READ MORE BEFORE DOING MORE
+
+``` r
+tidy_blogs <- clean_blogs  %>%
   unnest_tokens(word, text) %>%
   anti_join(swear_words) %>%
   anti_join(stop_words)
@@ -76,6 +84,30 @@ tidy_blogs <- data_frame(text = blogs) %>%
     ## Joining, by = "word"
 
 ``` r
+## ngrams
+tidy_blogs_bigrams <- clean_blogs  %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+tidy_blogs_bigrams
+```
+
+    ## # A tibble: 33,823,399 x 1
+    ##              bigram
+    ##               <chr>
+    ##  1           in the
+    ##  2        the years
+    ##  3 years thereafter
+    ##  4  thereafter most
+    ##  5          most of
+    ##  6           of the
+    ##  7          the oil
+    ##  8       oil fields
+    ##  9       fields and
+    ## 10    and platforms
+    ## # ... with 33,823,389 more rows
+
+``` r
+################
+
 tidy_news <- data_frame(text = news) %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
@@ -108,25 +140,7 @@ tidy_twitter <- data_frame(text = twitter) %>%
 tidy_repo <- bind_rows(mutate(tidy_blogs, source = "blogs"),
                        mutate(tidy_news,  source = "news"),
                        mutate(tidy_twitter, source = "twitter")) 
-tidy_repo
-```
-
-    ## # A tibble: 22,754,109 x 2
-    ##         word source
-    ##        <chr>  <chr>
-    ##  1       oil  blogs
-    ##  2    fields  blogs
-    ##  3 platforms  blogs
-    ##  4     named  blogs
-    ##  5     pagan  blogs
-    ##  6     godsc  blogs
-    ##  7      love  blogs
-    ##  8     brown  blogs
-    ##  9      chad  blogs
-    ## 10   awesome  blogs
-    ## # ... with 22,754,099 more rows
-
-``` r
+tidy_repo$source <- as.factor(tidy_repo$source)
 saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
 ```
 
@@ -143,8 +157,11 @@ freq <- tidy_repo %>%
   spread(source, proportion) %>%
   gather(source, proportion, `blogs`:`twitter`) %>%
   arrange(desc(proportion), desc(n))
+```
 
-# Most frequent words
+Most frequent words
+
+``` r
 kable(head(freq, 10))
 ```
 
@@ -161,8 +178,9 @@ kable(head(freq, 10))
 | people |   51422| twitter |   0.0051529|
 | people |   58839| blogs   |   0.0049893|
 
+Least frequent words
+
 ``` r
-# Least frequent words
 freq_low <- freq %>% 
   arrange(proportion, n)
 kable(head(freq_low, 10)) 
@@ -181,15 +199,16 @@ kable(head(freq_low, 10))
 | aafes          |    1| blogs  |       1e-07|
 | aag            |    1| blogs  |       1e-07|
 
+Word clouds
+
 ``` r
-# Word clouds
 tidy_blogs %>%
   count(word) %>%
   with(wordcloud(word, n, max.words = 100, 
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-1.png)
 
 ``` r
 tidy_blogs %>%
@@ -198,10 +217,11 @@ tidy_blogs %>%
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE)) 
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-2.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-2.png)
+
+Word distribution
 
 ``` r
-# Word distribution
 tidy_repo %>%
   count(word, sort = TRUE) %>%
   filter(n > 40000) %>%
@@ -212,18 +232,20 @@ tidy_repo %>%
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-3.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-1.png)
+
+Word distribution by source
 
 ``` r
 freq %>%
   group_by(source) %>%
-  filter(proportion > 0.001) %>%
-  mutate(word = reorder(word, proportion)) %>%
+  filter(proportion > 0.0025) %>% 
+  mutate(word = reorder(word, proportion)) %>% 
   ggplot(aes(word, proportion)) +
   geom_col() + 
   xlab(NULL) + 
   coord_flip() +
-  facet_wrap(~source)
+  facet_wrap(~source) 
 ```
 
     ## Warning in mutate_impl(.data, dots): Unequal factor levels: coercing to
@@ -238,7 +260,7 @@ freq %>%
     ## Warning in mutate_impl(.data, dots): binding character and factor vector,
     ## coercing into character vector
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-4.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-10-1.png)
 
 ------------------------------------------------------------------------
 

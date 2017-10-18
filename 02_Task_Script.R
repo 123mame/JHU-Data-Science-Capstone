@@ -51,9 +51,9 @@ clean_blogs <- data_frame(text = blogs) %>%
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
 
 
-#############  
-# SPLIT CLEANING FROM TIDYING, this allows use of unnest_tokens for ngrams
-# READ MORE BEFORE DOING MORE
+#' ############  
+#' SPLIT CLEANING FROM TIDYING, this allows use of unnest_tokens for ngrams
+#' READ MORE BEFORE DOING MORE
 
 tidy_blogs <- clean_blogs  %>%
   unnest_tokens(word, text) %>%
