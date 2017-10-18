@@ -3,6 +3,16 @@ Task 2: Exploratory Data Analysis
 Mark Blackmore
 2017-10-18
 
+1. Introduction
+---------------
+
+This script uses the tidy data principles applied to text mining, as outlined in [Text Mining with R: A Tidy Approach](http://tidytextmining.com/).
+
+Using this approach, we are able to use the **entire data set** as opposed to data sampling approach required by the memory constraints of the `tm` package.
+
+1. Data loading and cleaning
+----------------------------
+
 English Repository Files
 
 ``` r
@@ -25,9 +35,10 @@ news    <- readLines(news_file,    skipNul = TRUE)
 twitter <- readLines(twitter_file, skipNul = TRUE) 
 ```
 
-Create filters: profanity, non-alphanumeric characters, url's, repeated letters
+Create filters: stopwords, profanity, non-alphanumeric characters, url's, repeated letters
 
 ``` r
+data("stop_words")
 swear_words <- read.csv("./data/final/en_US/en_US.swearWords.csv", header = FALSE)
 ```
 
@@ -45,8 +56,12 @@ swear_words <- gather(swear_words) %>% transmute(word = value)
 ``` r
 replace_reg <- "[^[:alpha:][:space:]]*"
 replace_url <- "http[^[:space:]]*"
-replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"
+replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"  
+```
 
+Create clean & tidy dataframes for each source and a clean & tidy repository
+
+``` r
 tidy_blogs <- data_frame(text = blogs) %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
@@ -89,12 +104,38 @@ tidy_twitter <- data_frame(text = twitter) %>%
     ## Joining, by = "word"
 
 ``` r
+# Tidy repository with source, save to file  
 tidy_repo <- bind_rows(mutate(tidy_blogs, source = "blogs"),
                        mutate(tidy_news,  source = "news"),
                        mutate(tidy_twitter, source = "twitter")) 
+tidy_repo
+```
 
+    ## # A tibble: 22,754,109 x 2
+    ##         word source
+    ##        <chr>  <chr>
+    ##  1       oil  blogs
+    ##  2    fields  blogs
+    ##  3 platforms  blogs
+    ##  4     named  blogs
+    ##  5     pagan  blogs
+    ##  6     godsc  blogs
+    ##  7      love  blogs
+    ##  8     brown  blogs
+    ##  9      chad  blogs
+    ## 10   awesome  blogs
+    ## # ... with 22,754,099 more rows
+
+``` r
+saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
+```
+
+2. Most frequent words and word distributions
+---------------------------------------------
+
+``` r
 freq <- tidy_repo %>%
-  mutate(word = str_extract(word, "[a-z']+")) %>%
+  #mutate(word = str_extract(word, "[a-z']+")) %>%
   count(source, word) %>%
   group_by(source) %>%
   mutate(proportion = n / sum(n)) %>%
@@ -103,6 +144,7 @@ freq <- tidy_repo %>%
   gather(source, proportion, `blogs`:`twitter`) %>%
   arrange(desc(proportion), desc(n))
 
+# Most frequent words
 kable(head(freq, 10))
 ```
 
@@ -120,124 +162,34 @@ kable(head(freq, 10))
 | people |   58839| blogs   |   0.0049893|
 
 ``` r
+# Least frequent words
 freq_low <- freq %>% 
   arrange(proportion, n)
-
-kable(head(freq_low, 100)) 
+kable(head(freq_low, 10)) 
 ```
 
-| word                  |    n| source |  proportion|
-|:----------------------|----:|:-------|-----------:|
-| aaaaaaaaaaaaaa        |    1| blogs  |       1e-07|
-| aabb                  |    1| blogs  |       1e-07|
-| aaberg                |    1| blogs  |       1e-07|
-| aabergc               |    1| blogs  |       1e-07|
-| aac                   |    1| blogs  |       1e-07|
-| aack                  |    1| blogs  |       1e-07|
-| aadvanced             |    1| blogs  |       1e-07|
-| aafaton               |    1| blogs  |       1e-07|
-| aafes                 |    1| blogs  |       1e-07|
-| aag                   |    1| blogs  |       1e-07|
-| aahforget             |    1| blogs  |       1e-07|
-| aahing                |    1| blogs  |       1e-07|
-| aahs                  |    1| blogs  |       1e-07|
-| aair                  |    1| blogs  |       1e-07|
-| aaircare              |    1| blogs  |       1e-07|
-| aajac                 |    1| blogs  |       1e-07|
-| aakhri                |    1| blogs  |       1e-07|
-| aakhu                 |    1| blogs  |       1e-07|
-| aal                   |    1| blogs  |       1e-07|
-| aalab                 |    1| blogs  |       1e-07|
-| aalah                 |    1| blogs  |       1e-07|
-| aalams                |    1| blogs  |       1e-07|
-| aalaya                |    1| blogs  |       1e-07|
-| aalesund              |    1| blogs  |       1e-07|
-| aali                  |    1| blogs  |       1e-07|
-| aalst                 |    1| blogs  |       1e-07|
-| aamodt                |    1| blogs  |       1e-07|
-| aamoth                |    1| blogs  |       1e-07|
-| aan                   |    1| blogs  |       1e-07|
-| aanchal               |    1| blogs  |       1e-07|
-| aangc                 |    1| blogs  |       1e-07|
-| aankh                 |    1| blogs  |       1e-07|
-| aap                   |    1| blogs  |       1e-07|
-| aapke                 |    1| blogs  |       1e-07|
-| aarakshan             |    1| blogs  |       1e-07|
-| aarc                  |    1| blogs  |       1e-07|
-| aardema               |    1| blogs  |       1e-07|
-| aare                  |    1| blogs  |       1e-07|
-| aarhusians            |    1| blogs  |       1e-07|
-| aarkstorecom          |    1| blogs  |       1e-07|
-| aaronkaties           |    1| blogs  |       1e-07|
-| aaronovitchs          |    1| blogs  |       1e-07|
-| aaronson              |    1| blogs  |       1e-07|
-| aarsman               |    1| blogs  |       1e-07|
-| aarthi                |    1| blogs  |       1e-07|
-| aartic                |    1| blogs  |       1e-07|
-| aartis                |    1| blogs  |       1e-07|
-| aaru                  |    1| blogs  |       1e-07|
-| aase                  |    1| blogs  |       1e-07|
-| aashikac              |    1| blogs  |       1e-07|
-| aashimac              |    1| blogs  |       1e-07|
-| aashish               |    1| blogs  |       1e-07|
-| aasia                 |    1| blogs  |       1e-07|
-| aastac                |    1| blogs  |       1e-07|
-| aatask                |    1| blogs  |       1e-07|
-| aati                  |    1| blogs  |       1e-07|
-| aaton                 |    1| blogs  |       1e-07|
-| aaunty                |    1| blogs  |       1e-07|
-| aayan                 |    1| blogs  |       1e-07|
-| aayeaye               |    1| blogs  |       1e-07|
-| aayi                  |    1| blogs  |       1e-07|
-| abaaabab              |    1| blogs  |       1e-07|
-| ababased              |    1| blogs  |       1e-07|
-| ababou                |    1| blogs  |       1e-07|
-| abac                  |    1| blogs  |       1e-07|
-| abaca                 |    1| blogs  |       1e-07|
-| abackturned           |    1| blogs  |       1e-07|
-| abacusc               |    1| blogs  |       1e-07|
-| abadie                |    1| blogs  |       1e-07|
-| abafazi               |    1| blogs  |       1e-07|
-| abagnano              |    1| blogs  |       1e-07|
-| abahlali              |    1| blogs  |       1e-07|
-| abair                 |    1| blogs  |       1e-07|
-| abajo                 |    1| blogs  |       1e-07|
-| abakanowicz           |    1| blogs  |       1e-07|
-| abakhan               |    1| blogs  |       1e-07|
-| abalc                 |    1| blogs  |       1e-07|
-| abalones              |    1| blogs  |       1e-07|
-| abanc                 |    1| blogs  |       1e-07|
-| abancay               |    1| blogs  |       1e-07|
-| abandance             |    1| blogs  |       1e-07|
-| abandonados           |    1| blogs  |       1e-07|
-| abandonar             |    1| blogs  |       1e-07|
-| abandonded            |    1| blogs  |       1e-07|
-| abandonedeverything   |    1| blogs  |       1e-07|
-| abandonedforthemoment |    1| blogs  |       1e-07|
-| abandoningc           |    1| blogs  |       1e-07|
-| abandonmentc          |    1| blogs  |       1e-07|
-| abandonments          |    1| blogs  |       1e-07|
-| abangida              |    1| blogs  |       1e-07|
-| abaou                 |    1| blogs  |       1e-07|
-| abaove                |    1| blogs  |       1e-07|
-| abarouting            |    1| blogs  |       1e-07|
-| abart                 |    1| blogs  |       1e-07|
-| abarth                |    1| blogs  |       1e-07|
-| abarthc               |    1| blogs  |       1e-07|
-| abasa                 |    1| blogs  |       1e-07|
-| abashedc              |    1| blogs  |       1e-07|
-| abashidze             |    1| blogs  |       1e-07|
-| abasiyanik            |    1| blogs  |       1e-07|
+| word           |    n| source |  proportion|
+|:---------------|----:|:-------|-----------:|
+| aaaaaaaaaaaaaa |    1| blogs  |       1e-07|
+| aabb           |    1| blogs  |       1e-07|
+| aaberg         |    1| blogs  |       1e-07|
+| aabergc        |    1| blogs  |       1e-07|
+| aac            |    1| blogs  |       1e-07|
+| aack           |    1| blogs  |       1e-07|
+| aadvanced      |    1| blogs  |       1e-07|
+| aafaton        |    1| blogs  |       1e-07|
+| aafes          |    1| blogs  |       1e-07|
+| aag            |    1| blogs  |       1e-07|
 
 ``` r
-# Word cloud
+# Word clouds
 tidy_blogs %>%
   count(word) %>%
   with(wordcloud(word, n, max.words = 100, 
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/chunk%20message-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-1.png)
 
 ``` r
 tidy_blogs %>%
@@ -246,7 +198,47 @@ tidy_blogs %>%
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE)) 
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/chunk%20message-2.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-2.png)
+
+``` r
+# Word distribution
+tidy_repo %>%
+  count(word, sort = TRUE) %>%
+  filter(n > 40000) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+```
+
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-3.png)
+
+``` r
+freq %>%
+  group_by(source) %>%
+  filter(proportion > 0.001) %>%
+  mutate(word = reorder(word, proportion)) %>%
+  ggplot(aes(word, proportion)) +
+  geom_col() + 
+  xlab(NULL) + 
+  coord_flip() +
+  facet_wrap(~source)
+```
+
+    ## Warning in mutate_impl(.data, dots): Unequal factor levels: coercing to
+    ## character
+
+    ## Warning in mutate_impl(.data, dots): binding character and factor vector,
+    ## coercing into character vector
+
+    ## Warning in mutate_impl(.data, dots): binding character and factor vector,
+    ## coercing into character vector
+
+    ## Warning in mutate_impl(.data, dots): binding character and factor vector,
+    ## coercing into character vector
+
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-4.png)
 
 ------------------------------------------------------------------------
 
@@ -287,13 +279,14 @@ sessionInfo()
     ## [13] modelr_0.1.1      readxl_1.0.0      bindr_0.1        
     ## [16] plyr_1.8.4        munsell_0.4.3     gtable_0.2.0     
     ## [19] cellranger_1.1.0  rvest_0.3.2       psych_1.7.8      
-    ## [22] evaluate_0.10.1   forcats_0.2.0     parallel_3.4.2   
-    ## [25] highr_0.6         broom_0.4.2       tokenizers_0.1.4 
-    ## [28] Rcpp_0.12.13      backports_1.1.1   scales_0.5.0     
-    ## [31] jsonlite_1.5      mnormt_1.5-5      hms_0.3          
-    ## [34] digest_0.6.12     stringi_1.1.5     grid_3.4.2       
-    ## [37] rprojroot_1.2     tools_3.4.2       magrittr_1.5     
-    ## [40] lazyeval_0.2.0    janeaustenr_0.1.5 pkgconfig_2.0.1  
-    ## [43] Matrix_1.2-11     xml2_1.1.1        lubridate_1.6.0  
-    ## [46] assertthat_0.2.0  rmarkdown_1.6     httr_1.3.1       
-    ## [49] R6_2.2.2          nlme_3.1-131      compiler_3.4.2
+    ## [22] evaluate_0.10.1   labeling_0.3      forcats_0.2.0    
+    ## [25] parallel_3.4.2    highr_0.6         broom_0.4.2      
+    ## [28] tokenizers_0.1.4  Rcpp_0.12.13      backports_1.1.1  
+    ## [31] scales_0.5.0      jsonlite_1.5      mnormt_1.5-5     
+    ## [34] hms_0.3           digest_0.6.12     stringi_1.1.5    
+    ## [37] grid_3.4.2        rprojroot_1.2     tools_3.4.2      
+    ## [40] magrittr_1.5      lazyeval_0.2.0    janeaustenr_0.1.5
+    ## [43] pkgconfig_2.0.1   Matrix_1.2-11     xml2_1.1.1       
+    ## [46] lubridate_1.6.0   assertthat_0.2.0  rmarkdown_1.6    
+    ## [49] httr_1.3.1        R6_2.2.2          nlme_3.1-131     
+    ## [52] compiler_3.4.2
