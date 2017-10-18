@@ -24,57 +24,59 @@ twitter_file <- "./data/final/en_US/en_US.twitter.txt"
 Read the data files
 
 ``` r
-blogs   <- readLines(blogs_file,   skipNul = TRUE)
-news    <- readLines(news_file,    skipNul = TRUE)
-```
-
-    ## Warning in readLines(news_file, skipNul = TRUE): incomplete final line
-    ## found on './data/final/en_US/en_US.news.txt'
-
-``` r
-twitter <- readLines(twitter_file, skipNul = TRUE) 
+blogs   <- data_frame(text = readLines(blogs_file,   skipNul = TRUE, warn = FALSE))
+news    <- data_frame(text = readLines(news_file,    skipNul = TRUE, warn = FALSE))
+twitter <- data_frame(text = readLines(twitter_file, skipNul = TRUE, warn = FALSE)) 
 ```
 
 Create filters: stopwords, profanity, non-alphanumeric characters, url's, repeated letters
 
 ``` r
 data("stop_words")
-swear_words <- read.csv("./data/final/en_US/en_US.swearWords.csv", header = FALSE)
+swear_words <- read_csv2("./data/final/en_US/en_US.swearWords.csv", col_names = FALSE)
 ```
 
-    ## Warning in read.table(file = file, header = header, sep = sep, quote =
-    ## quote, : incomplete final line found by readTableHeader on './data/final/
-    ## en_US/en_US.swearWords.csv'
+    ## Using ',' as decimal and '.' as grouping mark. Use read_delim() for more control.
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   X1 = col_character()
+    ## )
 
 ``` r
-swear_words <- gather(swear_words) %>% transmute(word = value)
-```
-
-    ## Warning: attributes are not identical across measure variables;
-    ## they will be dropped
-
-``` r
+swear_words <- unnest_tokens(swear_words, word, X1)
 replace_reg <- "[^[:alpha:][:space:]]*"
 replace_url <- "http[^[:space:]]*"
 replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"  
 ```
 
-Create clean & tidy dataframes for each source and a clean & tidy repository
+Clean dataframes for each souce
+Cleaning is separted from tidying so unnest\_tokens function can be used for words, and ngrams.
 
 ``` r
-clean_blogs <- data_frame(text = blogs) %>%
+clean_blogs <-  blogs %>%
+  mutate(text = str_replace_all(text, replace_reg, "")) %>%
+  mutate(text = str_replace_all(text, replace_url, "")) %>%
+  mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
+  mutate(text = iconv(text, "ASCII//TRANSLIT"))
+
+clean_news <-   news %>%
+  mutate(text = str_replace_all(text, replace_reg, "")) %>%
+  mutate(text = str_replace_all(text, replace_url, "")) %>%
+  mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
+  mutate(text = iconv(text, "ASCII//TRANSLIT"))
+
+clean_twitter <- twitter%>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
 ```
 
-############ 
-
-SPLIT CLEANING FROM TIDYING, this allows use of unnest\_tokens for ngrams READ MORE BEFORE DOING MORE
+Create tidy dataframes for each source
 
 ``` r
-tidy_blogs <- clean_blogs  %>%
+tidy_blogs <- clean_blogs %>%
   unnest_tokens(word, text) %>%
   anti_join(swear_words) %>%
   anti_join(stop_words)
@@ -84,35 +86,7 @@ tidy_blogs <- clean_blogs  %>%
     ## Joining, by = "word"
 
 ``` r
-## ngrams
-tidy_blogs_bigrams <- clean_blogs  %>%
-  unnest_tokens(bigram, text, token = "ngrams", n = 2)
-tidy_blogs_bigrams
-```
-
-    ## # A tibble: 33,823,399 x 1
-    ##              bigram
-    ##               <chr>
-    ##  1           in the
-    ##  2        the years
-    ##  3 years thereafter
-    ##  4  thereafter most
-    ##  5          most of
-    ##  6           of the
-    ##  7          the oil
-    ##  8       oil fields
-    ##  9       fields and
-    ## 10    and platforms
-    ## # ... with 33,823,389 more rows
-
-``` r
-################
-
-tidy_news <- data_frame(text = news) %>%
-  mutate(text = str_replace_all(text, replace_reg, "")) %>%
-  mutate(text = str_replace_all(text, replace_url, "")) %>%
-  mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
-  mutate(text = iconv(text, "ASCII//TRANSLIT")) %>%
+tidy_news <- clean_news %>%
   unnest_tokens(word, text) %>%
   anti_join(swear_words) %>%
   anti_join(stop_words)
@@ -122,11 +96,7 @@ tidy_news <- data_frame(text = news) %>%
     ## Joining, by = "word"
 
 ``` r
-tidy_twitter <- data_frame(text = twitter) %>%
-  mutate(text = str_replace_all(text, replace_reg, "")) %>%
-  mutate(text = str_replace_all(text, replace_url, "")) %>%
-  mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
-  mutate(text = iconv(text, "ASCII//TRANSLIT")) %>%
+tidy_twitter <- clean_twitter %>%  
   unnest_tokens(word, text) %>%
   anti_join(swear_words) %>%
   anti_join(stop_words)
@@ -167,16 +137,16 @@ kable(head(freq, 10))
 
 | word   |       n| source  |  proportion|
 |:-------|-------:|:--------|-----------:|
-| im     |  157940| twitter |   0.0158269|
-| love   |  105474| twitter |   0.0105694|
-| day    |   89821| twitter |   0.0090008|
-| dont   |   88730| twitter |   0.0088915|
-| rt     |   88189| twitter |   0.0088373|
-| time   |   74547| twitter |   0.0074702|
-| time   |   87526| blogs   |   0.0074219|
-| lol    |   66386| twitter |   0.0066524|
-| people |   51422| twitter |   0.0051529|
-| people |   58839| blogs   |   0.0049893|
+| im     |  157940| twitter |   0.0158961|
+| love   |  105474| twitter |   0.0106156|
+| day    |   89821| twitter |   0.0090402|
+| dont   |   88730| twitter |   0.0089304|
+| rt     |   88189| twitter |   0.0088759|
+| time   |   74547| twitter |   0.0075029|
+| time   |   87526| blogs   |   0.0074466|
+| lol    |   66386| twitter |   0.0066815|
+| people |   51422| twitter |   0.0051754|
+| people |   58839| blogs   |   0.0050059|
 
 Least frequent words
 
@@ -202,22 +172,22 @@ kable(head(freq_low, 10))
 Word clouds
 
 ``` r
-tidy_blogs %>%
+tidy_repo %>%
   count(word) %>%
   with(wordcloud(word, n, max.words = 100, 
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-1.png)
 
 ``` r
-tidy_blogs %>%
+tidy_repo %>%
   count(word) %>%
   with(wordcloud(word, n, max.words = 200, 
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE)) 
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-2.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-2.png)
 
 Word distribution
 
@@ -232,7 +202,7 @@ tidy_repo %>%
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-10-1.png)
 
 Word distribution by source
 
@@ -260,7 +230,34 @@ freq %>%
     ## Warning in mutate_impl(.data, dots): binding character and factor vector,
     ## coercing into character vector
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-10-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-11-1.png)
+
+``` r
+################  
+## ngrams
+tidy_blogs_bigrams <- clean_blogs  %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+tidy_blogs_bigrams
+```
+
+    ## # A tibble: 33,823,399 x 1
+    ##              bigram
+    ##               <chr>
+    ##  1           in the
+    ##  2        the years
+    ##  3 years thereafter
+    ##  4  thereafter most
+    ##  5          most of
+    ##  6           of the
+    ##  7          the oil
+    ##  8       oil fields
+    ##  9       fields and
+    ## 10    and platforms
+    ## # ... with 33,823,389 more rows
+
+``` r
+################
+```
 
 ------------------------------------------------------------------------
 
