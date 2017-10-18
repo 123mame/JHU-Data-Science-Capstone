@@ -1,3 +1,10 @@
+#' ---
+#' title: "Task 2: Exploratory Data Analysis"
+#' author: "Mark Blackmore"
+#' date: "`r format(Sys.Date())`"
+#' output: github_document
+#' ---
+#'
 library(tidytext)
 library(tidyverse)
 library(stringr)
@@ -51,9 +58,15 @@ frequncey <- tidy_repo %>%
   #select(-n) %>%
   spread(source, proportion) %>%
   gather(source, proportion, `blogs`:`twitter`) %>%
-  arrange(desc(proportion), desc(n))
-frequncey
-kable(head(frequncey, 10))
+  
+
+frequncey %>% 
+  arrange(desc(proportion), desc(n)) %>%
+  kable(head(frequncey, 10))
+
+frequncey %>% 
+  arrange(proportion, n) %>% 
+  kable(head(frequncey, 10))
 
 # Word cloud
 tidy_blogs %>%

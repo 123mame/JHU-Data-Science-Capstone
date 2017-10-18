@@ -1,7 +1,7 @@
 Task 1: Getting and Cleaning the Data
 ================
 Mark Blackmore
-2017-10-16
+2017-10-17
 
 ``` r
 library(downloader)
@@ -30,22 +30,16 @@ library(tidyverse)
 
 ``` r
 library(dplyr)
+library(dtplyr)
 library(data.table)
 ```
-
-    ## -------------------------------------------------------------------------
-
-    ## data.table + dplyr code now lives in dtplyr.
-    ## Please library(dtplyr)!
-
-    ## -------------------------------------------------------------------------
 
     ## 
     ## Attaching package: 'data.table'
 
     ## The following objects are masked from 'package:dplyr':
     ## 
-    ##     between, last
+    ##     between, first, last
 
     ## The following object is masked from 'package:purrr':
     ## 
@@ -53,7 +47,11 @@ library(data.table)
 
 ``` r
 library(ggthemes)
+
+library(wordcloud)
 ```
+
+    ## Loading required package: RColorBrewer
 
 1. Download and explore the data
 --------------------------------
@@ -93,8 +91,8 @@ twitter_size <- file.size(twitter_file) / (2^20)
 Read the data files
 
 ``` r
-blogs   <- readLines(blogs_file, skipNul = TRUE)
-news    <- readLines(news_file, skipNul = TRUE)
+blogs   <- readLines(blogs_file,   skipNul = TRUE)
+news    <- readLines(news_file,    skipNul = TRUE)
 ```
 
     ## Warning in readLines(news_file, skipNul = TRUE): incomplete final line
@@ -122,7 +120,7 @@ twitter_nchar <- nchar(twitter)
 
 boxplot(blogs_nchar, news_nchar, twitter_nchar, log = "y",
         names = c("blogs", "news", "twitter"),
-        ylab = "log(Number of Characters)", xlab = "File Name")
+        ylab = "log(Number of Characters)", xlab = "File Name") 
         title("Comparing Distributions of Chracters per Line")
 ```
 
@@ -182,18 +180,18 @@ Compute sample sizes in terms of lines
 ``` r
 sample_pct = 0.05
 set.seed(1001)
-blogs_size <- blogs_lines * sample_pct
-news_size  <- news_lines * sample_pct
+blogs_size   <- blogs_lines * sample_pct
+news_size    <- news_lines * sample_pct
 twitter_size <- twitter_lines * sample_pct
 ```
 
 Create samples
 
 ``` r
-blogs_sample <- sample(blogs, blogs_size)
-news_sample  <- sample(news, news_size)
+blogs_sample   <- sample(blogs, blogs_size)
+news_sample    <- sample(news, news_size)
 twitter_sample <- sample(twitter, twitter_size)
-repo_sample = c(blogs_sample, news_sample, twitter_sample)
+repo_sample    <- c(blogs_sample, news_sample, twitter_sample)
 ```
 
 Save sample
@@ -201,11 +199,7 @@ Save sample
 ``` r
 writeLines(repo_sample, "./data/final/en_US/en_US.repo_sample.txt")
 saveRDS(repo_sample, file = "./data/final/en_US/repo_sample.RData" )
-
-########################## START HERE ############### SEE LAST TAB
 ```
-
-[Test Mining Tutorial](%22https://www.hackerearth.com/fr/practice/machine-learning/advanced-techniques/text-mining-feature-engineering-r/tutorial/%22)
 
 3. Clean the sample data
 ------------------------
@@ -276,86 +270,75 @@ Save clean corpus
 
 ``` r
 saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.RData" )
-
-
-###### CONSIDER SPLIT TO 02 HERE
 ```
 
-Convert to text document
+4. Initial Exploratory Data Analysis
+------------------------------------
+
+Convert to document term matrix
 
 ``` r
-text_corpus <- tm_map(clean_sample, PlainTextDocument)
-
-#perform stemming - this should always be performed after text doc conversion
-text_corpus <- tm_map(text_corpus, stemDocument,language = "english")
-print(as.character(text_corpus[[1]]))
-```
-
-    ## [1] "love onomatopoeia made dumpl scallion cabbag plenti place buy dumpl veggi dollar place dont sell white booth seethrough window sell delici stuff home cook inexpens good enjoy"
-
-``` r
-text_corpus[[1]]$content
-```
-
-    ## [1] "love onomatopoeia made dumpl scallion cabbag plenti place buy dumpl veggi dollar place dont sell white booth seethrough window sell delici stuff home cook inexpens good enjoy"
-
-``` r
-#convert to document term matrix
-docterm_corpus <- DocumentTermMatrix(text_corpus)
+docterm_corpus <- DocumentTermMatrix(clean_sample)
 dim(docterm_corpus)
 ```
 
-    ## [1] 166833  95939
+    ## [1] 166833 122031
 
 ``` r
-new_docterm_corpus <- removeSparseTerms(docterm_corpus,sparse = 0.99)
+new_docterm_corpus <- removeSparseTerms(docterm_corpus,sparse = 0.993)
 dim(new_docterm_corpus)
 ```
 
-    ## [1] 166833     73
+    ## [1] 166833     96
+
+Find frequent terms
 
 ``` r
-#find frequent terms
 colS <- colSums(as.matrix(new_docterm_corpus))
 length(colS)
 ```
 
-    ## [1] 73
+    ## [1] 96
 
 ``` r
 doc_features <- data.table(name = attributes(colS)$names, count = colS)
+```
 
-#most frequent and least frequent words
+Most frequent and least frequent words
+
+``` r
 doc_features[order(-count)][1:10] #top 10 most frequent words
 ```
 
-    ##      name count
-    ##  1:  time  9699
-    ##  2:  love  9256
-    ##  3:   day  9085
-    ##  4:  make  7885
-    ##  5:  good  7602
-    ##  6:  work  6398
-    ##  7:  dont  5975
-    ##  8:  year  5814
-    ##  9: peopl  5664
-    ## 10:  back  5457
+    ##       name count
+    ##  1:   time  8239
+    ##  2:   love  7425
+    ##  3:   good  7368
+    ##  4:    day  7045
+    ##  5:   dont  5973
+    ##  6: people  5542
+    ##  7:   back  5330
+    ##  8:  great  5299
+    ##  9:   make  4972
+    ## 10:  today  4736
 
 ``` r
 doc_features[order(count)][1:10] #least 10 frequent words
 ```
 
     ##         name count
-    ##  1: tomorrow  1702
-    ##  2:    enjoy  1760
-    ##  3:    didnt  1778
-    ##  4:    final  1782
-    ##  5:    tweet  1849
-    ##  6:    check  1859
-    ##  7:     hous  1881
-    ##  8:     open  1898
-    ##  9:     stop  1901
-    ## 10:   famili  1906
+    ##  1:     hear  1219
+    ##  2: watching  1230
+    ##  3:     miss  1230
+    ##  4:      bit  1275
+    ##  5:     yeah  1278
+    ##  6:    point  1281
+    ##  7:     talk  1287
+    ##  8:     girl  1297
+    ##  9:    ready  1299
+    ## 10:     post  1300
+
+Plot most frequent terms
 
 ``` r
 ggplot(doc_features[count>5000],aes(name, count)) +
@@ -364,29 +347,20 @@ ggplot(doc_features[count>5000],aes(name, count)) +
   theme_economist() + scale_color_economist() 
 ```
 
-![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-24-1.png)
+![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-27-1.png)
 
-``` r
-# #check association of terms of top features
-# findAssocs(new_docterm_corpus, "time", corlimit = 0.5)
-# findAssocs(new_docterm_corpus, "love", corlimit = 0.5)
-# findAssocs(new_docterm_corpus, "day",  corlimit = 0.5)
-
-library(wordcloud)
-```
-
-    ## Loading required package: RColorBrewer
+Create word cloud
 
 ``` r
 wordcloud(names(colS), colS, min.freq = 500, 
           colors = brewer.pal(6, 'Dark2'), random.order = FALSE)  
 ```
 
-![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-24-2.png)
+![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-28-1.png)
 
 ``` r
 wordcloud(names(colS), colS, min.freq = 2000, 
           colors = brewer.pal(6, 'Dark2'), random.order = FALSE)  
 ```
 
-![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-24-3.png)
+![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-28-2.png)

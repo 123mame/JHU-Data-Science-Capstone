@@ -11,7 +11,9 @@ library(knitr)
 library(tidyverse)
 library(dplyr)
 library(dtplyr)
+library(data.table)
 library(ggthemes)
+
 library(wordcloud)
 
 #' ## 1. Download and explore the data
@@ -143,22 +145,12 @@ print(as.character(clean_sample[[1]]))
 #' Save clean corpus  
 saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.RData" )
 
-#' ## Initial Exploratory Data Analysis
-
-#' Convert to text document  
-#' Source: [Test Mining Tutorial]("https://www.hackerearth.com/fr/practice/machine-learning/advanced-techniques/text-mining-feature-engineering-r/tutorial/")
-text_corpus <- tm_map(clean_sample, PlainTextDocument)
-
-#' Perform stemming
-text_corpus <- tm_map(text_corpus, stemDocument,language = "english")
-print(as.character(text_corpus[[1]]))
-text_corpus[[1]]$content
-
+#' ## 4. Initial Exploratory Data Analysis
 #' Convert to document term matrix
-docterm_corpus <- DocumentTermMatrix(text_corpus)
+docterm_corpus <- DocumentTermMatrix(clean_sample)
 dim(docterm_corpus)
 
-new_docterm_corpus <- removeSparseTerms(docterm_corpus,sparse = 0.99)
+new_docterm_corpus <- removeSparseTerms(docterm_corpus,sparse = 0.993)
 dim(new_docterm_corpus)
 
 #' Find frequent terms
