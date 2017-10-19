@@ -10,6 +10,10 @@ This script uses the tidy data principles applied to text mining, as outlined in
 
 Using this approach, we are able to use the **entire data set** as opposed to data sampling approach required by the memory constraints of the `tm` package.
 
+``` r
+start <- Sys.time()
+```
+
 1. Data loading and cleaning
 ----------------------------
 
@@ -29,14 +33,12 @@ news    <- data_frame(text = readLines(news_file,    skipNul = TRUE, warn = FALS
 twitter <- data_frame(text = readLines(twitter_file, skipNul = TRUE, warn = FALSE)) 
 ```
 
-Create filters: stopwords, profanity, non-alphanumeric characters, url's, repeated letters
+Create filters: stopwords, profanity, non-alphanumeric, url's, repeated letters
 
 ``` r
 data("stop_words")
-swear_words <- read_csv2("./data/final/en_US/en_US.swearWords.csv", col_names = FALSE)
+swear_words <- read_delim("./data/final/en_US/en_US.swearWords.csv", delim = "\n", col_names = FALSE)
 ```
-
-    ## Using ',' as decimal and '.' as grouping mark. Use read_delim() for more control.
 
     ## Parsed with column specification:
     ## cols(
@@ -50,7 +52,7 @@ replace_url <- "http[^[:space:]]*"
 replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"  
 ```
 
-Clean dataframes for each souce
+Clean dataframes for each souce.
 Cleaning is separted from tidying so unnest\_tokens function can be used for words, and ngrams.
 
 ``` r
@@ -105,14 +107,23 @@ tidy_twitter <- clean_twitter %>%
     ## Joining, by = "word"
     ## Joining, by = "word"
 
+Create tidy repository
+
 ``` r
-# Tidy repository with source, save to file  
 tidy_repo <- bind_rows(mutate(tidy_blogs, source = "blogs"),
                        mutate(tidy_news,  source = "news"),
                        mutate(tidy_twitter, source = "twitter")) 
 tidy_repo$source <- as.factor(tidy_repo$source)
-saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
 ```
+
+Save tidy repository
+
+``` r
+saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
+(tidy_repo_size <- file.size("./data/final/en_US/tidy_repo.rds") / (2^20))
+```
+
+    ## [1] 82.07806
 
 2. Most frequent words and word distributions
 ---------------------------------------------
@@ -178,7 +189,7 @@ tidy_repo %>%
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-1.png)
 
 ``` r
 tidy_repo %>%
@@ -187,14 +198,14 @@ tidy_repo %>%
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE)) 
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-2.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-2.png)
 
 Word distribution
 
 ``` r
 tidy_repo %>%
   count(word, sort = TRUE) %>%
-  filter(n > 40000) %>%
+  filter(n > 35000) %>%
   mutate(word = reorder(word, n)) %>%
   ggplot(aes(word, n)) +
   geom_col() +
@@ -202,14 +213,14 @@ tidy_repo %>%
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-10-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
 
 Word distribution by source
 
 ``` r
 freq %>%
-  group_by(source) %>%
-  filter(proportion > 0.0025) %>% 
+  #group_by(source) %>%
+  filter(proportion > 0.002) %>% 
   mutate(word = reorder(word, proportion)) %>% 
   ggplot(aes(word, proportion)) +
   geom_col() + 
@@ -218,42 +229,33 @@ freq %>%
   facet_wrap(~source) 
 ```
 
-    ## Warning in mutate_impl(.data, dots): Unequal factor levels: coercing to
-    ## character
-
-    ## Warning in mutate_impl(.data, dots): binding character and factor vector,
-    ## coercing into character vector
-
-    ## Warning in mutate_impl(.data, dots): binding character and factor vector,
-    ## coercing into character vector
-
-    ## Warning in mutate_impl(.data, dots): binding character and factor vector,
-    ## coercing into character vector
-
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-11-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
 
 ``` r
 ################  
 ## ngrams
-tidy_blogs_bigrams <- clean_blogs  %>%
-  unnest_tokens(bigram, text, token = "ngrams", n = 2)
-tidy_blogs_bigrams
+# 
+# blogs_bigrams <- clean_blogs  %>%
+#   unnest_tokens(bigram, text, token = "ngrams", n = 2)
+# 
+# news_bigrams <- clean_news  %>%
+#   unnest_tokens(bigram, text, token = "ngrams", n = 2)
+# 
+# twitter_bigrams <- clean_twitter  %>%
+#   unnest_tokens(bigram, text, token = "ngrams", n = 2)
+# 
+# #' Create tidy repository
+# bigram_repo <- bind_rows(mutate(blogs_bigrams, source = "blogs"),
+#                        mutate(news_bigrams,  source = "news"),
+#                        mutate(twitter_bigrams, source = "twitter"))
+# bigram_repo$source <- as.factor(bigram_repo$source)
+
+end <- Sys.time()
+
+(run_time <- end - start)
 ```
 
-    ## # A tibble: 33,823,399 x 1
-    ##              bigram
-    ##               <chr>
-    ##  1           in the
-    ##  2        the years
-    ##  3 years thereafter
-    ##  4  thereafter most
-    ##  5          most of
-    ##  6           of the
-    ##  7          the oil
-    ##  8       oil fields
-    ##  9       fields and
-    ## 10    and platforms
-    ## # ... with 33,823,389 more rows
+    ## Time difference of 7.583297 mins
 
 ``` r
 ################

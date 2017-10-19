@@ -12,6 +12,8 @@
 #' Using this approach, we are able to use the **entire data set** as opposed
 #' to data sampling approach required by the memory constraints of the `tm` package.
 #' 
+start <- Sys.time()
+
 #+ startup, echo = FALSE 
 suppressPackageStartupMessages({
   library(tidytext)
@@ -41,7 +43,7 @@ replace_reg <- "[^[:alpha:][:space:]]*"
 replace_url <- "http[^[:space:]]*"
 replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"  
 
-#' Clean dataframes for each souce  
+#' Clean dataframes for each souce.   
 #' Cleaning is separted from tidying so unnest_tokens function can be used for words,
 #' and ngrams.
 clean_blogs <-  blogs %>%
@@ -86,11 +88,12 @@ tidy_repo$source <- as.factor(tidy_repo$source)
 
 #' Save tidy repository
 saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
+(tidy_repo_size <- file.size("./data/final/en_US/tidy_repo.rds") / (2^20))
 
 #' ## 2. Most frequent words and word distributions
 
 freq <- tidy_repo %>%
-  #mutate(word = str_extract(word, "[a-z']+")) %>%
+  mutate(word = str_extract(word, "[a-z']+")) %>%
   count(source, word) %>%
   group_by(source) %>%
   mutate(proportion = n / sum(n)) %>%
@@ -120,7 +123,7 @@ tidy_repo %>%
 #' Word distribution
 tidy_repo %>%
   count(word, sort = TRUE) %>%
-  filter(n > 40000) %>%
+  filter(n > 35000) %>%
   mutate(word = reorder(word, n)) %>%
   ggplot(aes(word, n)) +
   geom_col() +
@@ -129,8 +132,8 @@ tidy_repo %>%
 
 #' Word distribution by source
 freq %>%
-  group_by(source) %>%
-  filter(proportion > 0.0025) %>% 
+  #group_by(source) %>%
+  filter(proportion > 0.002) %>% 
   mutate(word = reorder(word, proportion)) %>% 
   ggplot(aes(word, proportion)) +
   geom_col() + 
@@ -140,22 +143,25 @@ freq %>%
 
 ################  
 ## ngrams
-blogs_bigrams <- clean_blogs  %>%
-  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+# 
+# blogs_bigrams <- clean_blogs  %>%
+#   unnest_tokens(bigram, text, token = "ngrams", n = 2)
+# 
+# news_bigrams <- clean_news  %>%
+#   unnest_tokens(bigram, text, token = "ngrams", n = 2)
+# 
+# twitter_bigrams <- clean_twitter  %>%
+#   unnest_tokens(bigram, text, token = "ngrams", n = 2)
+# 
+# #' Create tidy repository
+# bigram_repo <- bind_rows(mutate(blogs_bigrams, source = "blogs"),
+#                        mutate(news_bigrams,  source = "news"),
+#                        mutate(twitter_bigrams, source = "twitter"))
+# bigram_repo$source <- as.factor(bigram_repo$source)
 
-news_bigrams <- clean_news  %>%
-  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+end <- Sys.time()
 
-twitter_bigrams <- clean_twitter  %>%
-  unnest_tokens(bigram, text, token = "ngrams", n = 2)
-
-#' Create tidy repository
-bigram_repo <- bind_rows(mutate(blogs_bigrams, source = "blogs"),
-                       mutate(news_bigrams,  source = "news"),
-                       mutate(twitter_bigrams, source = "twitter")) 
-bigram_repo$source <- as.factor(bigram_repo$source)
-
-
+(run_time <- end - start)
 ################
 
 #' -------------
