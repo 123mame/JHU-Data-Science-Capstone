@@ -140,11 +140,23 @@ freq %>%
 
 ################  
 ## ngrams
-tidy_blogs_bigrams <- clean_blogs  %>%
+blogs_bigrams <- clean_blogs  %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
-tidy_blogs_bigrams
-################
 
+news_bigrams <- clean_news  %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+
+twitter_bigrams <- clean_twitter  %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+
+#' Create tidy repository
+bigram_repo <- bind_rows(mutate(blogs_bigrams, source = "blogs"),
+                       mutate(news_bigrams,  source = "news"),
+                       mutate(twitter_bigrams, source = "twitter")) 
+bigram_repo$source <- as.factor(bigram_repo$source)
+
+
+################
 
 #' -------------
 #'  
