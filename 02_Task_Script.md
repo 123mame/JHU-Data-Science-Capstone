@@ -1,7 +1,7 @@
 Task 2: Exploratory Data Analysis
 ================
 Mark Blackmore
-2017-10-18
+2017-10-19
 
 1. Introduction
 ---------------
@@ -130,7 +130,7 @@ saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
 
 ``` r
 freq <- tidy_repo %>%
-  #mutate(word = str_extract(word, "[a-z']+")) %>%
+  mutate(word = str_extract(word, "[a-z']+")) %>%
   count(source, word) %>%
   group_by(source) %>%
   mutate(proportion = n / sum(n)) %>%
@@ -255,7 +255,7 @@ end <- Sys.time()
 (run_time <- end - start)
 ```
 
-    ## Time difference of 7.583297 mins
+    ## Time difference of 5.425708 mins
 
 ``` r
 ################

@@ -41,9 +41,9 @@ news_size    <- file.size(news_file) / (2^20)
 twitter_size <- file.size(twitter_file) / (2^20)
  
 #' Read the data files
-blogs   <- readLines(blogs_file,   skipNul = TRUE)
-news    <- readLines(news_file,    skipNul = TRUE)
-twitter <- readLines(twitter_file, skipNul = TRUE) 
+blogs   <- readLines(blogs_file,   skipNul = TRUE, warn = FALSE)
+news    <- readLines(news_file,    skipNul = TRUE, warn = FALSE)
+twitter <- readLines(twitter_file, skipNul = TRUE, warn = FALSE) 
 
 #' Number of Lines per file
 blogs_lines   <- length(blogs)
