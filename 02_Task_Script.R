@@ -23,7 +23,7 @@ suppressPackageStartupMessages({
   library(wordcloud)
 })
 
-#' ## 1. Data loading and cleaning 
+#' ## 2. Data loading and cleaning 
 
 #' English Repository Files
 blogs_file   <- "./data/final/en_US/en_US.blogs.txt"
@@ -90,7 +90,7 @@ tidy_repo$source <- as.factor(tidy_repo$source)
 saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
 (tidy_repo_size <- file.size("./data/final/en_US/tidy_repo.rds") / (2^20))
 
-#' ## 2. Most frequent words and word distributions
+#' ## 3. Most frequent words and word distributions
 freq <- tidy_repo %>%
   count(source, word) %>%
   group_by(source) %>%
@@ -182,7 +182,7 @@ freq %>%
   facet_grid(~source, scales = "free") 
 
 ################  
-## ngrams
+## 4.  ngrams
 # 
 # blogs_bigrams <- clean_blogs  %>%
 #   unnest_tokens(bigram, text, token = "ngrams", n = 2)
