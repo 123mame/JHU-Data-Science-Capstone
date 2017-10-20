@@ -11,6 +11,7 @@
 #' 
 #' Using this approach, we are able to use the **entire data set** as opposed
 #' to data sampling approach required by the memory constraints of the `tm` package.
+#' After exploring the entire data set, we then reduce the data based on frequency.
 #' 
 start <- Sys.time()
 
@@ -30,12 +31,12 @@ blogs_file   <- "./data/final/en_US/en_US.blogs.txt"
 news_file    <- "./data/final/en_US/en_US.news.txt"
 twitter_file <- "./data/final/en_US/en_US.twitter.txt"  
 
-#' Read the data files
+#' Read the data files into dataframes
 blogs   <- data_frame(text = readLines(blogs_file,   skipNul = TRUE, warn = FALSE))
 news    <- data_frame(text = readLines(news_file,    skipNul = TRUE, warn = FALSE))
 twitter <- data_frame(text = readLines(twitter_file, skipNul = TRUE, warn = FALSE)) 
 
-#' Create filters: stopwords, profanity, non-alphanumeric, url's, repeated letters
+#' Create filters: stopwords, profanity, non-alphanumeric's, url's, repeated letters(+3x)
 data("stop_words")
 swear_words <- read_delim("./data/final/en_US/en_US.swearWords.csv", delim = "\n", col_names = FALSE)
 swear_words <- unnest_tokens(swear_words, word, X1)
@@ -43,7 +44,7 @@ replace_reg <- "[^[:alpha:][:space:]]*"
 replace_url <- "http[^[:space:]]*"
 replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"  
 
-#' Clean dataframes for each souce. Cleaning is separted from tidying so `unnest_tokens` function can be used for words,
+#' Clean dataframes from each souce. Cleaning is separted from tidying so `unnest_tokens` function can be used for words,
 #' and ngrams.
 clean_blogs <-  blogs %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
@@ -89,7 +90,7 @@ tidy_repo <- bind_rows(mutate(tidy_blogs, source = "blogs"),
                        mutate(tidy_twitter, source = "twitter")) 
 tidy_repo$source <- as.factor(tidy_repo$source)
 
-#' Save tidy repository
+#' Save tidy repository; note repository size (MB)
 saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
 (tidy_repo_size <- file.size("./data/final/en_US/tidy_repo.rds") / (2^20))
 
@@ -117,7 +118,7 @@ cover_90 <- tidy_repo %>%
 nrow(cover_90)
 
 #' ## 4. Word distributions
-#' Most frequent words by proportion
+#' Most frequent words by proportion, with source
 freq <- tidy_repo %>%
   count(source, word) %>%
   group_by(source) %>%
@@ -127,7 +128,7 @@ freq <- tidy_repo %>%
   arrange(desc(proportion), desc(n))
 kable(head(freq, 10))
 
-# Words above cutoff proportion: number of unique words
+#' Words above cutoff proportion: number of unique words
 cutoff <- 0.0001
 (small_repo_count <- freq %>%
     filter(proportion > cutoff) %>%
@@ -159,9 +160,7 @@ cover_90 %>%
   with(wordcloud(word, n, max.words = 100, 
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 
-################  
-#' ## 5. Bigrams
-
+#' ## 5. Bigrams  
 #' Create bigrams by source using `unnest_tokens`
 blogs_bigrams <- clean_blogs  %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
@@ -178,7 +177,7 @@ bigram_repo <- bind_rows(mutate(blogs_bigrams, source = "blogs"),
                        mutate(twitter_bigrams, source = "twitter"))
 bigram_repo$source <- as.factor(bigram_repo$source)
 
-#' Number of words to attain 90% coverage of all words in repo
+#' Number of bigrams to attain 90% coverage of all bigrams in repo
 bigram_cover_90 <- bigram_repo %>%
   count(bigram) %>%  
   mutate(proportion = n / sum(n)) %>%
@@ -196,6 +195,47 @@ bigram_cover_90 %>%
   geom_col() +
   xlab(NULL) +
   coord_flip()
+
+##############
+#' ## 6. Trigrams  
+#' Create Trigrams by source using `unnest_tokens`
+blogs_trigrams <- clean_blogs  %>%
+  unnest_tokens(trigram, text, token = "ngrams", n = 3)
+
+news_trigrams <- clean_news  %>%
+  unnest_tokens(trigram, text, token = "ngrams", n = 3)
+
+twitter_trigrams <- clean_twitter  %>%
+  unnest_tokens(trigram, text, token = "ngrams", n = 3)
+
+#' Create tidy trigram repository
+trigram_repo <- bind_rows(mutate(blogs_trigrams, source = "blogs"),
+                         mutate(news_trigrams,  source = "news"),
+                         mutate(twitter_trigrams, source = "twitter"))
+trigram_repo$source <- as.factor(trigram_repo$source)
+
+#' Number of trigrams to attain 90% coverage of all trigrams in repo
+trigram_cover_90 <- trigram_repo %>%
+  count(trigram) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.9)
+nrow(trigram_cover_90)
+
+#' trigram distribution
+trigram_cover_90 %>%
+  #count(trigram, sort = TRUE) %>%
+  filter(n > 50000) %>%
+  mutate(trigram = reorder(trigram, n)) %>%
+  ggplot(aes(trigram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+
+
+
+
 
 end <- Sys.time()
 
