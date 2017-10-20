@@ -130,6 +130,10 @@ saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
 
 ``` r
 freq <- tidy_repo %>%
+<<<<<<< HEAD
+  mutate(word = str_extract(word, "[a-z']+")) %>%
+=======
+>>>>>>> 2ea96a1e35c6f4524d85ce4ed6f08069668514e0
   count(source, word) %>%
   group_by(source) %>%
   mutate(proportion = n / sum(n)) %>%
@@ -332,7 +336,15 @@ end <- Sys.time()
 (run_time <- end - start)
 ```
 
+<<<<<<< HEAD
     ## Time difference of 6.851307 mins
+=======
+<<<<<<< HEAD
+    ## Time difference of 5.425708 mins
+=======
+    ## Time difference of 6.948055 mins
+>>>>>>> 2ea96a1e35c6f4524d85ce4ed6f08069668514e0
+>>>>>>> 751e9f119504d12660f671bfa8879747fb38b092
 
 ``` r
 ################
