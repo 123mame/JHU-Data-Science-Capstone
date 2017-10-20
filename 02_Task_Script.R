@@ -64,8 +64,8 @@ clean_twitter <- twitter%>%
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
 
 #' Clean up
-rm(blogs, news, twitter)
-gc()
+rm(blogs, news, twitter, replace_reg, replace_url, replace_aaa)
+x <- gc()
   
 #' Create tidy dataframes for each source
 tidy_blogs <- clean_blogs %>%
@@ -99,12 +99,6 @@ saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
 (repo_count <- tidy_repo %>%
     summarise(keys = n_distinct(word)))
 
-# Words above cutoff proportion: number of unique words
-cutoff <- 0.0001
-(small_repo_count <- freq %>%
-    filter(proportion > cutoff) %>%
-    summarise(keys = n_distinct(word)))
-
 #' Number of words to attain 50% and 90% coverage of all words in repo
 cover_50 <- tidy_repo %>%
   count(word) %>%  
@@ -122,8 +116,8 @@ cover_90 <- tidy_repo %>%
   filter(coverage <= 0.9)
 nrow(cover_90)
 
-#' ## 4. Word distributions: using 90% coverage
-#' Most frequent words
+#' ## 4. Word distributions
+#' Most frequent words by proportion
 freq <- tidy_repo %>%
   count(source, word) %>%
   group_by(source) %>%
@@ -133,35 +127,15 @@ freq <- tidy_repo %>%
   arrange(desc(proportion), desc(n))
 kable(head(freq, 10))
 
-#' Word clouds
-tidy_repo %>%
-  count(word) %>%
-  with(wordcloud(word, n, max.words = 150, 
-                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
+# Words above cutoff proportion: number of unique words
+cutoff <- 0.0001
+(small_repo_count <- freq %>%
+    filter(proportion > cutoff) %>%
+    summarise(keys = n_distinct(word)))
 
-#' Word clouds by source
-# Blogs
-tidy_repo %>%
-  filter(source == "blogs") %>%
-  count(word) %>%
-  with(wordcloud(word, n, max.words = 100, 
-                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
-# News
-tidy_repo %>%
-  filter(source == "news") %>%
-  count(word) %>%
-  with(wordcloud(word, n, max.words = 50, 
-                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
-# Twitter
-tidy_repo %>%
-  filter(source == "twitter") %>%
-  count(word) %>%
-  with(wordcloud(word, n, max.words = 100, 
-                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
-
-#' Word distribution
-tidy_repo %>%
-  count(word, sort = TRUE) %>%
+#' Word distribution by count
+cover_90 %>%
+  #count(word, sort = TRUE) %>%
   filter(n > 35000) %>%
   mutate(word = reorder(word, n)) %>%
   ggplot(aes(word, n)) +
@@ -177,10 +151,16 @@ freq %>%
   geom_col() + 
   xlab(NULL) + 
   coord_flip() +
-  facet_grid(~source, scales = "free") 
+  facet_grid(~source, scales = "free")
+
+#' Word cloud
+cover_90 %>%
+  #count(word) %>%
+  with(wordcloud(word, n, max.words = 100, 
+                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 
 ################  
-#' ## 4. Bigrams
+#' ## 5. Bigrams
 
 #' Create bigrams by source using `unnest_tokens`
 blogs_bigrams <- clean_blogs  %>%
@@ -198,25 +178,7 @@ bigram_repo <- bind_rows(mutate(blogs_bigrams, source = "blogs"),
                        mutate(twitter_bigrams, source = "twitter"))
 bigram_repo$source <- as.factor(bigram_repo$source)
 
-#### WORKING
-
-#' Bigram distribution
-bigram_repo %>%
-  count(bigram, sort = TRUE) %>%
-  filter(n > 50000) %>%
-  mutate(bigram = reorder(bigram, n)) %>%
-  ggplot(aes(bigram, n)) +
-  geom_col() +
-  xlab(NULL) +
-  coord_flip()
-
-# #' Bigram word cloud
-# bigram_repo %>%
-#   count(bigram) %>%
-#   with(wordcloud(bigram, n, max.words = 25, 
-#                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
-
-#' #' Number of words to attain 90% coverage of all words in repo
+#' Number of words to attain 90% coverage of all words in repo
 bigram_cover_90 <- bigram_repo %>%
   count(bigram) %>%  
   mutate(proportion = n / sum(n)) %>%
@@ -225,11 +187,20 @@ bigram_cover_90 <- bigram_repo %>%
   filter(coverage <= 0.9)
 nrow(bigram_cover_90)
 
+#' Bigram distribution
+bigram_cover_90 %>%
+  #count(bigram, sort = TRUE) %>%
+  filter(n > 50000) %>%
+  mutate(bigram = reorder(bigram, n)) %>%
+  ggplot(aes(bigram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
 
 end <- Sys.time()
 
 (run_time <- end - start)
-################
+###############
 
 #' -------------
 #'  

@@ -1,7 +1,7 @@
 Task 2: Exploratory Data Analysis
 ================
 Mark Blackmore
-2017-10-19
+2017-10-20
 
 1. Introduction
 ---------------
@@ -14,7 +14,7 @@ Using this approach, we are able to use the **entire data set** as opposed to da
 start <- Sys.time()
 ```
 
-1. Data loading and cleaning
+2. Data loading and cleaning
 ----------------------------
 
 English Repository Files
@@ -52,8 +52,7 @@ replace_url <- "http[^[:space:]]*"
 replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"  
 ```
 
-Clean dataframes for each souce.
-Cleaning is separted from tidying so unnest\_tokens function can be used for words, and ngrams.
+Clean dataframes for each souce. Cleaning is separted from tidying so `unnest_tokens` function can be used for words, and ngrams.
 
 ``` r
 clean_blogs <-  blogs %>%
@@ -73,6 +72,13 @@ clean_twitter <- twitter%>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
+```
+
+Clean up
+
+``` r
+rm(blogs, news, twitter, replace_reg, replace_url, replace_aaa)
+x <- gc()
 ```
 
 Create tidy dataframes for each source
@@ -125,83 +131,20 @@ saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
 
     ## [1] 82.07806
 
-2. Most frequent words and word distributions
+3. Most frequent words and word distributions
 ---------------------------------------------
 
-``` r
-freq <- tidy_repo %>%
-  count(source, word) %>%
-  group_by(source) %>%
-  mutate(proportion = n / sum(n)) %>%
-  spread(source, proportion) %>%
-  gather(source, proportion, `blogs`:`twitter`) %>%
-  arrange(desc(proportion), desc(n))
-```
-
-Most frequent words
+Word counts: Number of unique words in repo
 
 ``` r
-kable(head(freq, 10))
-```
-
-| word   |       n| source  |  proportion|
-|:-------|-------:|:--------|-----------:|
-| im     |  157940| twitter |   0.0158961|
-| love   |  105474| twitter |   0.0106156|
-| day    |   89821| twitter |   0.0090402|
-| dont   |   88730| twitter |   0.0089304|
-| rt     |   88189| twitter |   0.0088759|
-| time   |   74547| twitter |   0.0075029|
-| time   |   87526| blogs   |   0.0074466|
-| lol    |   66386| twitter |   0.0066815|
-| people |   51422| twitter |   0.0051754|
-| people |   58839| blogs   |   0.0050059|
-
-Least frequent words
-
-``` r
-freq_low <- freq %>% 
-  arrange(proportion, n)
-kable(head(freq_low, 10)) 
-```
-
-| word           |    n| source |  proportion|
-|:---------------|----:|:-------|-----------:|
-| aaaaaaaaaaaaaa |    1| blogs  |       1e-07|
-| aabb           |    1| blogs  |       1e-07|
-| aaberg         |    1| blogs  |       1e-07|
-| aabergc        |    1| blogs  |       1e-07|
-| aac            |    1| blogs  |       1e-07|
-| aack           |    1| blogs  |       1e-07|
-| aadvanced      |    1| blogs  |       1e-07|
-| aafaton        |    1| blogs  |       1e-07|
-| aafes          |    1| blogs  |       1e-07|
-| aag            |    1| blogs  |       1e-07|
-
-Word counts
-
-``` r
-# Number of unique words in repo
 (repo_count <- tidy_repo %>%
-  summarise(keys = n_distinct(word)))
+    summarise(keys = n_distinct(word)))
 ```
 
     ## # A tibble: 1 x 1
     ##     keys
     ##    <int>
     ## 1 552745
-
-``` r
-# Potential to reduce repo size by cutoff proportion
-(small_repo_count <- freq %>%
-  filter(proportion > 0.0001) %>%
-  summarise(keys = n_distinct(word)))
-```
-
-    ## # A tibble: 1 x 1
-    ##    keys
-    ##   <int>
-    ## 1  2886
 
 Number of words to attain 50% and 90% coverage of all words in repo
 
@@ -223,66 +166,59 @@ cover_90 <- tidy_repo %>%
   mutate(proportion = n / sum(n)) %>%
   arrange(desc(proportion)) %>%  
   mutate(coverage = cumsum(proportion)) %>%
-  filter(coverage <= 0.5)
+  filter(coverage <= 0.9)
 nrow(cover_90)
 ```
 
-    ## [1] 1145
+    ## [1] 18050
 
-Word clouds
+4. Word distributions
+---------------------
+
+Most frequent words by proportion
 
 ``` r
-tidy_repo %>%
-  count(word) %>%
-  with(wordcloud(word, n, max.words = 150, 
-                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
+freq <- tidy_repo %>%
+  count(source, word) %>%
+  group_by(source) %>%
+  mutate(proportion = n / sum(n)) %>%
+  spread(source, proportion) %>%
+  gather(source, proportion, `blogs`:`twitter`) %>%
+  arrange(desc(proportion), desc(n))
+kable(head(freq, 10))
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
-
-Word clouds by source
+| word   |       n| source  |  proportion|
+|:-------|-------:|:--------|-----------:|
+| im     |  157940| twitter |   0.0158961|
+| love   |  105474| twitter |   0.0106156|
+| day    |   89821| twitter |   0.0090402|
+| dont   |   88730| twitter |   0.0089304|
+| rt     |   88189| twitter |   0.0088759|
+| time   |   74547| twitter |   0.0075029|
+| time   |   87526| blogs   |   0.0074466|
+| lol    |   66386| twitter |   0.0066815|
+| people |   51422| twitter |   0.0051754|
+| people |   58839| blogs   |   0.0050059|
 
 ``` r
-# Blogs
-tidy_repo %>%
-  filter(source == "blogs") %>%
-  count(word) %>%
-  with(wordcloud(word, n, max.words = 100, 
-                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
+# Words above cutoff proportion: number of unique words
+cutoff <- 0.0001
+(small_repo_count <- freq %>%
+    filter(proportion > cutoff) %>%
+    summarise(keys = n_distinct(word)))
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
+    ## # A tibble: 1 x 1
+    ##    keys
+    ##   <int>
+    ## 1  2886
+
+Word distribution by count
 
 ``` r
-# News
-```
-
-``` r
-tidy_repo %>%
-  filter(source == "news") %>%
-  count(word) %>%
-  with(wordcloud(word, n, max.words = 50, 
-                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
-```
-
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/chunkoptions-1.png)
-
-``` r
-# Twitter
-tidy_repo %>%
-  filter(source == "twitter") %>%
-  count(word) %>%
-  with(wordcloud(word, n, max.words = 100, 
-                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
-```
-
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/chunkoptions-2.png)
-
-Word distribution
-
-``` r
-tidy_repo %>%
-  count(word, sort = TRUE) %>%
+cover_90 %>%
+  #count(word, sort = TRUE) %>%
   filter(n > 35000) %>%
   mutate(word = reorder(word, n)) %>%
   ggplot(aes(word, n)) +
@@ -291,7 +227,7 @@ tidy_repo %>%
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-16-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
 
 Word distribution by source
 
@@ -303,39 +239,90 @@ freq %>%
   geom_col() + 
   xlab(NULL) + 
   coord_flip() +
-  facet_grid(~source, scales = "free") 
+  facet_grid(~source, scales = "free")
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-17-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
+
+Word cloud
+
+``` r
+cover_90 %>%
+  #count(word) %>%
+  with(wordcloud(word, n, max.words = 100, 
+                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
+```
+
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
 
 ``` r
 ################  
-## ngrams
-# 
-# blogs_bigrams <- clean_blogs  %>%
-#   unnest_tokens(bigram, text, token = "ngrams", n = 2)
-# 
-# news_bigrams <- clean_news  %>%
-#   unnest_tokens(bigram, text, token = "ngrams", n = 2)
-# 
-# twitter_bigrams <- clean_twitter  %>%
-#   unnest_tokens(bigram, text, token = "ngrams", n = 2)
-# 
-# #' Create tidy repository
-# bigram_repo <- bind_rows(mutate(blogs_bigrams, source = "blogs"),
-#                        mutate(news_bigrams,  source = "news"),
-#                        mutate(twitter_bigrams, source = "twitter"))
-# bigram_repo$source <- as.factor(bigram_repo$source)
+```
 
+5. Bigrams
+----------
+
+Create bigrams by source using `unnest_tokens`
+
+``` r
+blogs_bigrams <- clean_blogs  %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+
+news_bigrams <- clean_news  %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+
+twitter_bigrams <- clean_twitter  %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+```
+
+Create tidy bigram repository
+
+``` r
+bigram_repo <- bind_rows(mutate(blogs_bigrams, source = "blogs"),
+                       mutate(news_bigrams,  source = "news"),
+                       mutate(twitter_bigrams, source = "twitter"))
+bigram_repo$source <- as.factor(bigram_repo$source)
+```
+
+Number of words to attain 90% coverage of all words in repo
+
+``` r
+bigram_cover_90 <- bigram_repo %>%
+  count(bigram) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.9)
+nrow(bigram_cover_90)
+```
+
+    ## [1] 2986631
+
+Bigram distribution
+
+``` r
+bigram_cover_90 %>%
+  #count(bigram, sort = TRUE) %>%
+  filter(n > 50000) %>%
+  mutate(bigram = reorder(bigram, n)) %>%
+  ggplot(aes(bigram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+```
+
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-19-1.png)
+
+``` r
 end <- Sys.time()
 
 (run_time <- end - start)
 ```
 
-    ## Time difference of 5.668391 mins
+    ## Time difference of 15.00969 mins
 
 ``` r
-################
+###############
 ```
 
 ------------------------------------------------------------------------
