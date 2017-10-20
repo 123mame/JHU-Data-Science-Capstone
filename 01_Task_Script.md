@@ -1,7 +1,7 @@
 Task 1: Getting and Cleaning the Data
 ================
 Mark Blackmore
-2017-10-18
+2017-10-19
 
 1. Download and explore the data
 --------------------------------
@@ -41,15 +41,9 @@ twitter_size <- file.size(twitter_file) / (2^20)
 Read the data files
 
 ``` r
-blogs   <- readLines(blogs_file,   skipNul = TRUE)
-news    <- readLines(news_file,    skipNul = TRUE)
-```
-
-    ## Warning in readLines(news_file, skipNul = TRUE): incomplete final line
-    ## found on './data/final/en_US/en_US.news.txt'
-
-``` r
-twitter <- readLines(twitter_file, skipNul = TRUE) 
+blogs   <- readLines(blogs_file,   skipNul = TRUE, warn = FALSE)
+news    <- readLines(news_file,    skipNul = TRUE, warn = FALSE)
+twitter <- readLines(twitter_file, skipNul = TRUE, warn = FALSE) 
 ```
 
 Number of Lines per file
