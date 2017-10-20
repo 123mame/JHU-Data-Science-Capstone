@@ -130,11 +130,13 @@ saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
 
 ``` r
 freq <- tidy_repo %>%
+<<<<<<< HEAD
   mutate(word = str_extract(word, "[a-z']+")) %>%
+=======
+>>>>>>> 2ea96a1e35c6f4524d85ce4ed6f08069668514e0
   count(source, word) %>%
   group_by(source) %>%
   mutate(proportion = n / sum(n)) %>%
-  #select(-n) %>%
   spread(source, proportion) %>%
   gather(source, proportion, `blogs`:`twitter`) %>%
   arrange(desc(proportion), desc(n))
@@ -180,25 +182,141 @@ kable(head(freq_low, 10))
 | aafes          |    1| blogs  |       1e-07|
 | aag            |    1| blogs  |       1e-07|
 
+Word counts
+
+``` r
+# Number of unique words in repo
+(repo_count <- tidy_repo %>%
+  summarise(keys = n_distinct(word)))
+```
+
+    ## # A tibble: 1 x 1
+    ##     keys
+    ##    <int>
+    ## 1 552745
+
+``` r
+# Potential to reduce repo size by cutoff proportion
+(small_repo_count <- freq %>%
+  filter(proportion > 0.0001) %>%
+  summarise(keys = n_distinct(word)))
+```
+
+    ## # A tibble: 1 x 1
+    ##    keys
+    ##   <int>
+    ## 1  2886
+
+Number of words to attain 50% and 90% coverage of all words in repo
+
+``` r
+cover_50 <- tidy_repo %>%
+  count(word) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.5)
+nrow(cover_50)
+```
+
+    ## [1] 1145
+
+``` r
+cover_90 <- tidy_repo %>%
+  count(word) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.5)
+nrow(cover_90)
+```
+
+    ## [1] 1145
+
 Word clouds
 
 ``` r
 tidy_repo %>%
   count(word) %>%
+  with(wordcloud(word, n, max.words = 150, 
+                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
+```
+
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
+
+Word clouds by source
+
+``` r
+# Blogs
+tidy_repo %>%
+  filter(source == "blogs") %>%
+  count(word) %>%
   with(wordcloud(word, n, max.words = 100, 
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
 
 ``` r
+# News
 tidy_repo %>%
+  filter(source == "news") %>%
   count(word) %>%
-  with(wordcloud(word, n, max.words = 200, 
-                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE)) 
+  with(wordcloud(word, n, max.words = 100, 
+                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-2.png)
+    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
+    ## "Dark2"), : tuesday could not be fit on page. It will not be plotted.
+
+    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
+    ## "Dark2"), : cleveland could not be fit on page. It will not be plotted.
+
+    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
+    ## "Dark2"), : service could not be fit on page. It will not be plotted.
+
+    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
+    ## "Dark2"), : saturday could not be fit on page. It will not be plotted.
+
+    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
+    ## "Dark2"), : north could not be fit on page. It will not be plotted.
+
+    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
+    ## "Dark2"), : country could not be fit on page. It will not be plotted.
+
+    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
+    ## "Dark2"), : wednesday could not be fit on page. It will not be plotted.
+
+    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
+    ## "Dark2"), : washington could not be fit on page. It will not be plotted.
+
+    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
+    ## "Dark2"), : started could not be fit on page. It will not be plotted.
+
+    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
+    ## "Dark2"), : sunday could not be fit on page. It will not be plotted.
+
+    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
+    ## "Dark2"), : building could not be fit on page. It will not be plotted.
+
+    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
+    ## "Dark2"), : market could not be fit on page. It will not be plotted.
+
+    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
+    ## "Dark2"), : played could not be fit on page. It will not be plotted.
+
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-2.png)
+
+``` r
+# Twitter
+tidy_repo %>%
+  filter(source == "twitter") %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 100, 
+                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
+```
+
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-3.png)
 
 Word distribution
 
@@ -213,23 +331,22 @@ tidy_repo %>%
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-16-1.png)
 
 Word distribution by source
 
 ``` r
 freq %>%
-  #group_by(source) %>%
   filter(proportion > 0.002) %>% 
   mutate(word = reorder(word, proportion)) %>% 
   ggplot(aes(word, proportion)) +
   geom_col() + 
   xlab(NULL) + 
   coord_flip() +
-  facet_wrap(~source) 
+  facet_grid(~source, scales = "free") 
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-17-1.png)
 
 ``` r
 ################  
@@ -255,7 +372,11 @@ end <- Sys.time()
 (run_time <- end - start)
 ```
 
+<<<<<<< HEAD
     ## Time difference of 5.425708 mins
+=======
+    ## Time difference of 6.948055 mins
+>>>>>>> 2ea96a1e35c6f4524d85ce4ed6f08069668514e0
 
 ``` r
 ################

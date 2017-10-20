@@ -91,13 +91,10 @@ saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
 (tidy_repo_size <- file.size("./data/final/en_US/tidy_repo.rds") / (2^20))
 
 #' ## 2. Most frequent words and word distributions
-
 freq <- tidy_repo %>%
-  mutate(word = str_extract(word, "[a-z']+")) %>%
   count(source, word) %>%
   group_by(source) %>%
   mutate(proportion = n / sum(n)) %>%
-  #select(-n) %>%
   spread(source, proportion) %>%
   gather(source, proportion, `blogs`:`twitter`) %>%
   arrange(desc(proportion), desc(n))
@@ -109,16 +106,59 @@ kable(head(freq, 10))
 freq_low <- freq %>% 
   arrange(proportion, n)
 kable(head(freq_low, 10)) 
+
+#' Word counts
+# Number of unique words in repo
+(repo_count <- tidy_repo %>%
+  summarise(keys = n_distinct(word)))
+
+# Potential to reduce repo size by cutoff proportion
+(small_repo_count <- freq %>%
+  filter(proportion > 0.0001) %>%
+  summarise(keys = n_distinct(word)))
+
+#' Number of words to attain 50% and 90% coverage of all words in repo
+cover_50 <- tidy_repo %>%
+  count(word) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.5)
+nrow(cover_50)
+
+cover_90 <- tidy_repo %>%
+  count(word) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.5)
+nrow(cover_90)
   
 #' Word clouds
 tidy_repo %>%
   count(word) %>%
+  with(wordcloud(word, n, max.words = 150, 
+                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
+
+#' Word clouds by source
+# Blogs
+tidy_repo %>%
+  filter(source == "blogs") %>%
+  count(word) %>%
   with(wordcloud(word, n, max.words = 100, 
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
+# News
 tidy_repo %>%
+  filter(source == "news") %>%
   count(word) %>%
-  with(wordcloud(word, n, max.words = 200, 
-                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE)) 
+  with(wordcloud(word, n, max.words = 100, 
+                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
+# Twitter
+tidy_repo %>%
+  filter(source == "twitter") %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 100, 
+                 colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 
 #' Word distribution
 tidy_repo %>%
@@ -132,14 +172,13 @@ tidy_repo %>%
 
 #' Word distribution by source
 freq %>%
-  #group_by(source) %>%
   filter(proportion > 0.002) %>% 
   mutate(word = reorder(word, proportion)) %>% 
   ggplot(aes(word, proportion)) +
   geom_col() + 
   xlab(NULL) + 
   coord_flip() +
-  facet_wrap(~source) 
+  facet_grid(~source, scales = "free") 
 
 ################  
 ## ngrams
