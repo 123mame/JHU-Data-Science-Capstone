@@ -43,8 +43,7 @@ replace_reg <- "[^[:alpha:][:space:]]*"
 replace_url <- "http[^[:space:]]*"
 replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"  
 
-#' Clean dataframes for each souce.   
-#' Cleaning is separted from tidying so unnest_tokens function can be used for words,
+#' Clean dataframes for each souce. Cleaning is separted from tidying so `unnest_tokens` function can be used for words,
 #' and ngrams.
 clean_blogs <-  blogs %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
@@ -63,6 +62,10 @@ clean_twitter <- twitter%>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
+
+#' Clean up
+rm(blogs, news, twitter)
+gc()
   
 #' Create tidy dataframes for each source
 tidy_blogs <- clean_blogs %>%
@@ -91,31 +94,16 @@ saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
 (tidy_repo_size <- file.size("./data/final/en_US/tidy_repo.rds") / (2^20))
 
 #' ## 3. Most frequent words and word distributions
-freq <- tidy_repo %>%
-  count(source, word) %>%
-  group_by(source) %>%
-  mutate(proportion = n / sum(n)) %>%
-  spread(source, proportion) %>%
-  gather(source, proportion, `blogs`:`twitter`) %>%
-  arrange(desc(proportion), desc(n))
 
-#' Most frequent words
-kable(head(freq, 10))
-
-#' Least frequent words
-freq_low <- freq %>% 
-  arrange(proportion, n)
-kable(head(freq_low, 10)) 
-
-#' Word counts
-# Number of unique words in repo
+#' Word counts: Number of unique words in repo
 (repo_count <- tidy_repo %>%
-  summarise(keys = n_distinct(word)))
+    summarise(keys = n_distinct(word)))
 
-# Potential to reduce repo size by cutoff proportion
+# Words above cutoff proportion: number of unique words
+cutoff <- 0.0001
 (small_repo_count <- freq %>%
-  filter(proportion > 0.0001) %>%
-  summarise(keys = n_distinct(word)))
+    filter(proportion > cutoff) %>%
+    summarise(keys = n_distinct(word)))
 
 #' Number of words to attain 50% and 90% coverage of all words in repo
 cover_50 <- tidy_repo %>%
@@ -131,9 +119,20 @@ cover_90 <- tidy_repo %>%
   mutate(proportion = n / sum(n)) %>%
   arrange(desc(proportion)) %>%  
   mutate(coverage = cumsum(proportion)) %>%
-  filter(coverage <= 0.5)
+  filter(coverage <= 0.9)
 nrow(cover_90)
-  
+
+#' ## 4. Word distributions: using 90% coverage
+#' Most frequent words
+freq <- tidy_repo %>%
+  count(source, word) %>%
+  group_by(source) %>%
+  mutate(proportion = n / sum(n)) %>%
+  spread(source, proportion) %>%
+  gather(source, proportion, `blogs`:`twitter`) %>%
+  arrange(desc(proportion), desc(n))
+kable(head(freq, 10))
+
 #' Word clouds
 tidy_repo %>%
   count(word) %>%
@@ -148,7 +147,6 @@ tidy_repo %>%
   with(wordcloud(word, n, max.words = 100, 
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 # News
-#+ chunkoptions, warnings = FALSE
 tidy_repo %>%
   filter(source == "news") %>%
   count(word) %>%
@@ -182,22 +180,51 @@ freq %>%
   facet_grid(~source, scales = "free") 
 
 ################  
-## 4.  ngrams
-# 
-# blogs_bigrams <- clean_blogs  %>%
-#   unnest_tokens(bigram, text, token = "ngrams", n = 2)
-# 
-# news_bigrams <- clean_news  %>%
-#   unnest_tokens(bigram, text, token = "ngrams", n = 2)
-# 
-# twitter_bigrams <- clean_twitter  %>%
-#   unnest_tokens(bigram, text, token = "ngrams", n = 2)
-# 
-# #' Create tidy repository
-# bigram_repo <- bind_rows(mutate(blogs_bigrams, source = "blogs"),
-#                        mutate(news_bigrams,  source = "news"),
-#                        mutate(twitter_bigrams, source = "twitter"))
-# bigram_repo$source <- as.factor(bigram_repo$source)
+#' ## 4. Bigrams
+
+#' Create bigrams by source using `unnest_tokens`
+blogs_bigrams <- clean_blogs  %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+
+news_bigrams <- clean_news  %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+
+twitter_bigrams <- clean_twitter  %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+
+#' Create tidy bigram repository
+bigram_repo <- bind_rows(mutate(blogs_bigrams, source = "blogs"),
+                       mutate(news_bigrams,  source = "news"),
+                       mutate(twitter_bigrams, source = "twitter"))
+bigram_repo$source <- as.factor(bigram_repo$source)
+
+#### WORKING
+
+#' Bigram distribution
+bigram_repo %>%
+  count(bigram, sort = TRUE) %>%
+  filter(n > 50000) %>%
+  mutate(bigram = reorder(bigram, n)) %>%
+  ggplot(aes(bigram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+
+# #' Bigram word cloud
+# bigram_repo %>%
+#   count(bigram) %>%
+#   with(wordcloud(bigram, n, max.words = 25, 
+#                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
+
+#' #' Number of words to attain 90% coverage of all words in repo
+bigram_cover_90 <- bigram_repo %>%
+  count(bigram) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.9)
+nrow(bigram_cover_90)
+
 
 end <- Sys.time()
 
