@@ -319,7 +319,7 @@ end <- Sys.time()
 (run_time <- end - start)
 ```
 
-    ## Time difference of 15.00969 mins
+    ## Time difference of 11.4998 mins
 
 ``` r
 ###############
