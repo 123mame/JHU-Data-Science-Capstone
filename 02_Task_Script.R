@@ -148,10 +148,11 @@ tidy_repo %>%
   with(wordcloud(word, n, max.words = 100, 
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 # News
+#+ chunkoptions, warnings = FALSE
 tidy_repo %>%
   filter(source == "news") %>%
   count(word) %>%
-  with(wordcloud(word, n, max.words = 100, 
+  with(wordcloud(word, n, max.words = 50, 
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 # Twitter
 tidy_repo %>%

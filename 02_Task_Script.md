@@ -255,53 +255,17 @@ tidy_repo %>%
 
 ``` r
 # News
+```
+
+``` r
 tidy_repo %>%
   filter(source == "news") %>%
   count(word) %>%
-  with(wordcloud(word, n, max.words = 100, 
+  with(wordcloud(word, n, max.words = 50, 
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 ```
 
-    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
-    ## "Dark2"), : tuesday could not be fit on page. It will not be plotted.
-
-    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
-    ## "Dark2"), : cleveland could not be fit on page. It will not be plotted.
-
-    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
-    ## "Dark2"), : service could not be fit on page. It will not be plotted.
-
-    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
-    ## "Dark2"), : saturday could not be fit on page. It will not be plotted.
-
-    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
-    ## "Dark2"), : north could not be fit on page. It will not be plotted.
-
-    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
-    ## "Dark2"), : country could not be fit on page. It will not be plotted.
-
-    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
-    ## "Dark2"), : wednesday could not be fit on page. It will not be plotted.
-
-    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
-    ## "Dark2"), : washington could not be fit on page. It will not be plotted.
-
-    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
-    ## "Dark2"), : started could not be fit on page. It will not be plotted.
-
-    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
-    ## "Dark2"), : sunday could not be fit on page. It will not be plotted.
-
-    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
-    ## "Dark2"), : building could not be fit on page. It will not be plotted.
-
-    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
-    ## "Dark2"), : market could not be fit on page. It will not be plotted.
-
-    ## Warning in wordcloud(word, n, max.words = 100, colors = brewer.pal(6,
-    ## "Dark2"), : played could not be fit on page. It will not be plotted.
-
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-2.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/chunkoptions-1.png)
 
 ``` r
 # Twitter
@@ -312,7 +276,7 @@ tidy_repo %>%
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-3.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/chunkoptions-2.png)
 
 Word distribution
 
@@ -368,7 +332,7 @@ end <- Sys.time()
 (run_time <- end - start)
 ```
 
-    ## Time difference of 6.948055 mins
+    ## Time difference of 6.851307 mins
 
 ``` r
 ################
