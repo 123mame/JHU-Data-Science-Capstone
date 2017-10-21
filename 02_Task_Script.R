@@ -199,13 +199,17 @@ bigram_cover_90 %>%
 ##############
 #' ## 6. Trigrams  
 #' Create Trigrams by source using `unnest_tokens`
+
 blogs_trigrams <- clean_blogs  %>%
+  sample_n(., nrow(clean_blogs)*0.20) %>%
   unnest_tokens(trigram, text, token = "ngrams", n = 3)
 
 news_trigrams <- clean_news  %>%
+  sample_n(., nrow(clean_news)*0.20) %>%
   unnest_tokens(trigram, text, token = "ngrams", n = 3)
 
 twitter_trigrams <- clean_twitter  %>%
+  sample_n(., nrow(clean_twitter)*0.20) %>%
   unnest_tokens(trigram, text, token = "ngrams", n = 3)
 
 #' Create tidy trigram repository
@@ -226,14 +230,52 @@ nrow(trigram_cover_90)
 #' trigram distribution
 trigram_cover_90 %>%
   #count(trigram, sort = TRUE) %>%
-  filter(n > 50000) %>%
+  filter(n > 1500) %>%
   mutate(trigram = reorder(trigram, n)) %>%
   ggplot(aes(trigram, n)) +
   geom_col() +
   xlab(NULL) +
   coord_flip()
 
+#' ## 7. Fourgrams  
+#' Create Trigrams by source using `unnest_tokens`
 
+blogs_fourgrams <- clean_blogs  %>%
+  sample_n(., nrow(clean_blogs)*0.05) %>%
+  unnest_tokens(fourgram, text, token = "ngrams", n = 4)
+
+news_fourgrams <- clean_news  %>%
+  sample_n(., nrow(clean_news)*0.05) %>%
+  unnest_tokens(fourgram, text, token = "ngrams", n = 4)
+
+twitter_fourgrams <- clean_twitter  %>%
+  sample_n(., nrow(clean_twitter)*0.05) %>%
+  unnest_tokens(fourgram, text, token = "ngrams", n = 4)
+
+#' Create tidy fourgram repository
+fourgram_repo <- bind_rows(mutate(blogs_fourgrams, source = "blogs"),
+                          mutate(news_fourgrams,  source = "news"),
+                          mutate(twitter_fourgrams, source = "twitter"))
+fourgram_repo$source <- as.factor(fourgram_repo$source)
+
+#' Number of fourgrams to attain 90% coverage of all fourgrams in repo
+fourgram_cover_90 <- fourgram_repo %>%
+  count(fourgram) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.9)
+nrow(fourgram_cover_90)
+
+#' Fourgram distribution
+fourgram_cover_90 %>%
+  #count(trigram, sort = TRUE) %>%
+  filter(n > 100) %>%
+  mutate(fourgram = reorder(fourgram, n)) %>%
+  ggplot(aes(fourgram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
 
 
 

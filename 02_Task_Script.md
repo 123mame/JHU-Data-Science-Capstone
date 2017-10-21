@@ -1,14 +1,14 @@
 Task 2: Exploratory Data Analysis
 ================
 Mark Blackmore
-2017-10-20
+2017-10-21
 
 1. Introduction
 ---------------
 
 This script uses the tidy data principles applied to text mining, as outlined in [Text Mining with R: A Tidy Approach](http://tidytextmining.com/).
 
-Using this approach, we are able to use the **entire data set** as opposed to data sampling approach required by the memory constraints of the `tm` package.
+Using this approach, we are able to use the **entire data set** as opposed to data sampling approach required by the memory constraints of the `tm` package. After exploring the entire data set, we then reduce the data based on frequency.
 
 ``` r
 start <- Sys.time()
@@ -25,7 +25,7 @@ news_file    <- "./data/final/en_US/en_US.news.txt"
 twitter_file <- "./data/final/en_US/en_US.twitter.txt"  
 ```
 
-Read the data files
+Read the data files into dataframes
 
 ``` r
 blogs   <- data_frame(text = readLines(blogs_file,   skipNul = TRUE, warn = FALSE))
@@ -33,7 +33,7 @@ news    <- data_frame(text = readLines(news_file,    skipNul = TRUE, warn = FALS
 twitter <- data_frame(text = readLines(twitter_file, skipNul = TRUE, warn = FALSE)) 
 ```
 
-Create filters: stopwords, profanity, non-alphanumeric, url's, repeated letters
+Create filters: stopwords, profanity, non-alphanumeric's, url's, repeated letters(+3x)
 
 ``` r
 data("stop_words")
@@ -52,7 +52,7 @@ replace_url <- "http[^[:space:]]*"
 replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"  
 ```
 
-Clean dataframes for each souce. Cleaning is separted from tidying so `unnest_tokens` function can be used for words, and ngrams.
+Clean dataframes from each souce. Cleaning is separted from tidying so `unnest_tokens` function can be used for words, and ngrams.
 
 ``` r
 clean_blogs <-  blogs %>%
@@ -122,7 +122,7 @@ tidy_repo <- bind_rows(mutate(tidy_blogs, source = "blogs"),
 tidy_repo$source <- as.factor(tidy_repo$source)
 ```
 
-Save tidy repository
+Save tidy repository; note repository size (MB)
 
 ``` r
 saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
@@ -175,7 +175,7 @@ nrow(cover_90)
 4. Word distributions
 ---------------------
 
-Most frequent words by proportion
+Most frequent words by proportion, with source
 
 ``` r
 freq <- tidy_repo %>%
@@ -201,8 +201,9 @@ kable(head(freq, 10))
 | people |   51422| twitter |   0.0051754|
 | people |   58839| blogs   |   0.0050059|
 
+Words above cutoff proportion: number of unique words
+
 ``` r
-# Words above cutoff proportion: number of unique words
 cutoff <- 0.0001
 (small_repo_count <- freq %>%
     filter(proportion > cutoff) %>%
@@ -227,7 +228,7 @@ cover_90 %>%
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
 
 Word distribution by source
 
@@ -242,7 +243,7 @@ freq %>%
   facet_grid(~source, scales = "free")
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
 
 Word cloud
 
@@ -253,11 +254,7 @@ cover_90 %>%
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
-
-``` r
-################  
-```
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-16-1.png)
 
 5. Bigrams
 ----------
@@ -284,7 +281,7 @@ bigram_repo <- bind_rows(mutate(blogs_bigrams, source = "blogs"),
 bigram_repo$source <- as.factor(bigram_repo$source)
 ```
 
-Number of words to attain 90% coverage of all words in repo
+Number of bigrams to attain 90% coverage of all bigrams in repo
 
 ``` r
 bigram_cover_90 <- bigram_repo %>%
@@ -311,7 +308,68 @@ bigram_cover_90 %>%
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-19-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-20-1.png)
+
+``` r
+##############
+```
+
+6. Trigrams
+-----------
+
+Create Trigrams by source using `unnest_tokens`
+
+``` r
+blogs_trigrams <- clean_blogs  %>%
+  sample_n(., nrow(clean_blogs)*0.20) %>%
+  unnest_tokens(trigram, text, token = "ngrams", n = 3)
+
+news_trigrams <- clean_news  %>%
+  sample_n(., nrow(clean_news)*0.20) %>%
+  unnest_tokens(trigram, text, token = "ngrams", n = 3)
+
+twitter_trigrams <- clean_twitter  %>%
+  sample_n(., nrow(clean_twitter)*0.20) %>%
+  unnest_tokens(trigram, text, token = "ngrams", n = 3)
+```
+
+Create tidy trigram repository
+
+``` r
+trigram_repo <- bind_rows(mutate(blogs_trigrams, source = "blogs"),
+                         mutate(news_trigrams,  source = "news"),
+                         mutate(twitter_trigrams, source = "twitter"))
+trigram_repo$source <- as.factor(trigram_repo$source)
+```
+
+Number of trigrams to attain 90% coverage of all trigrams in repo
+
+``` r
+trigram_cover_90 <- trigram_repo %>%
+  count(trigram) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.9)
+nrow(trigram_cover_90)
+```
+
+    ## [1] 6602814
+
+trigram distribution
+
+``` r
+trigram_cover_90 %>%
+  #count(trigram, sort = TRUE) %>%
+  filter(n > 2000) %>%
+  mutate(trigram = reorder(trigram, n)) %>%
+  ggplot(aes(trigram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+```
+
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-24-1.png)
 
 ``` r
 end <- Sys.time()
@@ -319,7 +377,7 @@ end <- Sys.time()
 (run_time <- end - start)
 ```
 
-    ## Time difference of 11.4998 mins
+    ## Time difference of 19.3694 mins
 
 ``` r
 ###############
