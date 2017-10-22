@@ -241,15 +241,15 @@ trigram_cover_90 %>%
 #' Create Trigrams by source using `unnest_tokens`
 
 blogs_fourgrams <- clean_blogs  %>%
-  sample_n(., nrow(clean_blogs)*0.05) %>%
+  sample_n(., nrow(clean_blogs)*0.20) %>%
   unnest_tokens(fourgram, text, token = "ngrams", n = 4)
 
 news_fourgrams <- clean_news  %>%
-  sample_n(., nrow(clean_news)*0.05) %>%
+  sample_n(., nrow(clean_news)*0.20) %>%
   unnest_tokens(fourgram, text, token = "ngrams", n = 4)
 
 twitter_fourgrams <- clean_twitter  %>%
-  sample_n(., nrow(clean_twitter)*0.05) %>%
+  sample_n(., nrow(clean_twitter)*0.20) %>%
   unnest_tokens(fourgram, text, token = "ngrams", n = 4)
 
 #' Create tidy fourgram repository
@@ -276,8 +276,6 @@ fourgram_cover_90 %>%
   geom_col() +
   xlab(NULL) +
   coord_flip()
-
-
 
 end <- Sys.time()
 

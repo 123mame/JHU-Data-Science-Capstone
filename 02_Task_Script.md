@@ -354,14 +354,14 @@ trigram_cover_90 <- trigram_repo %>%
 nrow(trigram_cover_90)
 ```
 
-    ## [1] 6602814
+    ## [1] 6602889
 
 trigram distribution
 
 ``` r
 trigram_cover_90 %>%
   #count(trigram, sort = TRUE) %>%
-  filter(n > 2000) %>%
+  filter(n > 1500) %>%
   mutate(trigram = reorder(trigram, n)) %>%
   ggplot(aes(trigram, n)) +
   geom_col() +
@@ -371,13 +371,70 @@ trigram_cover_90 %>%
 
 ![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-24-1.png)
 
+7. Fourgrams
+------------
+
+Create Trigrams by source using `unnest_tokens`
+
+``` r
+blogs_fourgrams <- clean_blogs  %>%
+  sample_n(., nrow(clean_blogs)*0.05) %>%
+  unnest_tokens(fourgram, text, token = "ngrams", n = 4)
+
+news_fourgrams <- clean_news  %>%
+  sample_n(., nrow(clean_news)*0.10) %>%
+  unnest_tokens(fourgram, text, token = "ngrams", n = 4)
+
+twitter_fourgrams <- clean_twitter  %>%
+  sample_n(., nrow(clean_twitter)*0.10) %>%
+  unnest_tokens(fourgram, text, token = "ngrams", n = 4)
+```
+
+Create tidy fourgram repository
+
+``` r
+fourgram_repo <- bind_rows(mutate(blogs_fourgrams, source = "blogs"),
+                          mutate(news_fourgrams,  source = "news"),
+                          mutate(twitter_fourgrams, source = "twitter"))
+fourgram_repo$source <- as.factor(fourgram_repo$source)
+```
+
+Number of fourgrams to attain 90% coverage of all fourgrams in repo
+
+``` r
+fourgram_cover_90 <- fourgram_repo %>%
+  count(fourgram) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.9)
+nrow(fourgram_cover_90)
+```
+
+    ## [1] 3754614
+
+Fourgram distribution
+
+``` r
+fourgram_cover_90 %>%
+  #count(trigram, sort = TRUE) %>%
+  filter(n > 100) %>%
+  mutate(fourgram = reorder(fourgram, n)) %>%
+  ggplot(aes(fourgram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+```
+
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-28-1.png)
+
 ``` r
 end <- Sys.time()
 
 (run_time <- end - start)
 ```
 
-    ## Time difference of 19.3694 mins
+    ## Time difference of 22.07607 mins
 
 ``` r
 ###############
