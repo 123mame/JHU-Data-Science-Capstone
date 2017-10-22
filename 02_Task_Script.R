@@ -277,9 +277,9 @@ fourgram_cover_90 %>%
   xlab(NULL) +
   coord_flip()
 
-# fourgrams_separated <- fourgram_cover_90 %>%
-#   separate(fourgram, c("word1", "word2", "word3", "word4"), sep = " ")
-# fourgrams_separated
+fourgrams_separated <- fourgram_cover_90 %>%
+  separate(fourgram, c("word1", "word2", "word3", "word4"), sep = " ")
+fourgrams_separated
 
 
 end <- Sys.time()
