@@ -238,18 +238,18 @@ trigram_cover_90 %>%
   coord_flip()
 
 #' ## 7. Fourgrams  
-#' Create Trigrams by source using `unnest_tokens`
+#' Create Fourgrams by source using `unnest_tokens`
 
 blogs_fourgrams <- clean_blogs  %>%
-  sample_n(., nrow(clean_blogs)*0.20) %>%
+  sample_n(., nrow(clean_blogs)*0.10) %>%
   unnest_tokens(fourgram, text, token = "ngrams", n = 4)
 
 news_fourgrams <- clean_news  %>%
-  sample_n(., nrow(clean_news)*0.20) %>%
+  sample_n(., nrow(clean_news)*0.10) %>%
   unnest_tokens(fourgram, text, token = "ngrams", n = 4)
 
 twitter_fourgrams <- clean_twitter  %>%
-  sample_n(., nrow(clean_twitter)*0.20) %>%
+  sample_n(., nrow(clean_twitter)*0.10) %>%
   unnest_tokens(fourgram, text, token = "ngrams", n = 4)
 
 #' Create tidy fourgram repository
@@ -270,7 +270,7 @@ nrow(fourgram_cover_90)
 #' Fourgram distribution
 fourgram_cover_90 %>%
   #count(trigram, sort = TRUE) %>%
-  filter(n > 100) %>%
+  filter(n > 200) %>%
   mutate(fourgram = reorder(fourgram, n)) %>%
   ggplot(aes(fourgram, n)) +
   geom_col() +

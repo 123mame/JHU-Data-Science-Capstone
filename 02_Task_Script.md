@@ -354,7 +354,7 @@ trigram_cover_90 <- trigram_repo %>%
 nrow(trigram_cover_90)
 ```
 
-    ## [1] 6602889
+    ## [1] 6589699
 
 trigram distribution
 
@@ -378,15 +378,15 @@ Create Trigrams by source using `unnest_tokens`
 
 ``` r
 blogs_fourgrams <- clean_blogs  %>%
-  sample_n(., nrow(clean_blogs)*0.05) %>%
+  sample_n(., nrow(clean_blogs)*0.20) %>%
   unnest_tokens(fourgram, text, token = "ngrams", n = 4)
 
 news_fourgrams <- clean_news  %>%
-  sample_n(., nrow(clean_news)*0.10) %>%
+  sample_n(., nrow(clean_news)*0.20) %>%
   unnest_tokens(fourgram, text, token = "ngrams", n = 4)
 
 twitter_fourgrams <- clean_twitter  %>%
-  sample_n(., nrow(clean_twitter)*0.10) %>%
+  sample_n(., nrow(clean_twitter)*0.20) %>%
   unnest_tokens(fourgram, text, token = "ngrams", n = 4)
 ```
 
@@ -411,7 +411,7 @@ fourgram_cover_90 <- fourgram_repo %>%
 nrow(fourgram_cover_90)
 ```
 
-    ## [1] 3754614
+    ## [1] 9835480
 
 Fourgram distribution
 
@@ -434,7 +434,7 @@ end <- Sys.time()
 (run_time <- end - start)
 ```
 
-    ## Time difference of 22.07607 mins
+    ## Time difference of 55.47961 mins
 
 ``` r
 ###############
