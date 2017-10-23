@@ -16,7 +16,7 @@ clean_news  <- readRDS("./data/final/en_US/clean_news.rds")
 clean_twitter <- readRDS("./data/final/en_US/clean_twitter.rds")
 
 #' Set sample percentage
-pct <- 0.4
+pct <- 0.2
 
 #' Create Fourgrams by source using `unnest_tokens`
 
@@ -50,7 +50,7 @@ nrow(fourgram_cover_90)
 #' Fourgram distribution
 fourgram_cover_90 %>%
   #count(trigram, sort = TRUE) %>%
-  filter(n > 200) %>%
+  filter(n > 400) %>%
   mutate(fourgram = reorder(fourgram, n)) %>%
   ggplot(aes(fourgram, n)) +
   geom_col() +
