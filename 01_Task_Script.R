@@ -16,6 +16,7 @@ suppressPackageStartupMessages({
  library(data.table)
  library(ggthemes)
  library(wordcloud)
+ library(ngram)
 })  
 
 #' ## 1. Download and explore the data
@@ -41,9 +42,9 @@ news_size    <- file.size(news_file) / (2^20)
 twitter_size <- file.size(twitter_file) / (2^20)
  
 #' Read the data files
-blogs   <- readLines(blogs_file,   skipNul = TRUE, warn = FALSE)
-news    <- readLines(news_file,    skipNul = TRUE, warn = FALSE)
-twitter <- readLines(twitter_file, skipNul = TRUE, warn = FALSE) 
+blogs   <- read_lines(blogs_file)
+news    <- read_lines(news_file)
+twitter <- read_lines(twitter_file) 
 
 #' Number of Lines per file
 blogs_lines   <- length(blogs)
