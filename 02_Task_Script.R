@@ -94,6 +94,11 @@ tidy_repo$source <- as.factor(tidy_repo$source)
 saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
 (tidy_repo_size <- file.size("./data/final/en_US/tidy_repo.rds") / (2^20))
 
+#' Save intermediate files for n-grams
+saveRDS(clean_blogs, "./data/final/en_US/clean_blogs.rds")
+saveRDS(clean_news, "./data/final/en_US/clean_news.rds")
+saveRDS(clean_twitter, "./data/final/en_US/clean_twitter.rds")
+
 #' ## 3. Most frequent words and word distributions
 
 #' Word counts: Number of unique words in repo
