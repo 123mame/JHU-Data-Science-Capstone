@@ -1,7 +1,7 @@
 Task 1: Getting and Cleaning the Data
 ================
 Mark Blackmore
-2017-10-19
+2017-10-23
 
 1. Download and explore the data
 --------------------------------
@@ -41,9 +41,9 @@ twitter_size <- file.size(twitter_file) / (2^20)
 Read the data files
 
 ``` r
-blogs   <- readLines(blogs_file,   skipNul = TRUE, warn = FALSE)
-news    <- readLines(news_file,    skipNul = TRUE, warn = FALSE)
-twitter <- readLines(twitter_file, skipNul = TRUE, warn = FALSE) 
+blogs   <- read_lines(blogs_file)
+news    <- read_lines(news_file)
+twitter <- read_lines(twitter_file) 
 ```
 
 Number of Lines per file
@@ -70,22 +70,6 @@ boxplot(blogs_nchar, news_nchar, twitter_nchar, log = "y",
 
 ![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-7-1.png)
 
-Max characters in a line, by file (longest line)
-
-``` r
-blogs_nchar_max   <- max(blogs_nchar)
-news_nchar_max    <- max(news_nchar)
-twitter_nchar_max <- max(twitter_nchar)
-```
-
-Median characters per file
-
-``` r
-blogs_nchar_med   <- median(blogs_nchar)
-news_nchar_med    <- median(news_nchar)
-twitter_nchar_med <- median(twitter_nchar)
-```
-
 Total characters per file
 
 ``` r
@@ -94,27 +78,33 @@ news_nchar_sum    <- sum(news_nchar)
 twitter_nchar_sum <- sum(twitter_nchar)
 ```
 
+Total words per file
+
+``` r
+blogs_words <- wordcount(blogs, sep = " ")
+news_words  <- wordcount(news,  sep = " ")
+twitter_words <- wordcount(news, sep = " ")
+```
+
 Create summary of repo stats
 
 ``` r
 repo_summary <- data.frame(f_names = c("blogs", "news", "twitter"),
                            f_size  = c(blogs_size, news_size, twitter_size),
                            f_lines = c(blogs_lines, news_lines, twitter_lines),
-                           nchar_max  = c(blogs_nchar_max, news_nchar_max, twitter_nchar_max),
-                           nchar_med =  c(blogs_nchar_med, news_nchar_med, twitter_nchar_med),
-                           nchar_sum =  c(blogs_nchar_sum, news_nchar_sum, twitter_nchar_sum))
-
-
-repo_summary <- repo_summary %>% mutate(pct_nchar = round(nchar_sum/sum(nchar_sum), 2))
+                           n_char =  c(blogs_nchar_sum, news_nchar_sum, twitter_nchar_sum),
+                           n_words = c(blogs_words, news_words, twitter_words))
+repo_summary <- repo_summary %>% mutate(pct_n_char = round(n_char/sum(n_char), 2))
 repo_summary <- repo_summary %>% mutate(pct_lines = round(f_lines/sum(f_lines), 2))
+repo_summary <- repo_summary %>% mutate(pct_words = round(n_words/sum(n_words), 2))
 kable(repo_summary)
 ```
 
-| f\_names |   f\_size|  f\_lines|  nchar\_max|  nchar\_med|  nchar\_sum|  pct\_nchar|  pct\_lines|
-|:---------|---------:|---------:|-----------:|-----------:|-----------:|-----------:|-----------:|
-| blogs    |  200.4242|    899288|       40835|         157|   208361438|        0.54|        0.27|
-| news     |  196.2775|     77259|        5760|         186|    15683765|        0.04|        0.02|
-| twitter  |  159.3641|   2360148|         213|          64|   162385035|        0.42|        0.71|
+| f\_names |   f\_size|  f\_lines|    n\_char|  n\_words|  pct\_n\_char|  pct\_lines|  pct\_words|
+|:---------|---------:|---------:|----------:|---------:|-------------:|-----------:|-----------:|
+| blogs    |  200.4242|    899288|  206824505|  37334131|          0.36|        0.21|        0.35|
+| news     |  196.2775|   1010242|  203223159|  34372530|          0.36|        0.24|        0.32|
+| twitter  |  159.3641|   2360148|  162096031|  34372530|          0.28|        0.55|        0.32|
 
 2. Sample the data and save the sample
 --------------------------------------
@@ -151,20 +141,11 @@ saveRDS(repo_sample, file = "./data/final/en_US/repo_sample.rds" )
 Use `tm` to create and clean the corpus
 
 ``` r
-clean_sample <- Corpus(VectorSource(repo_sample),
-                       readerControl = list(readPlain, 
-                                            language = "en",
-                                            load = TRUE))
+clean_sample <- Corpus(VectorSource(repo_sample))
 print(as.character(clean_sample[[1]]))
 ```
 
     ## [1] "Love the use of onomatopoeia, and I wish they made dumplings with just scallions and cabbage. But there are plenty of places on 8th where you can buy dumplings (veggie or otherwise) for 4 for a dollar or so. Several places that look like they don't sell anything (just a white booth with a see-through window) actually sell delicious stuff to take home a cook. It's inexpensive and usually quite good. Enjoy."
-
-Transform sample to all lower case
-
-``` r
-clean_sample <- tm_map(clean_sample, content_transformer(tolower))
-```
 
 Remove URL's
 Source: [R and Data Mining](%22http://www.rdatamining.com/books/rdm/faq/removeurlsfromtext%22)
@@ -176,6 +157,12 @@ clean_sample <- tm_map(clean_sample, content_transformer(removeURL))
 # Remove anything other than English letters or space
 removeNumPunct <- function(x) gsub("[^[:alpha:][:space:]]*", "", x)
 clean_sample <- tm_map(clean_sample, content_transformer(removeNumPunct))
+```
+
+Transform sample to all lower case
+
+``` r
+clean_sample <- tm_map(clean_sample, content_transformer(tolower))
 ```
 
 Create profanity filter
@@ -226,14 +213,14 @@ docterm_corpus <- DocumentTermMatrix(clean_sample)
 dim(docterm_corpus)
 ```
 
-    ## [1] 166833 122031
+    ## [1] 213483 141426
 
 ``` r
 new_docterm_corpus <- removeSparseTerms(docterm_corpus,sparse = 0.993)
 dim(new_docterm_corpus)
 ```
 
-    ## [1] 166833     96
+    ## [1] 213483    105
 
 Find frequent terms
 
@@ -242,7 +229,7 @@ colS <- colSums(as.matrix(new_docterm_corpus))
 length(colS)
 ```
 
-    ## [1] 96
+    ## [1] 105
 
 ``` r
 doc_features <- data.table(name = attributes(colS)$names, count = colS)
@@ -255,32 +242,32 @@ doc_features[order(-count)][1:10] #top 10 most frequent words
 ```
 
     ##       name count
-    ##  1:   time  8239
-    ##  2:   love  7425
-    ##  3:   good  7368
-    ##  4:    day  7045
-    ##  5:   dont  5973
-    ##  6: people  5542
-    ##  7:   back  5330
-    ##  8:  great  5299
-    ##  9:   make  4972
-    ## 10:  today  4736
+    ##  1:   time 10625
+    ##  2:   good  8913
+    ##  3:   dont  8841
+    ##  4:    day  8488
+    ##  5:   love  8005
+    ##  6: people  7808
+    ##  7:   back  6948
+    ##  8:   make  6422
+    ##  9:  great  6089
+    ## 10:   year  5835
 
 ``` r
 doc_features[order(count)][1:10] #least 10 frequent words
 ```
 
     ##         name count
-    ##  1:     hear  1219
-    ##  2: watching  1230
-    ##  3:     miss  1230
-    ##  4:      bit  1275
-    ##  5:     yeah  1278
-    ##  6:    point  1281
-    ##  7:     talk  1287
-    ##  8:     girl  1297
-    ##  9:    ready  1299
-    ## 10:     post  1300
+    ##  1:  started  1622
+    ##  2:     stop  1627
+    ##  3:  twitter  1661
+    ##  4:   person  1662
+    ##  5:     guys  1676
+    ##  6: tomorrow  1677
+    ##  7:      win  1694
+    ##  8:     head  1695
+    ##  9:     open  1703
+    ## 10: business  1713
 
 Plot most frequent terms
 
@@ -291,7 +278,7 @@ ggplot(doc_features[count>5000],aes(name, count)) +
   theme_economist() + scale_color_economist() 
 ```
 
-![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-26-1.png)
+![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-25-1.png)
 
 Create word cloud
 
@@ -300,14 +287,21 @@ wordcloud(names(colS), colS, min.freq = 500,
           colors = brewer.pal(6, 'Dark2'), random.order = FALSE)  
 ```
 
-![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-27-1.png)
+![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-26-1.png)
 
 ``` r
 wordcloud(names(colS), colS, min.freq = 2000, 
           colors = brewer.pal(6, 'Dark2'), random.order = FALSE)  
 ```
 
-![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-27-2.png)
+![](01_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-26-2.png)
+
+``` r
+end <- Sys.time()
+(ellapsed <- end - start)
+```
+
+    ## Time difference of 1.743895 mins
 
 ------------------------------------------------------------------------
 
@@ -334,12 +328,12 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ##  [1] bindrcpp_0.2        wordcloud_2.5       RColorBrewer_1.1-2 
-    ##  [4] ggthemes_3.4.0      data.table_1.10.4-2 dtplyr_0.0.2       
-    ##  [7] dplyr_0.7.4         purrr_0.2.3         readr_1.1.1        
-    ## [10] tidyr_0.7.1         tibble_1.3.4        ggplot2_2.2.1      
-    ## [13] tidyverse_1.1.1     knitr_1.17          tm_0.7-1           
-    ## [16] NLP_0.1-11          downloader_0.4     
+    ##  [1] bindrcpp_0.2        ngram_3.0.3         wordcloud_2.5      
+    ##  [4] RColorBrewer_1.1-2  ggthemes_3.4.0      data.table_1.10.4-2
+    ##  [7] dtplyr_0.0.2        dplyr_0.7.4         purrr_0.2.3        
+    ## [10] readr_1.1.1         tidyr_0.7.1         tibble_1.3.4       
+    ## [13] ggplot2_2.2.1       tidyverse_1.1.1     knitr_1.17         
+    ## [16] tm_0.7-1            NLP_0.1-11          downloader_0.4     
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] slam_0.1-40      reshape2_1.4.2   haven_1.1.0      lattice_0.20-35 

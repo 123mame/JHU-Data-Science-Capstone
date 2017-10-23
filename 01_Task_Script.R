@@ -18,6 +18,7 @@ suppressPackageStartupMessages({
  library(wordcloud)
  library(ngram)
 })  
+start <- Sys.time()
 
 #' ## 1. Download and explore the data
 #'
@@ -62,32 +63,25 @@ boxplot(blogs_nchar, news_nchar, twitter_nchar, log = "y",
         ylab = "log(Number of Characters)", xlab = "File Name") 
         title("Comparing Distributions of Chracters per Line")
 
-#' Max characters in a line, by file (longest line)
-blogs_nchar_max   <- max(blogs_nchar)
-news_nchar_max    <- max(news_nchar)
-twitter_nchar_max <- max(twitter_nchar)
-
-#' Median characters per file
-blogs_nchar_med   <- median(blogs_nchar)
-news_nchar_med    <- median(news_nchar)
-twitter_nchar_med <- median(twitter_nchar)
-
 #' Total characters per file
 blogs_nchar_sum   <- sum(blogs_nchar)
 news_nchar_sum    <- sum(news_nchar)
 twitter_nchar_sum <- sum(twitter_nchar)
 
+#' Total words per file
+blogs_words <- wordcount(blogs, sep = " ")
+news_words  <- wordcount(news,  sep = " ")
+twitter_words <- wordcount(news, sep = " ")
+
 #' Create summary of repo stats
 repo_summary <- data.frame(f_names = c("blogs", "news", "twitter"),
                            f_size  = c(blogs_size, news_size, twitter_size),
                            f_lines = c(blogs_lines, news_lines, twitter_lines),
-                           nchar_max  = c(blogs_nchar_max, news_nchar_max, twitter_nchar_max),
-                           nchar_med =  c(blogs_nchar_med, news_nchar_med, twitter_nchar_med),
-                           nchar_sum =  c(blogs_nchar_sum, news_nchar_sum, twitter_nchar_sum))
-
-
-repo_summary <- repo_summary %>% mutate(pct_nchar = round(nchar_sum/sum(nchar_sum), 2))
+                           n_char =  c(blogs_nchar_sum, news_nchar_sum, twitter_nchar_sum),
+                           n_words = c(blogs_words, news_words, twitter_words))
+repo_summary <- repo_summary %>% mutate(pct_n_char = round(n_char/sum(n_char), 2))
 repo_summary <- repo_summary %>% mutate(pct_lines = round(f_lines/sum(f_lines), 2))
+repo_summary <- repo_summary %>% mutate(pct_words = round(n_words/sum(n_words), 2))
 kable(repo_summary)
 
 #' ## 2. Sample the data and save the sample
@@ -110,15 +104,10 @@ writeLines(repo_sample, "./data/final/en_US/en_US.repo_sample.txt")
 saveRDS(repo_sample, file = "./data/final/en_US/repo_sample.rds" )
 
 #' ## 3.  Clean the sample data
-#' Use `tm` to create and clean the corpus
-clean_sample <- Corpus(VectorSource(repo_sample),
-                       readerControl = list(readPlain, 
-                                            language = "en",
-                                            load = TRUE))
-print(as.character(clean_sample[[1]]))
 
-#' Transform sample to all lower case
-clean_sample <- tm_map(clean_sample, content_transformer(tolower))
+#' Use `tm` to create and clean the corpus
+clean_sample <- Corpus(VectorSource(repo_sample))
+print(as.character(clean_sample[[1]]))
 
 #' Remove URL's  
 #' Source: [R and Data Mining]("http://www.rdatamining.com/books/rdm/faq/removeurlsfromtext")
@@ -128,6 +117,9 @@ clean_sample <- tm_map(clean_sample, content_transformer(removeURL))
 # Remove anything other than English letters or space
 removeNumPunct <- function(x) gsub("[^[:alpha:][:space:]]*", "", x)
 clean_sample <- tm_map(clean_sample, content_transformer(removeNumPunct))
+
+#' Transform sample to all lower case
+clean_sample <- tm_map(clean_sample, content_transformer(tolower))
 
 #' Create profanity filter  
 #' Source: [List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words]("List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/en")
@@ -178,8 +170,10 @@ wordcloud(names(colS), colS, min.freq = 500,
 wordcloud(names(colS), colS, min.freq = 2000, 
           colors = brewer.pal(6, 'Dark2'), random.order = FALSE)  
 
+end <- Sys.time()
+(ellapsed <- end - start)
+
 #' -------------
 #'  
 #' #### Session info:
-#+ show-sessionInfo
 sessionInfo()
