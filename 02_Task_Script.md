@@ -1,7 +1,7 @@
 Task 2: Exploratory Data Analysis
 ================
 Mark Blackmore
-2017-10-23
+2017-10-24
 
 1. Introduction
 ---------------
@@ -36,9 +36,9 @@ twitter_size <- file.size(twitter_file) / (2^20)
 Read the data files
 
 ``` r
-blogs   <- read_lines(blogs_file)
-news    <- read_lines(news_file)
-twitter <- read_lines(twitter_file)
+blogs   <- readLines(blogs_file, skipNul = TRUE)
+news    <- readLines(news_file,  skipNul = TRUE)
+twitter <- readLines(twitter_file, skipNul = TRUE)
 ```
 
 Number of Lines per file
@@ -78,7 +78,7 @@ Total words per file
 ``` r
 blogs_words <- wordcount(blogs, sep = " ")
 news_words  <- wordcount(news,  sep = " ")
-twitter_words <- wordcount(news, sep = " ")
+twitter_words <- wordcount(twitter, sep = " ")
 ```
 
 Create summary of repo stats
@@ -97,17 +97,16 @@ kable(repo_summary)
 
 | f\_names |   f\_size|  f\_lines|    n\_char|  n\_words|  pct\_n\_char|  pct\_lines|  pct\_words|
 |:---------|---------:|---------:|----------:|---------:|-------------:|-----------:|-----------:|
-| blogs    |  200.4242|    899288|  206824505|  37334131|          0.36|        0.21|        0.35|
-| news     |  196.2775|   1010242|  203223159|  34372530|          0.36|        0.24|        0.32|
-| twitter  |  159.3641|   2360148|  162096031|  34372530|          0.28|        0.55|        0.32|
+| blogs    |  200.4242|    899288|  208361438|  37334131|          0.36|        0.21|        0.37|
+| news     |  195.3141|   1010242|  203791390|  34372528|          0.35|        0.24|        0.34|
+| twitter  |  159.3641|   2360148|  162385035|  30373583|          0.28|        0.55|        0.30|
 
 Read the data files into dataframes
 
 ``` r
-blogs   <- data_frame(text = readLines(blogs_file, skipNul = TRUE, warn = FALSE))
-news    <- data_frame(text = readLines(news_file,  skipNul = TRUE, warn = FALSE))
-twitter <- data_frame(text = readLines(twitter_file, skipNul = TRUE, warn = FALSE))
-#########
+blogs   <- data_frame(text = blogs)
+news    <- data_frame(text = news)
+twitter <- data_frame(text = twitter)
 ```
 
 Create filters: stopwords, profanity, non-alphanumeric's, url's, repeated letters(+3x)
@@ -144,24 +143,43 @@ clean_news <-   news %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
 
-clean_twitter <- twitter%>%
+clean_twitter <- twitter %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
+
+#######
+sample_pct <- 0.05
+
+blogs_sample <- clean_blogs %>%
+  sample_n(., nrow(clean_blogs)*sample_pct)
+news_sample <- clean_news %>%
+  sample_n(., nrow(clean_news)*sample_pct)
+twitter_sample <- clean_twitter %>%
+  sample_n(., nrow(clean_twitter)*sample_pct)
+```
+
+Create tidy repository
+
+``` r
+repo_sample <- bind_rows(mutate(blogs_sample, source = "blogs"),
+                         mutate(news_sample,  source = "news"),
+                         mutate(twitter_sample, source = "twitter")) 
+repo_sample$source <- as.factor(repo_sample$source)
 ```
 
 Clean up
 
 ``` r
-rm(blogs, news, twitter, replace_reg, replace_url, replace_aaa)
+rm(blogs, blogs_nchar, news, news_nchar, twitter, twitter_nchar, replace_reg, replace_url, replace_aaa)
 x <- gc()
 ```
 
-Create tidy dataframes for each source
+Create tidy dataframe for repo sample
 
 ``` r
-tidy_blogs <- clean_blogs %>%
+tidy_repo <- repo_sample %>%
   unnest_tokens(word, text) %>%
   anti_join(swear_words) %>%
   anti_join(stop_words)
@@ -169,52 +187,6 @@ tidy_blogs <- clean_blogs %>%
 
     ## Joining, by = "word"
     ## Joining, by = "word"
-
-``` r
-tidy_news <- clean_news %>%
-  unnest_tokens(word, text) %>%
-  anti_join(swear_words) %>%
-  anti_join(stop_words)
-```
-
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-
-``` r
-tidy_twitter <- clean_twitter %>%  
-  unnest_tokens(word, text) %>%
-  anti_join(swear_words) %>%
-  anti_join(stop_words)
-```
-
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-
-Create tidy repository
-
-``` r
-tidy_repo <- bind_rows(mutate(tidy_blogs, source = "blogs"),
-                       mutate(tidy_news,  source = "news"),
-                       mutate(tidy_twitter, source = "twitter")) 
-tidy_repo$source <- as.factor(tidy_repo$source)
-```
-
-Save tidy repository; note repository size (MB)
-
-``` r
-saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
-(tidy_repo_size <- file.size("./data/final/en_US/tidy_repo.rds") / (2^20))
-```
-
-    ## [1] 82.07806
-
-Save intermediate files for n-grams
-
-``` r
-saveRDS(clean_blogs, "./data/final/en_US/clean_blogs.rds")
-saveRDS(clean_news, "./data/final/en_US/clean_news.rds")
-saveRDS(clean_twitter, "./data/final/en_US/clean_twitter.rds")
-```
 
 3. Most frequent words and word distributions
 ---------------------------------------------
@@ -229,7 +201,7 @@ Word counts: Number of unique words in repo
     ## # A tibble: 1 x 1
     ##     keys
     ##    <int>
-    ## 1 552745
+    ## 1 111162
 
 Number of words to attain 50% and 90% coverage of all words in repo
 
@@ -243,7 +215,7 @@ cover_50 <- tidy_repo %>%
 nrow(cover_50)
 ```
 
-    ## [1] 1145
+    ## [1] 1318
 
 ``` r
 cover_90 <- tidy_repo %>%
@@ -255,7 +227,7 @@ cover_90 <- tidy_repo %>%
 nrow(cover_90)
 ```
 
-    ## [1] 18050
+    ## [1] 17853
 
 4. Word distributions
 ---------------------
@@ -273,18 +245,18 @@ freq <- tidy_repo %>%
 kable(head(freq, 10))
 ```
 
-| word   |       n| source  |  proportion|
-|:-------|-------:|:--------|-----------:|
-| im     |  157940| twitter |   0.0158961|
-| love   |  105474| twitter |   0.0106156|
-| day    |   89821| twitter |   0.0090402|
-| dont   |   88730| twitter |   0.0089304|
-| rt     |   88189| twitter |   0.0088759|
-| time   |   74547| twitter |   0.0075029|
-| time   |   87526| blogs   |   0.0074466|
-| lol    |   66386| twitter |   0.0066815|
-| people |   51422| twitter |   0.0051754|
-| people |   58839| blogs   |   0.0050059|
+| word   |     n| source  |  proportion|
+|:-------|-----:|:--------|-----------:|
+| im     |  7980| twitter |   0.0160675|
+| love   |  5352| twitter |   0.0107761|
+| dont   |  4509| twitter |   0.0090787|
+| day    |  4417| twitter |   0.0088935|
+| rt     |  4252| twitter |   0.0085613|
+| time   |  3755| twitter |   0.0075606|
+| time   |  4397| blogs   |   0.0074816|
+| lol    |  3287| twitter |   0.0066183|
+| people |  2958| blogs   |   0.0050331|
+| people |  2454| twitter |   0.0049410|
 
 Words above cutoff proportion: number of unique words
 
@@ -298,7 +270,7 @@ cutoff <- 0.0001
     ## # A tibble: 1 x 1
     ##    keys
     ##   <int>
-    ## 1  2886
+    ## 1  2938
 
 Word distribution by count
 
@@ -313,7 +285,7 @@ cover_90 %>%
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-22-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-19-1.png)
 
 Word distribution by source
 
@@ -328,7 +300,7 @@ freq %>%
   facet_grid(~source, scales = "free")
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-23-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-20-1.png)
 
 Word cloud
 
@@ -339,7 +311,7 @@ cover_90 %>%
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-24-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-21-1.png)
 
 5. Bigrams
 ----------
@@ -347,23 +319,11 @@ cover_90 %>%
 Create bigrams by source using `unnest_tokens`
 
 ``` r
-blogs_bigrams <- clean_blogs  %>%
+rm(tidy_repo)
+x <- gc()
+
+bigram_repo <- repo_sample  %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
-
-news_bigrams <- clean_news  %>%
-  unnest_tokens(bigram, text, token = "ngrams", n = 2)
-
-twitter_bigrams <- clean_twitter  %>%
-  unnest_tokens(bigram, text, token = "ngrams", n = 2)
-```
-
-Create tidy bigram repository
-
-``` r
-bigram_repo <- bind_rows(mutate(blogs_bigrams, source = "blogs"),
-                       mutate(news_bigrams,  source = "news"),
-                       mutate(twitter_bigrams, source = "twitter"))
-bigram_repo$source <- as.factor(bigram_repo$source)
 ```
 
 Number of bigrams to attain 90% coverage of all bigrams in repo
@@ -378,22 +338,21 @@ bigram_cover_90 <- bigram_repo %>%
 nrow(bigram_cover_90)
 ```
 
-    ## [1] 2986631
+    ## [1] 932860
 
 Bigram distribution
 
 ``` r
 bigram_cover_90 %>%
-  #count(bigram, sort = TRUE) %>%
-  filter(n > 50000) %>%
-  mutate(bigram = reorder(bigram, n)) %>%
-  ggplot(aes(bigram, n)) +
+  top_n(10, proportion) %>%
+  mutate(bigram = reorder(bigram, proportion)) %>%
+  ggplot(aes(bigram, proportion)) +
   geom_col() +
   xlab(NULL) +
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-28-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-24-1.png)
 
 ``` r
 ##############
@@ -405,27 +364,8 @@ bigram_cover_90 %>%
 Create Trigrams by source using `unnest_tokens`
 
 ``` r
-set.seed(1001)
-blogs_trigrams <- clean_blogs  %>%
-  sample_n(., nrow(clean_blogs)*0.10) %>%
+trigram_repo <- repo_sample  %>%
   unnest_tokens(trigram, text, token = "ngrams", n = 3)
-
-news_trigrams <- clean_news  %>%
-  sample_n(., nrow(clean_news)*0.10) %>%
-  unnest_tokens(trigram, text, token = "ngrams", n = 3)
-
-twitter_trigrams <- clean_twitter  %>%
-  sample_n(., nrow(clean_twitter)*0.10) %>%
-  unnest_tokens(trigram, text, token = "ngrams", n = 3)
-```
-
-Create tidy trigram repository
-
-``` r
-trigram_repo <- bind_rows(mutate(blogs_trigrams, source = "blogs"),
-                         mutate(news_trigrams,  source = "news"),
-                         mutate(twitter_trigrams, source = "twitter"))
-trigram_repo$source <- as.factor(trigram_repo$source)
 ```
 
 Number of trigrams to attain 90% coverage of all trigrams in repo
@@ -440,101 +380,80 @@ trigram_cover_90 <- trigram_repo %>%
 nrow(trigram_cover_90)
 ```
 
-    ## [1] 3647182
+    ## [1] 2827476
 
 trigram distribution
 
 ``` r
 trigram_cover_90 %>%
-  #count(trigram, sort = TRUE) %>%
-  filter(n > 1500) %>%
-  mutate(trigram = reorder(trigram, n)) %>%
-  ggplot(aes(trigram, n)) +
+  top_n(10, proportion) %>%
+  mutate(trigram = reorder(trigram, proportion)) %>%
+  ggplot(aes(trigram, proportion)) +
   geom_col() +
   xlab(NULL) +
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-32-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-26-1.png)
 
-7. Fourgrams
+7. Quadgrams
 ------------
 
-Create Fourgrams by source using `unnest_tokens`
+Create quadgrams by source using `unnest_tokens`
 
 ``` r
-set.seed(1001)
-blogs_fourgrams <- clean_blogs  %>%
-  sample_n(., nrow(clean_blogs)*0.10) %>%
-  unnest_tokens(fourgram, text, token = "ngrams", n = 4)
-
-news_fourgrams <- clean_news  %>%
-  sample_n(., nrow(clean_news)*0.10) %>%
-  unnest_tokens(fourgram, text, token = "ngrams", n = 4)
-
-twitter_fourgrams <- clean_twitter  %>%
-  sample_n(., nrow(clean_twitter)*0.10) %>%
-  unnest_tokens(fourgram, text, token = "ngrams", n = 4)
+quadgram_repo <- repo_sample  %>%
+  unnest_tokens(quadgram, text, token = "ngrams", n = 4)
 ```
 
-Create tidy fourgram repository
+Number of quadgrams to attain 90% coverage of all quadgrams in repo
 
 ``` r
-fourgram_repo <- bind_rows(mutate(blogs_fourgrams, source = "blogs"),
-                          mutate(news_fourgrams,  source = "news"),
-                          mutate(twitter_fourgrams, source = "twitter"))
-fourgram_repo$source <- as.factor(fourgram_repo$source)
-```
-
-Number of fourgrams to attain 90% coverage of all fourgrams in repo
-
-``` r
-fourgram_cover_90 <- fourgram_repo %>%
-  count(fourgram) %>%  
+quadgram_cover_90 <- quadgram_repo %>%
+  count(quadgram) %>%  
   mutate(proportion = n / sum(n)) %>%
   arrange(desc(proportion)) %>%  
   mutate(coverage = cumsum(proportion)) %>%
   filter(coverage <= 0.9)
-nrow(fourgram_cover_90)
+nrow(quadgram_cover_90)
 ```
 
-    ## [1] 5092014
+    ## [1] 3766212
 
-Fourgram distribution
+quadgram distribution
 
 ``` r
-fourgram_cover_90 %>%
-  #count(trigram, sort = TRUE) %>%
-  filter(n > 200) %>%
-  mutate(fourgram = reorder(fourgram, n)) %>%
-  ggplot(aes(fourgram, n)) +
+quadgram_cover_90 %>%
+  top_n(10, proportion) %>%
+  mutate(quadgram = reorder(quadgram, proportion)) %>%
+  ggplot(aes(quadgram, proportion)) +
   geom_col() +
   xlab(NULL) +
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-36-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-28-1.png)
 
 ``` r
-fourgrams_separated <- fourgram_cover_90 %>%
-  separate(fourgram, c("word1", "word2", "word3", "word4"), sep = " ")
-fourgrams_separated
+quadgrams_separated <- quadgram_cover_90 %>%
+  separate(quadgram, c("word1", "word2", "word3", "word4"), sep = " ")
+quadgrams_separated
 ```
 
-    ## # A tibble: 5,092,014 x 7
-    ##     word1 word2 word3 word4     n   proportion     coverage
-    ##  *  <chr> <chr> <chr> <chr> <int>        <dbl>        <dbl>
-    ##  1    the   end    of   the   525 8.431053e-05 8.431053e-05
-    ##  2    the  rest    of   the   478 7.676273e-05 1.610733e-04
-    ##  3     at   the   end    of   420 6.744843e-05 2.285217e-04
-    ##  4    for   the first  time   379 6.086417e-05 2.893859e-04
-    ##  5     is going    to    be   370 5.941885e-05 3.488047e-04
-    ##  6 thanks   for   the    rt   359 5.765235e-05 4.064571e-04
-    ##  7     at   the  same  time   356 5.717057e-05 4.636276e-04
-    ##  8  thank   you   for   the   331 5.315578e-05 5.167834e-04
-    ##  9     if   you  want    to   298 4.785626e-05 5.646397e-04
-    ## 10     is   one    of   the   296 4.753508e-05 6.121748e-04
-    ## # ... with 5,092,004 more rows
+    ## # A tibble: 3,766,212 x 7
+    ##    word1 word2 word3 word4     n   proportion     coverage
+    ##  * <chr> <chr> <chr> <chr> <int>        <dbl>        <dbl>
+    ##  1   the   end    of   the   430 9.543749e-05 9.543749e-05
+    ##  2    at   the   end    of   366 8.123284e-05 1.766703e-04
+    ##  3   the  rest    of   the   348 7.723778e-05 2.539081e-04
+    ##  4   for   the first  time   316 7.013546e-05 3.240436e-04
+    ##  5    at   the  same  time   240 5.326744e-05 3.773110e-04
+    ##  6    is going    to    be   224 4.971627e-05 4.270273e-04
+    ##  7    is   one    of   the   217 4.816264e-05 4.751899e-04
+    ##  8   one    of   the  most   210 4.660901e-05 5.217989e-04
+    ##  9 going    to    be     a   195 4.327979e-05 5.650787e-04
+    ## 10  when    it comes    to   190 4.217005e-05 6.072488e-04
+    ## # ... with 3,766,202 more rows
 
 ``` r
 end <- Sys.time()
@@ -542,7 +461,7 @@ end <- Sys.time()
 (run_time <- end - start)
 ```
 
-    ## Time difference of 18.37144 mins
+    ## Time difference of 9.07025 mins
 
 ``` r
 ###############

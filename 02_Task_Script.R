@@ -85,6 +85,24 @@ blogs   <- data_frame(text = blogs)
 news    <- data_frame(text = news)
 twitter <- data_frame(text = twitter)
 
+#' Sample the data
+#+ DataSampling
+sample_pct <- 0.05
+
+blogs_sample <- blogs %>%
+  sample_n(., nrow(blogs)*sample_pct)
+news_sample <- news %>%
+  sample_n(., nrow(news)*sample_pct)
+twitter_sample <- twitter %>%
+  sample_n(., nrow(twitter)*sample_pct)
+
+#' Create tidy repository
+repo_sample <- bind_rows(mutate(blogs_sample, source = "blogs"),
+                         mutate(news_sample,  source = "news"),
+                         mutate(twitter_sample, source = "twitter")) 
+repo_sample$source <- as.factor(repo_sample$source)
+
+
 #' Create filters: stopwords, profanity, non-alphanumeric's, url's, repeated letters(+3x)
 #+ DataCleaning
 data("stop_words")
@@ -94,41 +112,13 @@ replace_reg <- "[^[:alpha:][:space:]]*"
 replace_url <- "http[^[:space:]]*"
 replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"  
 
-#' Clean dataframes from each souce. Cleaning is separted from tidying so `unnest_tokens` function can be used for words,
+#' Clean the sample. Cleaning is separted from tidying so `unnest_tokens` function can be used for words,
 #' and ngrams.
-clean_blogs <-  blogs %>%
+clean_sample <-  repo_sample %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
-
-clean_news <-   news %>%
-  mutate(text = str_replace_all(text, replace_reg, "")) %>%
-  mutate(text = str_replace_all(text, replace_url, "")) %>%
-  mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
-  mutate(text = iconv(text, "ASCII//TRANSLIT"))
-
-clean_twitter <- twitter %>%
-  mutate(text = str_replace_all(text, replace_reg, "")) %>%
-  mutate(text = str_replace_all(text, replace_url, "")) %>%
-  mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
-  mutate(text = iconv(text, "ASCII//TRANSLIT"))
-
-#######
-sample_pct <- 0.05
-
-blogs_sample <- clean_blogs %>%
-  sample_n(., nrow(clean_blogs)*sample_pct)
-news_sample <- clean_news %>%
-  sample_n(., nrow(clean_news)*sample_pct)
-twitter_sample <- clean_twitter %>%
-  sample_n(., nrow(clean_twitter)*sample_pct)
-
-#' Create tidy repository
-repo_sample <- bind_rows(mutate(blogs_sample, source = "blogs"),
-                         mutate(news_sample,  source = "news"),
-                         mutate(twitter_sample, source = "twitter")) 
-repo_sample$source <- as.factor(repo_sample$source)
 
 #' Clean up
 rm(blogs, blogs_nchar, news, news_nchar, twitter, twitter_nchar, replace_reg, replace_url, replace_aaa)
@@ -163,8 +153,17 @@ cover_90 <- tidy_repo %>%
   filter(coverage <= 0.9)
 nrow(cover_90)
 
-#' ## 4. Word distributions
-#' Most frequent words by proportion, with source
+#' ## 4. Word distributions  
+#' Word distribution
+cover_90 %>%
+  top_n(20, proportion) %>%
+  mutate(word = reorder(word, proportion)) %>%
+  ggplot(aes(word, proportion)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+
+#' Word distribution by source
 freq <- tidy_repo %>%
   count(source, word) %>%
   group_by(source) %>%
@@ -172,25 +171,7 @@ freq <- tidy_repo %>%
   spread(source, proportion) %>%
   gather(source, proportion, `blogs`:`twitter`) %>%
   arrange(desc(proportion), desc(n))
-kable(head(freq, 10))
 
-#' Words above cutoff proportion: number of unique words
-cutoff <- 0.0001
-(small_repo_count <- freq %>%
-    filter(proportion > cutoff) %>%
-    summarise(keys = n_distinct(word)))
-
-#' Word distribution by count
-cover_90 %>%
-  #count(word, sort = TRUE) %>%
-  filter(n > 35000) %>%
-  mutate(word = reorder(word, n)) %>%
-  ggplot(aes(word, n)) +
-  geom_col() +
-  xlab(NULL) +
-  coord_flip()
-
-#' Word distribution by source
 freq %>%
   filter(proportion > 0.002) %>% 
   mutate(word = reorder(word, proportion)) %>% 
@@ -225,7 +206,7 @@ nrow(bigram_cover_90)
 
 #' Bigram distribution
 bigram_cover_90 %>%
-  top_n(10, proportion) %>%
+  top_n(20, proportion) %>%
   mutate(bigram = reorder(bigram, proportion)) %>%
   ggplot(aes(bigram, proportion)) +
   geom_col() +
@@ -251,7 +232,7 @@ nrow(trigram_cover_90)
 
 #' trigram distribution
 trigram_cover_90 %>%
-  top_n(10, proportion) %>%
+  top_n(20, proportion) %>%
   mutate(trigram = reorder(trigram, proportion)) %>%
   ggplot(aes(trigram, proportion)) +
   geom_col() +
@@ -276,7 +257,7 @@ nrow(quadgram_cover_90)
 
 #' quadgram distribution
 quadgram_cover_90 %>%
-  top_n(10, proportion) %>%
+  top_n(20, proportion) %>%
   mutate(quadgram = reorder(quadgram, proportion)) %>%
   ggplot(aes(quadgram, proportion)) +
   geom_col() +
