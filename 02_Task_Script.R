@@ -97,19 +97,19 @@ replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"
 
 #' Clean dataframes from each souce. Cleaning is separted from tidying so `unnest_tokens` function can be used for words,
 #' and ngrams.
-clean_blogs <-  blogs_df %>%
+clean_blogs <-  blogs %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
 
-clean_news <-   news_df %>%
+clean_news <-   news %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
 
-clean_twitter <- twitter_df %>%
+clean_twitter <- twitter %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
