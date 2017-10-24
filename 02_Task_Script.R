@@ -125,7 +125,7 @@ rm(blogs, blogs_nchar, news, news_nchar, twitter, twitter_nchar, replace_reg, re
 x <- gc()
   
 #' Create tidy dataframe for repo sample
-tidy_repo <- repo_sample %>%
+tidy_repo <- clean_sample %>%
   unnest_tokens(word, text) %>%
   anti_join(swear_words) %>%
   anti_join(stop_words)
@@ -192,7 +192,7 @@ cover_90 %>%
 rm(tidy_repo)
 x <- gc()
 
-bigram_repo <- repo_sample  %>%
+bigram_repo <- clean_sample  %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
 
 #' Number of bigrams to attain 90% coverage of all bigrams in repo
@@ -218,7 +218,7 @@ bigram_cover_90 %>%
 #' Create Trigrams by source using `unnest_tokens`
 #+ trigrams
 
-trigram_repo <- repo_sample  %>%
+trigram_repo <- clean_sample  %>%
   unnest_tokens(trigram, text, token = "ngrams", n = 3)
 
 #' Number of trigrams to attain 90% coverage of all trigrams in repo
@@ -243,7 +243,7 @@ trigram_cover_90 %>%
 #' Create quadgrams by source using `unnest_tokens`
 #+ quadgrams
 
-quadgram_repo <- repo_sample  %>%
+quadgram_repo <- clean_sample  %>%
   unnest_tokens(quadgram, text, token = "ngrams", n = 4)
 
 #' Number of quadgrams to attain 90% coverage of all quadgrams in repo
