@@ -39,9 +39,9 @@ news_size    <- file.size(news_file) / (2^20)
 twitter_size <- file.size(twitter_file) / (2^20)
 
 #' Read the data files
-blogs   <- read_lines(blogs_file)
-news    <- read_lines(news_file)
-twitter <- read_lines(twitter_file)
+blogs   <- readLines(blogs_file, skipNul = TRUE)
+news    <- readLines(news_file,  skipNul = TRUE)
+twitter <- readLines(twitter_file, skipNul = TRUE)
 
 #' Number of Lines per file
 blogs_lines   <- length(blogs)
@@ -67,7 +67,7 @@ twitter_nchar_sum <- sum(twitter_nchar)
 #' Total words per file
 blogs_words <- wordcount(blogs, sep = " ")
 news_words  <- wordcount(news,  sep = " ")
-twitter_words <- wordcount(news, sep = " ")
+twitter_words <- wordcount(twitter, sep = " ")
 
 #' Create summary of repo stats
 repo_summary <- data.frame(f_names = c("blogs", "news", "twitter"),
@@ -81,10 +81,9 @@ repo_summary <- repo_summary %>% mutate(pct_words = round(n_words/sum(n_words), 
 kable(repo_summary)
 
 #' Read the data files into dataframes
-blogs_df   <- data_frame(text = readLines(blogs_file, skipNul = TRUE, warn = FALSE))
-news_df    <- data_frame(text = readLines(news_file,  skipNul = TRUE))
-twitter_df <- data_frame(text = readLines(twitter_file, skipNul = TRUE, warn = FALSE))
-
+blogs   <- data_frame(text = blogs)
+news    <- data_frame(text = news)
+twitter <- data_frame(text = twitter)
 
 #' Create filters: stopwords, profanity, non-alphanumeric's, url's, repeated letters(+3x)
 #+ DataCleaning
@@ -115,40 +114,31 @@ clean_twitter <- twitter %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
 
-#' Clean up
-rm(blogs, news, twitter, replace_reg, replace_url, replace_aaa)
-x <- gc()
-  
-#' Create tidy dataframes for each source
-tidy_blogs <- clean_blogs %>%
-  unnest_tokens(word, text) %>%
-  anti_join(swear_words) %>%
-  anti_join(stop_words)
+#######
+sample_pct <- 0.05
 
-tidy_news <- clean_news %>%
-  unnest_tokens(word, text) %>%
-  anti_join(swear_words) %>%
-  anti_join(stop_words)
-
-tidy_twitter <- clean_twitter %>%  
-  unnest_tokens(word, text) %>%
-  anti_join(swear_words) %>%
-  anti_join(stop_words)
+blogs_sample <- clean_blogs %>%
+  sample_n(., nrow(clean_blogs)*sample_pct)
+news_sample <- clean_news %>%
+  sample_n(., nrow(clean_news)*sample_pct)
+twitter_sample <- clean_twitter %>%
+  sample_n(., nrow(clean_twitter)*sample_pct)
 
 #' Create tidy repository
-tidy_repo <- bind_rows(mutate(tidy_blogs, source = "blogs"),
-                       mutate(tidy_news,  source = "news"),
-                       mutate(tidy_twitter, source = "twitter")) 
-tidy_repo$source <- as.factor(tidy_repo$source)
+repo_sample <- bind_rows(mutate(blogs_sample, source = "blogs"),
+                         mutate(news_sample,  source = "news"),
+                         mutate(twitter_sample, source = "twitter")) 
+repo_sample$source <- as.factor(repo_sample$source)
 
-#' Save tidy repository; note repository size (MB)
-saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
-(tidy_repo_size <- file.size("./data/final/en_US/tidy_repo.rds") / (2^20))
-
-#' Save intermediate files for n-grams
-saveRDS(clean_blogs, "./data/final/en_US/clean_blogs.rds")
-saveRDS(clean_news, "./data/final/en_US/clean_news.rds")
-saveRDS(clean_twitter, "./data/final/en_US/clean_twitter.rds")
+#' Clean up
+rm(blogs, blogs_nchar, news, news_nchar, twitter, twitter_nchar, replace_reg, replace_url, replace_aaa)
+x <- gc()
+  
+#' Create tidy dataframe for repo sample
+tidy_repo <- repo_sample %>%
+  unnest_tokens(word, text) %>%
+  anti_join(swear_words) %>%
+  anti_join(stop_words)
 
 #' ## 3. Most frequent words and word distributions
 
@@ -218,20 +208,11 @@ cover_90 %>%
 
 #' ## 5. Bigrams  
 #' Create bigrams by source using `unnest_tokens`
-blogs_bigrams <- clean_blogs  %>%
-  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+rm(tidy_repo)
+x <- gc()
 
-news_bigrams <- clean_news  %>%
+bigram_repo <- repo_sample  %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
-
-twitter_bigrams <- clean_twitter  %>%
-  unnest_tokens(bigram, text, token = "ngrams", n = 2)
-
-#' Create tidy bigram repository
-bigram_repo <- bind_rows(mutate(blogs_bigrams, source = "blogs"),
-                       mutate(news_bigrams,  source = "news"),
-                       mutate(twitter_bigrams, source = "twitter"))
-bigram_repo$source <- as.factor(bigram_repo$source)
 
 #' Number of bigrams to attain 90% coverage of all bigrams in repo
 bigram_cover_90 <- bigram_repo %>%
@@ -244,10 +225,9 @@ nrow(bigram_cover_90)
 
 #' Bigram distribution
 bigram_cover_90 %>%
-  #count(bigram, sort = TRUE) %>%
-  filter(n > 50000) %>%
-  mutate(bigram = reorder(bigram, n)) %>%
-  ggplot(aes(bigram, n)) +
+  top_n(10, proportion) %>%
+  mutate(bigram = reorder(bigram, proportion)) %>%
+  ggplot(aes(bigram, proportion)) +
   geom_col() +
   xlab(NULL) +
   coord_flip()
@@ -256,27 +236,9 @@ bigram_cover_90 %>%
 #' ## 6. Trigrams  
 #' Create Trigrams by source using `unnest_tokens`
 #+ trigrams
-x <- gc()
 
-set.seed(1001)
-
-blogs_trigrams <- clean_blogs  %>%
-  sample_n(., nrow(clean_blogs)*0.10) %>%
+trigram_repo <- repo_sample  %>%
   unnest_tokens(trigram, text, token = "ngrams", n = 3)
-
-news_trigrams <- clean_news  %>%
-  sample_n(., nrow(clean_news)*0.10) %>%
-  unnest_tokens(trigram, text, token = "ngrams", n = 3)
-
-twitter_trigrams <- clean_twitter  %>%
-  sample_n(., nrow(clean_twitter)*0.10) %>%
-  unnest_tokens(trigram, text, token = "ngrams", n = 3)
-
-#' Create tidy trigram repository
-trigram_repo <- bind_rows(mutate(blogs_trigrams, source = "blogs"),
-                         mutate(news_trigrams,  source = "news"),
-                         mutate(twitter_trigrams, source = "twitter"))
-trigram_repo$source <- as.factor(trigram_repo$source)
 
 #' Number of trigrams to attain 90% coverage of all trigrams in repo
 trigram_cover_90 <- trigram_repo %>%
@@ -289,62 +251,41 @@ nrow(trigram_cover_90)
 
 #' trigram distribution
 trigram_cover_90 %>%
-  #count(trigram, sort = TRUE) %>%
-  filter(n > 750) %>%
-  mutate(trigram = reorder(trigram, n)) %>%
-  ggplot(aes(trigram, n)) +
+  top_n(10, proportion) %>%
+  mutate(trigram = reorder(trigram, proportion)) %>%
+  ggplot(aes(trigram, proportion)) +
   geom_col() +
   xlab(NULL) +
   coord_flip()
 
-#' ## 7. Fourgrams  
-#' Create Fourgrams by source using `unnest_tokens`
-#+ fourgrams
-x <- gc()
+#' ## 7. Quadgrams  
+#' Create quadgrams by source using `unnest_tokens`
+#+ quadgrams
 
-set.seed(1001)
+quadgram_repo <- repo_sample  %>%
+  unnest_tokens(quadgram, text, token = "ngrams", n = 4)
 
-blogs_fourgrams <- clean_blogs  %>%
-  sample_n(., nrow(clean_blogs)*0.005) %>%
-  unnest_tokens(fourgram, text, token = "ngrams", n = 4)
-
-news_fourgrams <- clean_news  %>%
-  sample_n(., nrow(clean_news)*0.05) %>%
-  unnest_tokens(fourgram, text, token = "ngrams", n = 4)
-
-twitter_fourgrams <- clean_twitter  %>%
-  sample_n(., nrow(clean_twitter)*0.05) %>%
-  unnest_tokens(fourgram, text, token = "ngrams", n = 4)
-
-#' Create tidy fourgram repository
-fourgram_repo <- bind_rows(mutate(blogs_fourgrams, source = "blogs"),
-                          mutate(news_fourgrams,  source = "news"),
-                          mutate(twitter_fourgrams, source = "twitter"))
-fourgram_repo$source <- as.factor(fourgram_repo$source)
-
-#' Number of fourgrams to attain 90% coverage of all fourgrams in repo
-fourgram_cover_90 <- fourgram_repo %>%
-  count(fourgram) %>%  
+#' Number of quadgrams to attain 90% coverage of all quadgrams in repo
+quadgram_cover_90 <- quadgram_repo %>%
+  count(quadgram) %>%  
   mutate(proportion = n / sum(n)) %>%
   arrange(desc(proportion)) %>%  
   mutate(coverage = cumsum(proportion)) %>%
   filter(coverage <= 0.9)
-nrow(fourgram_cover_90)
+nrow(quadgram_cover_90)
 
-#' Fourgram distribution
-fourgram_cover_90 %>%
-  #count(trigram, sort = TRUE) %>%
-  filter(n > 200) %>%
-  mutate(fourgram = reorder(fourgram, n)) %>%
-  ggplot(aes(fourgram, n)) +
+#' quadgram distribution
+quadgram_cover_90 %>%
+  top_n(10, proportion) %>%
+  mutate(quadgram = reorder(quadgram, proportion)) %>%
+  ggplot(aes(quadgram, proportion)) +
   geom_col() +
   xlab(NULL) +
   coord_flip()
 
-fourgrams_separated <- fourgram_cover_90 %>%
-  separate(fourgram, c("word1", "word2", "word3", "word4"), sep = " ")
-fourgrams_separated
-
+quadgrams_separated <- quadgram_cover_90 %>%
+  separate(quadgram, c("word1", "word2", "word3", "word4"), sep = " ")
+quadgrams_separated
 
 end <- Sys.time()
 
