@@ -22,21 +22,72 @@ suppressPackageStartupMessages({
   library(stringr)
   library(knitr)
   library(wordcloud)
+  library(ngram)
 })
 
 #' ## 2. Data loading and cleaning 
+#+ DataLoading
 
 #' English Repository Files
 blogs_file   <- "./data/final/en_US/en_US.blogs.txt"
 news_file    <- "./data/final/en_US/en_US.news.txt"
 twitter_file <- "./data/final/en_US/en_US.twitter.txt"  
 
+#' File Sizes (Mb)
+blogs_size   <- file.size(blogs_file) / (2^20)
+news_size    <- file.size(news_file) / (2^20)
+twitter_size <- file.size(twitter_file) / (2^20)
+
+#' Read the data files
+blogs   <- read_lines(blogs_file)
+news    <- read_lines(news_file)
+twitter <- read_lines(twitter_file)
+
+#' Number of Lines per file
+blogs_lines   <- length(blogs)
+news_lines    <- length(news)
+twitter_lines <- length(twitter)
+total_lines   <- blogs_lines + news_lines + twitter_lines
+
+#' Distibution of characters per line, by file
+blogs_nchar   <- nchar(blogs)
+news_nchar    <- nchar(news)
+twitter_nchar <- nchar(twitter)
+
+boxplot(blogs_nchar, news_nchar, twitter_nchar, log = "y",
+        names = c("blogs", "news", "twitter"),
+        ylab = "log(Number of Characters)", xlab = "File Name") 
+title("Comparing Distributions of Chracters per Line")
+
+#' Total characters per file
+blogs_nchar_sum   <- sum(blogs_nchar)
+news_nchar_sum    <- sum(news_nchar)
+twitter_nchar_sum <- sum(twitter_nchar)
+
+#' Total words per file
+blogs_words <- wordcount(blogs, sep = " ")
+news_words  <- wordcount(news,  sep = " ")
+twitter_words <- wordcount(news, sep = " ")
+
+#' Create summary of repo stats
+repo_summary <- data.frame(f_names = c("blogs", "news", "twitter"),
+                           f_size  = c(blogs_size, news_size, twitter_size),
+                           f_lines = c(blogs_lines, news_lines, twitter_lines),
+                           n_char =  c(blogs_nchar_sum, news_nchar_sum, twitter_nchar_sum),
+                           n_words = c(blogs_words, news_words, twitter_words))
+repo_summary <- repo_summary %>% mutate(pct_n_char = round(n_char/sum(n_char), 2))
+repo_summary <- repo_summary %>% mutate(pct_lines = round(f_lines/sum(f_lines), 2))
+repo_summary <- repo_summary %>% mutate(pct_words = round(n_words/sum(n_words), 2))
+kable(repo_summary)
+
 #' Read the data files into dataframes
-blogs   <- data_frame(text = readLines(blogs_file,   skipNul = TRUE, warn = FALSE))
-news    <- data_frame(text = readLines(news_file,    skipNul = TRUE, warn = FALSE))
-twitter <- data_frame(text = readLines(twitter_file, skipNul = TRUE, warn = FALSE)) 
+blogs_df   <- data_frame(text = readLines(blogs_file, skipNul = TRUE, warn = FALSE))
+news_df    <- data_frame(text = readLines(news_file,  skipNul = TRUE))
+twitter_df <- data_frame(text = readLines(twitter_file, skipNul = TRUE, warn = FALSE))
+
 
 #' Create filters: stopwords, profanity, non-alphanumeric's, url's, repeated letters(+3x)
+#+ DataCleaning
 data("stop_words")
 swear_words <- read_delim("./data/final/en_US/en_US.swearWords.csv", delim = "\n", col_names = FALSE)
 swear_words <- unnest_tokens(swear_words, word, X1)
@@ -46,19 +97,19 @@ replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"
 
 #' Clean dataframes from each souce. Cleaning is separted from tidying so `unnest_tokens` function can be used for words,
 #' and ngrams.
-clean_blogs <-  blogs %>%
+clean_blogs <-  blogs_df %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
 
-clean_news <-   news %>%
+clean_news <-   news_df %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
 
-clean_twitter <- twitter%>%
+clean_twitter <- twitter_df %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
@@ -204,17 +255,21 @@ bigram_cover_90 %>%
 ##############
 #' ## 6. Trigrams  
 #' Create Trigrams by source using `unnest_tokens`
+#+ trigrams
+x <- gc()
+
+set.seed(1001)
 
 blogs_trigrams <- clean_blogs  %>%
-  sample_n(., nrow(clean_blogs)*0.20) %>%
+  sample_n(., nrow(clean_blogs)*0.10) %>%
   unnest_tokens(trigram, text, token = "ngrams", n = 3)
 
 news_trigrams <- clean_news  %>%
-  sample_n(., nrow(clean_news)*0.20) %>%
+  sample_n(., nrow(clean_news)*0.10) %>%
   unnest_tokens(trigram, text, token = "ngrams", n = 3)
 
 twitter_trigrams <- clean_twitter  %>%
-  sample_n(., nrow(clean_twitter)*0.20) %>%
+  sample_n(., nrow(clean_twitter)*0.10) %>%
   unnest_tokens(trigram, text, token = "ngrams", n = 3)
 
 #' Create tidy trigram repository
@@ -235,7 +290,7 @@ nrow(trigram_cover_90)
 #' trigram distribution
 trigram_cover_90 %>%
   #count(trigram, sort = TRUE) %>%
-  filter(n > 1500) %>%
+  filter(n > 750) %>%
   mutate(trigram = reorder(trigram, n)) %>%
   ggplot(aes(trigram, n)) +
   geom_col() +
@@ -244,17 +299,21 @@ trigram_cover_90 %>%
 
 #' ## 7. Fourgrams  
 #' Create Fourgrams by source using `unnest_tokens`
+#+ fourgrams
+x <- gc()
+
+set.seed(1001)
 
 blogs_fourgrams <- clean_blogs  %>%
-  sample_n(., nrow(clean_blogs)*0.10) %>%
+  sample_n(., nrow(clean_blogs)*0.005) %>%
   unnest_tokens(fourgram, text, token = "ngrams", n = 4)
 
 news_fourgrams <- clean_news  %>%
-  sample_n(., nrow(clean_news)*0.10) %>%
+  sample_n(., nrow(clean_news)*0.05) %>%
   unnest_tokens(fourgram, text, token = "ngrams", n = 4)
 
 twitter_fourgrams <- clean_twitter  %>%
-  sample_n(., nrow(clean_twitter)*0.10) %>%
+  sample_n(., nrow(clean_twitter)*0.05) %>%
   unnest_tokens(fourgram, text, token = "ngrams", n = 4)
 
 #' Create tidy fourgram repository

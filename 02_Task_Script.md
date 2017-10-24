@@ -1,7 +1,7 @@
 Task 2: Exploratory Data Analysis
 ================
 Mark Blackmore
-2017-10-22
+2017-10-23
 
 1. Introduction
 ---------------
@@ -25,12 +25,89 @@ news_file    <- "./data/final/en_US/en_US.news.txt"
 twitter_file <- "./data/final/en_US/en_US.twitter.txt"  
 ```
 
+File Sizes (Mb)
+
+``` r
+blogs_size   <- file.size(blogs_file) / (2^20)
+news_size    <- file.size(news_file) / (2^20)
+twitter_size <- file.size(twitter_file) / (2^20)
+```
+
+Read the data files
+
+``` r
+blogs   <- read_lines(blogs_file)
+news    <- read_lines(news_file)
+twitter <- read_lines(twitter_file)
+```
+
+Number of Lines per file
+
+``` r
+blogs_lines   <- length(blogs)
+news_lines    <- length(news)
+twitter_lines <- length(twitter)
+total_lines   <- blogs_lines + news_lines + twitter_lines
+```
+
+Distibution of characters per line, by file
+
+``` r
+blogs_nchar   <- nchar(blogs)
+news_nchar    <- nchar(news)
+twitter_nchar <- nchar(twitter)
+
+boxplot(blogs_nchar, news_nchar, twitter_nchar, log = "y",
+        names = c("blogs", "news", "twitter"),
+        ylab = "log(Number of Characters)", xlab = "File Name") 
+title("Comparing Distributions of Chracters per Line")
+```
+
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-6-1.png)
+
+Total characters per file
+
+``` r
+blogs_nchar_sum   <- sum(blogs_nchar)
+news_nchar_sum    <- sum(news_nchar)
+twitter_nchar_sum <- sum(twitter_nchar)
+```
+
+Total words per file
+
+``` r
+blogs_words <- wordcount(blogs, sep = " ")
+news_words  <- wordcount(news,  sep = " ")
+twitter_words <- wordcount(news, sep = " ")
+```
+
+Create summary of repo stats
+
+``` r
+repo_summary <- data.frame(f_names = c("blogs", "news", "twitter"),
+                           f_size  = c(blogs_size, news_size, twitter_size),
+                           f_lines = c(blogs_lines, news_lines, twitter_lines),
+                           n_char =  c(blogs_nchar_sum, news_nchar_sum, twitter_nchar_sum),
+                           n_words = c(blogs_words, news_words, twitter_words))
+repo_summary <- repo_summary %>% mutate(pct_n_char = round(n_char/sum(n_char), 2))
+repo_summary <- repo_summary %>% mutate(pct_lines = round(f_lines/sum(f_lines), 2))
+repo_summary <- repo_summary %>% mutate(pct_words = round(n_words/sum(n_words), 2))
+kable(repo_summary)
+```
+
+| f\_names |   f\_size|  f\_lines|    n\_char|  n\_words|  pct\_n\_char|  pct\_lines|  pct\_words|
+|:---------|---------:|---------:|----------:|---------:|-------------:|-----------:|-----------:|
+| blogs    |  200.4242|    899288|  206824505|  37334131|          0.36|        0.21|        0.35|
+| news     |  196.2775|   1010242|  203223159|  34372530|          0.36|        0.24|        0.32|
+| twitter  |  159.3641|   2360148|  162096031|  34372530|          0.28|        0.55|        0.32|
+
 Read the data files into dataframes
 
 ``` r
-blogs   <- data_frame(text = readLines(blogs_file,   skipNul = TRUE, warn = FALSE))
-news    <- data_frame(text = readLines(news_file,    skipNul = TRUE, warn = FALSE))
-twitter <- data_frame(text = readLines(twitter_file, skipNul = TRUE, warn = FALSE)) 
+blogs   <- data_frame(text = readLines(blogs_file, skipNul = TRUE, warn = FALSE))
+news    <- data_frame(text = readLines(news_file,  skipNul = TRUE, warn = FALSE))
+twitter <- data_frame(text = readLines(twitter_file, skipNul = TRUE, warn = FALSE))
+#########
 ```
 
 Create filters: stopwords, profanity, non-alphanumeric's, url's, repeated letters(+3x)
@@ -131,6 +208,14 @@ saveRDS(tidy_repo, "./data/final/en_US/tidy_repo.rds")
 
     ## [1] 82.07806
 
+Save intermediate files for n-grams
+
+``` r
+saveRDS(clean_blogs, "./data/final/en_US/clean_blogs.rds")
+saveRDS(clean_news, "./data/final/en_US/clean_news.rds")
+saveRDS(clean_twitter, "./data/final/en_US/clean_twitter.rds")
+```
+
 3. Most frequent words and word distributions
 ---------------------------------------------
 
@@ -228,7 +313,7 @@ cover_90 %>%
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-22-1.png)
 
 Word distribution by source
 
@@ -243,7 +328,7 @@ freq %>%
   facet_grid(~source, scales = "free")
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-23-1.png)
 
 Word cloud
 
@@ -254,7 +339,7 @@ cover_90 %>%
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-16-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-24-1.png)
 
 5. Bigrams
 ----------
@@ -308,7 +393,7 @@ bigram_cover_90 %>%
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-20-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-28-1.png)
 
 ``` r
 ##############
@@ -320,16 +405,17 @@ bigram_cover_90 %>%
 Create Trigrams by source using `unnest_tokens`
 
 ``` r
+set.seed(1001)
 blogs_trigrams <- clean_blogs  %>%
-  sample_n(., nrow(clean_blogs)*0.20) %>%
+  sample_n(., nrow(clean_blogs)*0.10) %>%
   unnest_tokens(trigram, text, token = "ngrams", n = 3)
 
 news_trigrams <- clean_news  %>%
-  sample_n(., nrow(clean_news)*0.20) %>%
+  sample_n(., nrow(clean_news)*0.10) %>%
   unnest_tokens(trigram, text, token = "ngrams", n = 3)
 
 twitter_trigrams <- clean_twitter  %>%
-  sample_n(., nrow(clean_twitter)*0.20) %>%
+  sample_n(., nrow(clean_twitter)*0.10) %>%
   unnest_tokens(trigram, text, token = "ngrams", n = 3)
 ```
 
@@ -354,7 +440,7 @@ trigram_cover_90 <- trigram_repo %>%
 nrow(trigram_cover_90)
 ```
 
-    ## [1] 6616208
+    ## [1] 3647182
 
 trigram distribution
 
@@ -369,7 +455,7 @@ trigram_cover_90 %>%
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-24-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-32-1.png)
 
 7. Fourgrams
 ------------
@@ -377,6 +463,7 @@ trigram_cover_90 %>%
 Create Fourgrams by source using `unnest_tokens`
 
 ``` r
+set.seed(1001)
 blogs_fourgrams <- clean_blogs  %>%
   sample_n(., nrow(clean_blogs)*0.10) %>%
   unnest_tokens(fourgram, text, token = "ngrams", n = 4)
@@ -411,7 +498,7 @@ fourgram_cover_90 <- fourgram_repo %>%
 nrow(fourgram_cover_90)
 ```
 
-    ## [1] 5084613
+    ## [1] 5092014
 
 Fourgram distribution
 
@@ -426,7 +513,28 @@ fourgram_cover_90 %>%
   coord_flip()
 ```
 
-![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-28-1.png)
+![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-36-1.png)
+
+``` r
+fourgrams_separated <- fourgram_cover_90 %>%
+  separate(fourgram, c("word1", "word2", "word3", "word4"), sep = " ")
+fourgrams_separated
+```
+
+    ## # A tibble: 5,092,014 x 7
+    ##     word1 word2 word3 word4     n   proportion     coverage
+    ##  *  <chr> <chr> <chr> <chr> <int>        <dbl>        <dbl>
+    ##  1    the   end    of   the   525 8.431053e-05 8.431053e-05
+    ##  2    the  rest    of   the   478 7.676273e-05 1.610733e-04
+    ##  3     at   the   end    of   420 6.744843e-05 2.285217e-04
+    ##  4    for   the first  time   379 6.086417e-05 2.893859e-04
+    ##  5     is going    to    be   370 5.941885e-05 3.488047e-04
+    ##  6 thanks   for   the    rt   359 5.765235e-05 4.064571e-04
+    ##  7     at   the  same  time   356 5.717057e-05 4.636276e-04
+    ##  8  thank   you   for   the   331 5.315578e-05 5.167834e-04
+    ##  9     if   you  want    to   298 4.785626e-05 5.646397e-04
+    ## 10     is   one    of   the   296 4.753508e-05 6.121748e-04
+    ## # ... with 5,092,004 more rows
 
 ``` r
 end <- Sys.time()
@@ -434,7 +542,7 @@ end <- Sys.time()
 (run_time <- end - start)
 ```
 
-    ## Time difference of 21.84332 mins
+    ## Time difference of 18.37144 mins
 
 ``` r
 ###############
@@ -465,11 +573,11 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ##  [1] bindrcpp_0.2       wordcloud_2.5      RColorBrewer_1.1-2
-    ##  [4] knitr_1.17         stringr_1.2.0      dplyr_0.7.4       
-    ##  [7] purrr_0.2.3        readr_1.1.1        tidyr_0.7.1       
-    ## [10] tibble_1.3.4       ggplot2_2.2.1      tidyverse_1.1.1   
-    ## [13] tidytext_0.1.4    
+    ##  [1] bindrcpp_0.2       ngram_3.0.3        wordcloud_2.5     
+    ##  [4] RColorBrewer_1.1-2 knitr_1.17         stringr_1.2.0     
+    ##  [7] dplyr_0.7.4        purrr_0.2.3        readr_1.1.1       
+    ## [10] tidyr_0.7.1        tibble_1.3.4       ggplot2_2.2.1     
+    ## [13] tidyverse_1.1.1    tidytext_0.1.4    
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] tidyselect_0.2.2  slam_0.1-40       reshape2_1.4.2   
