@@ -9,13 +9,10 @@
 #' This script uses the tidy data principles applied to text mining, as outlined in
 #' [Text Mining with R: A Tidy Approach](http://tidytextmining.com/).  
 #' 
-#' Using this approach, we are able to use the **entire data set** as opposed
-#' to data sampling approach required by the memory constraints of the `tm` package.
-#' After exploring the entire data set, we then reduce the data based on frequency.
-#' 
-start <- Sys.time()
 
 #+ startup, echo = FALSE 
+rm(list = ls())
+x <- gc()
 suppressPackageStartupMessages({
   library(tidytext)
   library(tidyverse)
@@ -24,6 +21,7 @@ suppressPackageStartupMessages({
   library(wordcloud)
   library(ngram)
 })
+start_time <- Sys.time()
 
 #' ## 2. Data loading and cleaning 
 #+ DataLoading
@@ -87,7 +85,7 @@ twitter <- data_frame(text = twitter)
 
 #' Sample the data
 #+ DataSampling
-sample_pct <- 0.05
+sample_pct <- 0.1
 
 blogs_sample <- blogs %>%
   sample_n(., nrow(blogs)*sample_pct)
@@ -213,7 +211,6 @@ bigram_cover_90 %>%
   xlab(NULL) +
   coord_flip()
 
-##############
 #' ## 6. Trigrams  
 #' Create Trigrams by source using `unnest_tokens`
 #+ trigrams
@@ -270,8 +267,7 @@ quadgrams_separated
 
 end <- Sys.time()
 
-(run_time <- end - start)
-###############
+(run_time <- end - start_time)
 
 #' -------------
 #'  
