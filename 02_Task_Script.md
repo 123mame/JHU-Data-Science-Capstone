@@ -1,7 +1,7 @@
 Task 2: Exploratory Data Analysis
 ================
 Mark Blackmore
-2017-10-24
+2017-10-25
 
 1. Introduction
 ---------------
@@ -158,7 +158,6 @@ Clean up
 
 ``` r
 rm(blogs, blogs_nchar, news, news_nchar, twitter, twitter_nchar, replace_reg, replace_url, replace_aaa)
-x <- gc()
 ```
 
 Create tidy dataframe for repo sample
@@ -186,7 +185,7 @@ Word counts: Number of unique words in repo
     ## # A tibble: 1 x 1
     ##     keys
     ##    <int>
-    ## 1 164558
+    ## 1 164239
 
 Number of words to attain 50% and 90% coverage of all words in repo
 
@@ -200,7 +199,7 @@ cover_50 <- tidy_repo %>%
 nrow(cover_50)
 ```
 
-    ## [1] 1311
+    ## [1] 1318
 
 ``` r
 cover_90 <- tidy_repo %>%
@@ -212,7 +211,7 @@ cover_90 <- tidy_repo %>%
 nrow(cover_90)
 ```
 
-    ## [1] 18005
+    ## [1] 18078
 
 4. Word distributions
 ---------------------
@@ -272,7 +271,6 @@ Create bigrams by source using `unnest_tokens`
 
 ``` r
 rm(tidy_repo)
-x <- gc()
 
 bigram_repo <- clean_sample  %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
@@ -290,7 +288,7 @@ bigram_cover_90 <- bigram_repo %>%
 nrow(bigram_cover_90)
 ```
 
-    ## [1] 1424441
+    ## [1] 1425835
 
 Bigram distribution
 
@@ -328,7 +326,7 @@ trigram_cover_90 <- trigram_repo %>%
 nrow(trigram_cover_90)
 ```
 
-    ## [1] 5168063
+    ## [1] 5162845
 
 trigram distribution
 
@@ -366,7 +364,7 @@ quadgram_cover_90 <- quadgram_repo %>%
 nrow(quadgram_cover_90)
 ```
 
-    ## [1] 7327969
+    ## [1] 7314010
 
 quadgram distribution
 
@@ -388,20 +386,20 @@ quadgrams_separated <- quadgram_cover_90 %>%
 quadgrams_separated
 ```
 
-    ## # A tibble: 7,327,969 x 7
+    ## # A tibble: 7,314,010 x 7
     ##    word1 word2 word3 word4     n   proportion     coverage
     ##  * <chr> <chr> <chr> <chr> <int>        <dbl>        <dbl>
-    ##  1   the   end    of   the   789 8.752530e-05 0.0000875253
-    ##  2   the  rest    of   the   692 7.676491e-05 0.0001642902
-    ##  3    at   the   end    of   678 7.521186e-05 0.0002395021
-    ##  4   for   the first  time   623 6.911060e-05 0.0003086127
-    ##  5    at   the  same  time   511 5.668622e-05 0.0003652989
-    ##  6    is going    to    be   422 4.681328e-05 0.0004121122
-    ##  7  when    it comes    to   417 4.625862e-05 0.0004583708
-    ##  8   one    of   the  most   405 4.492744e-05 0.0005032982
-    ##  9    is   one    of   the   402 4.459464e-05 0.0005478929
-    ## 10 going    to    be     a   390 4.326346e-05 0.0005911563
-    ## # ... with 7,327,959 more rows
+    ##  1   the   end    of   the   814 9.048742e-05 9.048742e-05
+    ##  2   the  rest    of   the   683 7.592494e-05 1.664124e-04
+    ##  3   for   the first  time   655 7.281236e-05 2.392247e-04
+    ##  4    at   the   end    of   653 7.259003e-05 3.118147e-04
+    ##  5    at   the  same  time   521 5.791639e-05 3.697311e-04
+    ##  6    is going    to    be   442 4.913444e-05 4.188656e-04
+    ##  7  when    it comes    to   416 4.624418e-05 4.651098e-04
+    ##  8   one    of   the  most   415 4.613302e-05 5.112428e-04
+    ##  9    is   one    of   the   410 4.557720e-05 5.568200e-04
+    ## 10    if   you  want    to   382 4.246461e-05 5.992846e-04
+    ## # ... with 7,314,000 more rows
 
 ``` r
 end <- Sys.time()
@@ -409,7 +407,7 @@ end <- Sys.time()
 (run_time <- end - start_time)
 ```
 
-    ## Time difference of 10.83154 mins
+    ## Time difference of 10.85804 mins
 
 ------------------------------------------------------------------------
 
