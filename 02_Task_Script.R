@@ -12,7 +12,6 @@
 
 #+ startup, echo = FALSE 
 rm(list = ls())
-x <- gc()
 suppressPackageStartupMessages({
   library(tidytext)
   library(tidyverse)
@@ -120,7 +119,6 @@ clean_sample <-  repo_sample %>%
 
 #' Clean up
 rm(blogs, blogs_nchar, news, news_nchar, twitter, twitter_nchar, replace_reg, replace_url, replace_aaa)
-x <- gc()
   
 #' Create tidy dataframe for repo sample
 tidy_repo <- clean_sample %>%
@@ -188,7 +186,6 @@ cover_90 %>%
 #' ## 5. Bigrams  
 #' Create bigrams by source using `unnest_tokens`
 rm(tidy_repo)
-x <- gc()
 
 bigram_repo <- clean_sample  %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
