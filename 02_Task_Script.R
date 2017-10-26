@@ -77,6 +77,8 @@ repo_summary <- repo_summary %>% mutate(pct_lines = round(f_lines/sum(f_lines), 
 repo_summary <- repo_summary %>% mutate(pct_words = round(n_words/sum(n_words), 2))
 kable(repo_summary)
 
+saveRDS(repo_summary, "./clean_repos/repo_summary.rds")
+
 #' Read the data files into dataframes
 blogs   <- data_frame(text = blogs)
 news    <- data_frame(text = news)
@@ -115,7 +117,7 @@ replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"
 clean_sample <-  repo_sample %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
-  mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
+  mutate(text = str_replace_all(text, replace_aaa, "")) %>% 
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
 
 #' Clean up
@@ -180,13 +182,15 @@ freq %>%
 
 #' Word cloud
 cover_90 %>%
-  #count(word) %>%
   with(wordcloud(word, n, max.words = 100, 
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 
+saveRDS(tidy_repo, "./clean_repos/tidy_repo.rds")
+saveRDS(cover_90, "./clean_repos/cover_90.rds")
+rm(tidy_repo, cover_50, cover_90)
+
 #' ## 5. Bigrams  
 #' Create bigrams by source using `unnest_tokens`
-rm(tidy_repo)
 
 bigram_repo <- clean_sample  %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
@@ -208,6 +212,8 @@ bigram_cover_90 %>%
   geom_col() +
   xlab(NULL) +
   coord_flip()
+
+saveRDS(bigram_cover_90, "./clean_repos/bigram_cover_90.rds")
 
 #' ## 6. Trigrams  
 #' Create Trigrams by source using `unnest_tokens`
@@ -233,6 +239,8 @@ trigram_cover_90 %>%
   geom_col() +
   xlab(NULL) +
   coord_flip()
+
+saveRDS(trigram_cover_90, "./clean_repos/trigram_cover_90.rds")
 
 #' ## 7. Quadgrams  
 #' Create quadgrams by source using `unnest_tokens`
@@ -262,6 +270,8 @@ quadgram_cover_90 %>%
 quadgrams_separated <- quadgram_cover_90 %>%
   separate(quadgram, c("word1", "word2", "word3", "word4"), sep = " ")
 quadgrams_separated
+
+saveRDS(quadgram_cover_90, "./clean_repos/quadgram_cover_90.rds")
 
 end <- Sys.time()
 
