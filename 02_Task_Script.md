@@ -92,8 +92,12 @@ kable(repo_summary)
 | f\_names |   f\_size|  f\_lines|    n\_char|  n\_words|  pct\_n\_char|  pct\_lines|  pct\_words|
 |:---------|---------:|---------:|----------:|---------:|-------------:|-----------:|-----------:|
 | blogs    |  200.4242|    899288|  208361438|  37334131|          0.36|        0.21|        0.37|
-| news     |  195.3141|   1010242|  203791390|  34372528|          0.35|        0.24|        0.34|
+| news     |  196.2775|   1010242|  203791400|  34372528|          0.35|        0.24|        0.34|
 | twitter  |  159.3641|   2360148|  162385035|  30373583|          0.28|        0.55|        0.30|
+
+``` r
+saveRDS(repo_summary, "./clean_repos/repo_summary.rds")
+```
 
 Read the data files into dataframes
 
@@ -106,6 +110,7 @@ twitter <- data_frame(text = twitter)
 Sample the data
 
 ``` r
+set.seed(1001)
 sample_pct <- 0.1
 
 blogs_sample <- blogs %>%
@@ -150,7 +155,7 @@ Clean the sample. Cleaning is separted from tidying so `unnest_tokens` function 
 clean_sample <-  repo_sample %>%
   mutate(text = str_replace_all(text, replace_reg, "")) %>%
   mutate(text = str_replace_all(text, replace_url, "")) %>%
-  mutate(text = str_replace_all(text, replace_aaa, "")) %>%  
+  mutate(text = str_replace_all(text, replace_aaa, "")) %>% 
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
 ```
 
@@ -185,7 +190,7 @@ Word counts: Number of unique words in repo
     ## # A tibble: 1 x 1
     ##     keys
     ##    <int>
-    ## 1 164239
+    ## 1 164925
 
 Number of words to attain 50% and 90% coverage of all words in repo
 
@@ -199,7 +204,7 @@ cover_50 <- tidy_repo %>%
 nrow(cover_50)
 ```
 
-    ## [1] 1318
+    ## [1] 1317
 
 ``` r
 cover_90 <- tidy_repo %>%
@@ -211,7 +216,7 @@ cover_90 <- tidy_repo %>%
 nrow(cover_90)
 ```
 
-    ## [1] 18078
+    ## [1] 18097
 
 4. Word distributions
 ---------------------
@@ -257,12 +262,17 @@ Word cloud
 
 ``` r
 cover_90 %>%
-  #count(word) %>%
   with(wordcloud(word, n, max.words = 100, 
                  colors = brewer.pal(6, 'Dark2'), random.order = FALSE))
 ```
 
 ![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-18-1.png)
+
+``` r
+saveRDS(tidy_repo, "./clean_repos/tidy_repo.rds")
+saveRDS(cover_90, "./clean_repos/cover_90.rds")
+rm(tidy_repo, cover_50, cover_90)
+```
 
 5. Bigrams
 ----------
@@ -270,8 +280,6 @@ cover_90 %>%
 Create bigrams by source using `unnest_tokens`
 
 ``` r
-rm(tidy_repo)
-
 bigram_repo <- clean_sample  %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
 ```
@@ -288,7 +296,7 @@ bigram_cover_90 <- bigram_repo %>%
 nrow(bigram_cover_90)
 ```
 
-    ## [1] 1425835
+    ## [1] 1428897
 
 Bigram distribution
 
@@ -303,6 +311,10 @@ bigram_cover_90 %>%
 ```
 
 ![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-21-1.png)
+
+``` r
+saveRDS(bigram_cover_90, "./clean_repos/bigram_cover_90.rds")
+```
 
 6. Trigrams
 -----------
@@ -326,7 +338,7 @@ trigram_cover_90 <- trigram_repo %>%
 nrow(trigram_cover_90)
 ```
 
-    ## [1] 5162845
+    ## [1] 5178400
 
 trigram distribution
 
@@ -341,6 +353,10 @@ trigram_cover_90 %>%
 ```
 
 ![](02_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-23-1.png)
+
+``` r
+saveRDS(trigram_cover_90, "./clean_repos/trigram_cover_90.rds")
+```
 
 7. Quadgrams
 ------------
@@ -364,7 +380,7 @@ quadgram_cover_90 <- quadgram_repo %>%
 nrow(quadgram_cover_90)
 ```
 
-    ## [1] 7314010
+    ## [1] 7339529
 
 quadgram distribution
 
@@ -386,28 +402,30 @@ quadgrams_separated <- quadgram_cover_90 %>%
 quadgrams_separated
 ```
 
-    ## # A tibble: 7,314,010 x 7
+    ## # A tibble: 7,339,529 x 7
     ##    word1 word2 word3 word4     n   proportion     coverage
     ##  * <chr> <chr> <chr> <chr> <int>        <dbl>        <dbl>
-    ##  1   the   end    of   the   814 9.048742e-05 9.048742e-05
-    ##  2   the  rest    of   the   683 7.592494e-05 1.664124e-04
-    ##  3   for   the first  time   655 7.281236e-05 2.392247e-04
-    ##  4    at   the   end    of   653 7.259003e-05 3.118147e-04
-    ##  5    at   the  same  time   521 5.791639e-05 3.697311e-04
-    ##  6    is going    to    be   442 4.913444e-05 4.188656e-04
-    ##  7  when    it comes    to   416 4.624418e-05 4.651098e-04
-    ##  8   one    of   the  most   415 4.613302e-05 5.112428e-04
-    ##  9    is   one    of   the   410 4.557720e-05 5.568200e-04
-    ## 10    if   you  want    to   382 4.246461e-05 5.992846e-04
-    ## # ... with 7,314,000 more rows
+    ##  1   the   end    of   the   806 8.926682e-05 8.926682e-05
+    ##  2    at   the   end    of   656 7.265389e-05 1.619207e-04
+    ##  3   the  rest    of   the   651 7.210012e-05 2.340208e-04
+    ##  4   for   the first  time   613 6.789151e-05 3.019123e-04
+    ##  5    at   the  same  time   506 5.604095e-05 3.579533e-04
+    ##  6    is going    to    be   482 5.338289e-05 4.113362e-04
+    ##  7    is   one    of   the   446 4.939578e-05 4.607320e-04
+    ##  8   one    of   the  most   435 4.817750e-05 5.089095e-04
+    ##  9  when    it comes    to   419 4.640545e-05 5.553149e-04
+    ## 10 going    to    be     a   376 4.164308e-05 5.969580e-04
+    ## # ... with 7,339,519 more rows
 
 ``` r
+saveRDS(quadgram_cover_90, "./clean_repos/quadgram_cover_90.rds")
+
 end <- Sys.time()
 
 (run_time <- end - start_time)
 ```
 
-    ## Time difference of 10.85804 mins
+    ## Time difference of 14.39052 mins
 
 ------------------------------------------------------------------------
 
