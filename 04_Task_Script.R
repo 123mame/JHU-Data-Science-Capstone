@@ -5,7 +5,7 @@
 #' output: github_document
 #' ---
 
-#+ setup
+#+ setup, echo=FALSE
 suppressPackageStartupMessages({
   library(tidytext)
   library(tidyverse)
