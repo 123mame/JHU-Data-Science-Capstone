@@ -36,7 +36,7 @@ twitter <- data_frame(text = twitter)
 #' ## Sample the data
 #+ DataSampling
 set.seed(1001)
-sample_pct <- 0.1
+sample_pct <- 0.05
 
 blogs_sample <- blogs %>%
   sample_n(., nrow(blogs)*sample_pct)
@@ -133,3 +133,26 @@ tri_words
 quad_words <- quadgram_cover_50 %>%
   separate(quadgram, c("word1", "word2", "word3", "word4"), sep = " ")
 quad_words
+
+#' Save separated words for prediction
+saveRDS(bi_words, "./clean_repos/bi_words.rds")
+saveRDS(tri_words, "./clean_repos/tri_words.rds")
+saveRDS(quad_words, "./clean_repos/quad_words.rds")
+
+#' Clear workspace, time load
+rm(list= ls())
+
+go <- Sys.time()
+bi_words <- readRDS("./clean_repos/bi_words.rds")
+tri_words  <- readRDS("./clean_repos/tri_words.rds")
+quad_words <- readRDS("./clean_repos/quad_words.rds")
+
+stop <- Sys.time()
+(how_long <- stop - go)
+
+#' User Input
+#' Function to Predict
+#' Program output
+
+
+
