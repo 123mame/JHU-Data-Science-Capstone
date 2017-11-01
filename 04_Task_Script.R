@@ -140,7 +140,7 @@ saveRDS(tri_words, "./clean_repos/tri_words.rds")
 saveRDS(quad_words, "./clean_repos/quad_words.rds")
 
 #' Clear workspace, time load
-rm(list= ls())
+#rm(list= ls())
 
 go <- Sys.time()
 bi_words <- readRDS("./clean_repos/bi_words.rds")
@@ -154,5 +154,6 @@ stop <- Sys.time()
 #' Function to Predict
 #' Program output
 
-
-
+user_input <- data_frame(text = c("in case of"))
+temp <- separate(user_input, text, c("word1", "word2", "word3", "word4"), sep = " ")
+filter(quad_words, word1==temp$word1, word2==temp$word2, word3==temp$word3) # %>% top_n(1, n)
