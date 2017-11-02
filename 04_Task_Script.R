@@ -151,9 +151,21 @@ stop <- Sys.time()
 (how_long <- stop - go)
 
 #' User Input
+input <- data_frame(text = c("in case of"))
+
 #' Function to Predict
+input_count <- str_count(input, boundary("word"))
+input_words <- unlist(str_split(input, boundary("word")))
+y <- paste0(rep("word", count), 1:count)
+
+filter(quad_words, 
+       word1==input_words[1], 
+       word2==input_words[2], 
+       word3==input_words[3])  %>% 
+         top_n(1, n) %>%
+         select(word4) %>%
+         as.character()
+
 #' Program output
 
-user_input <- data_frame(text = c("in case of"))
-temp <- separate(user_input, text, c("word1", "word2", "word3", "word4"), sep = " ")
-filter(quad_words, word1==temp$word1, word2==temp$word2, word3==temp$word3) # %>% top_n(1, n)
+
