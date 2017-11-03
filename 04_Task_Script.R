@@ -143,6 +143,8 @@ saveRDS(quad_words, "./clean_repos/quad_words.rds")
 #rm(list= ls())
 
 go <- Sys.time()
+library(tidyverse)
+library(stringr)
 bi_words <- readRDS("./clean_repos/bi_words.rds")
 tri_words  <- readRDS("./clean_repos/tri_words.rds")
 quad_words <- readRDS("./clean_repos/quad_words.rds")
@@ -151,20 +153,54 @@ stop <- Sys.time()
 (how_long <- stop - go)
 
 #' User Input
-input <- data_frame(text = c("in case of"))
+input <- data_frame(text = c("wok wok wok"))
 
-#' Function to Predict
+#' Logic to Predict
 input_count <- str_count(input, boundary("word"))
 input_words <- unlist(str_split(input, boundary("word")))
-y <- paste0(rep("word", count), 1:count)
+y <- paste0(rep("word", input_count), 1:input_count)
 
-filter(quad_words, 
-       word1==input_words[1], 
-       word2==input_words[2], 
-       word3==input_words[3])  %>% 
-         top_n(1, n) %>%
-         select(word4) %>%
-         as.character()
+
+if (input_count == 1) {
+  filter(bi_words, 
+         word1==input_words[1]) %>% 
+    top_n(1, n) %>%
+    filter(row_number() == 1L) %>%
+    select(num_range("word", input_count+1)) %>%
+    as.character()
+} else {
+    
+  if (input_count == 2){
+    filter(tri_words, 
+           word1==input_words[1], 
+           word2==input_words[2])  %>% 
+      top_n(1, n) %>%
+      filter(row_number() == 1L) %>%
+      select(num_range("word", input_count+1)) %>%
+      as.character()
+    
+  } else {    
+  filter(quad_words, 
+        word1==input_words[input_count-2], 
+        word2==input_words[input_count-1], 
+        word3==input_words[input_count])  %>% 
+    top_n(1, n) %>%
+    filter(row_number() == 1L) %>%
+    select(num_range("word", input_count+1)) %>%
+    as.character()
+  }
+}
+
+
+# Simple Logic Test; What if no match
+filter(quad_words,
+        word1==input_words[input_count-2],
+        word2==input_words[input_count-1],
+        word3==input_words[input_count]) %>%
+          top_n(1, n) %>%
+          filter(row_number() == 1L) %>%
+          select(num_range("word", input_count+1)) %>%
+          as.character()
 
 #' Program output
 
