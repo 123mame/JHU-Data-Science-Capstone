@@ -18,12 +18,13 @@ tri_words  <- readRDS("./clean_repos/tri_words.rds")
 quad_words <- readRDS("./clean_repos/quad_words.rds")
 
 #+ functions
-bigram <- function(input_words, input_count){
+bigram <- function(input_words){
+                    num <- length(input_words)
                     filter(bi_words, 
                           word1==input_words[num]) %>% 
                     top_n(1, n) %>%
                     filter(row_number() == 1L) %>%
-                    select(num_range("word", num+1)) %>%
+                    select(num_range("word", 2)) %>%
                     as.character()
 }
 
@@ -34,26 +35,27 @@ trigram <- function(input_words){
                             word2==input_words[num])  %>% 
                     top_n(1, n) %>%
                     filter(row_number() == 1L) %>%
-                    select(num_range("word", num+1)) %>%
-                    as.character()
+                    select(num_range("word", 3)) %>%
+                    as.character() -> out
+                    ifelse(nchar(out)==0, bigram(input_words[-1]), print(out))
 }
 
 quadgram <- function(input_words){
                     num <- length(input_words)
-                    out <- filter(quad_words, 
+                    filter(quad_words, 
                             word1==input_words[num-2], 
                             word2==input_words[num-1], 
                             word3==input_words[num])  %>% 
                     top_n(1, n) %>%
                     filter(row_number() == 1L) %>%
-                    select(num_range("word", num+1)) %>%
-                    as.character()
-                    #ifelse(nchar(out)==0, trigram(input_words[-1]), print(out))
+                    select(num_range("word", 4)) %>%
+                    as.character() %>%
+                    ifelse(nchar(out)==0, trigram(input_words[-1]), print(out))
 }
 
 
 #' User Input
-input <- data_frame(text = c("in case of"))
+input <- data_frame(text = c("in case of the"))
 
 #' Logic to Predict
 input_count <- str_count(input, boundary("word"))
