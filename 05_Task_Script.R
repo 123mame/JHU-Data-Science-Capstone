@@ -56,15 +56,17 @@ quadgram <- function(input_words){
 
 
 #' User Input
-input <- data_frame(text = c("teh"))
+input <- data_frame(text = c("Heck of A Fine"))
 
-#' Logic to Predict
+#' Clean the Input
 input_count <- str_count(input, boundary("word"))
 input_words <- unlist(str_split(input, boundary("word")))
+input_words <- tolower(input_words)
 
 
-ifelse(input_count == 1, y= bigram(input_words), 
+#' Call the matching functions
+y <- ifelse(input_count == 1, bigram(input_words), 
   ifelse (input_count == 2, trigram(input_words), quadgram(input_words)))
 
-
-#' Program output
+#' Output
+paste(input, y, sep = " ")
