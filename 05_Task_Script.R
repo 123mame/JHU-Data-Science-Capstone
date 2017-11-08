@@ -5,19 +5,19 @@
 #' output: github_document
 #' ---
 
-#+ setup, echo=FALSE
+#' setup
 go <- Sys.time()
 suppressPackageStartupMessages({
   library(tidyverse)
   library(stringr)
 })
 
-#+ data, echo=FALSE
+# Training Data
 bi_words <- readRDS("./clean_repos/bi_words.rds")
 tri_words  <- readRDS("./clean_repos/tri_words.rds")
 quad_words <- readRDS("./clean_repos/quad_words.rds")
 
-#+ functions
+# Ngram Matching Functions
 bigram <- function(input_words){
                     num <- length(input_words)
                     filter(bi_words, 
@@ -54,19 +54,29 @@ quadgram <- function(input_words){
                     ifelse(out=="character(0)", trigram(input_words), return(out))
 }
 
+#' Data Cleaning and Input Function; Calls the matching functions
+ngrams <- function(input){
+  # Create a dataframe
+  input <- data_frame(text = input)
+  # Clean the Inpput
+  replace_reg <- "[^[:alpha:][:space:]]*"
+  input <- input %>%
+    mutate(text = str_replace_all(text, replace_reg, ""))
+  # Find word count, separate words, lower case
+  input_count <- str_count(input, boundary("word"))
+  input_words <- unlist(str_split(input, boundary("word")))
+  input_words <- tolower(input_words)
+  # Call the matching functions
+  y <- ifelse(input_count == 1, bigram(input_words), 
+              ifelse (input_count == 2, trigram(input_words), quadgram(input_words)))
+  # Output
+  paste(input, y, sep = " ")
+}
 
-#' User Input
-input <- data_frame(text = c("Heck of A Fine"))
+#' User Input and Program Ouput
+input <- "A Walk in the park"
+ngrams(input)
 
-#' Clean the Input
-input_count <- str_count(input, boundary("word"))
-input_words <- unlist(str_split(input, boundary("word")))
-input_words <- tolower(input_words)
-
-
-#' Call the matching functions
-y <- ifelse(input_count == 1, bigram(input_words), 
-  ifelse (input_count == 2, trigram(input_words), quadgram(input_words)))
-
-#' Output
-paste(input, y, sep = " ")
+#' Time it
+stop <- Sys.time()
+(how_long <- stop - go)

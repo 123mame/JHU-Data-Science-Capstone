@@ -12,12 +12,24 @@ Q1. The guy in front of me just bought a pound of bacon, a bouquet, and a case o
 -   beer
 -   soda
 
+``` r
+ngrams("The guy in front of me just bought a pound of bacon, a bouquet, and a case of")  
+```
+
+    ## [1] "The guy in front of me just bought a pound of bacon a bouquet and a case of the"
+
 Q2. You're the reason why I smile everyday. Can you follow me please? It would mean the
 
 -   universe
 -   most
 -   world
 -   best
+
+``` r
+ngrams("You're the reason why I smile everyday. Can you follow me please? It would mean the")  
+```
+
+    ## [1] "Youre the reason why I smile everyday Can you follow me please It would mean the world"
 
 Q3. Hey sunshine, can you follow me and make me the
 
@@ -26,12 +38,24 @@ Q3. Hey sunshine, can you follow me and make me the
 -   saddest
 -   smelliest
 
+``` r
+ngrams("Hey sunshine, can you follow me and make me the")  
+```
+
+    ## [1] "Hey sunshine can you follow me and make me the most"
+
 Q4. Very early observations on the Bills game: Offense still struggling but the
 
 -   referees
 -   players
 -   crowd
 -   defense
+
+``` r
+ngrams("Very early observations on the Bills game: Offense still struggling but the") 
+```
+
+    ## [1] "Very early observations on the Bills game Offense still struggling but the is"
 
 Q5. Go on a romantic date at the
 
@@ -40,12 +64,24 @@ Q5. Go on a romantic date at the
 -   beach
 -   grocery
 
+``` r
+ngrams("Go on a romantic date at the") 
+```
+
+    ## [1] "Go on a romantic date at the caney"
+
 Q6. Well I'm pretty sure my granny has some old bagpipes in her garage I'll dust them off and be on my
 
 -   horse
 -   phone
 -   way
 -   motorcycle
+
+``` r
+ngrams("Well I'm pretty sure my granny has some old bagpipes in her garage I'll dust them off and be on my") 
+```
+
+    ## [1] "Well Im pretty sure my granny has some old bagpipes in her garage Ill dust them off and be on my own"
 
 Q7. Ohhhhh \#PointBreak is on tomorrow. Love that film and haven't seen it in quite some
 
@@ -54,12 +90,24 @@ Q7. Ohhhhh \#PointBreak is on tomorrow. Love that film and haven't seen it in qu
 -   weeks
 -   years
 
+``` r
+ngrams("Ohhhhh #PointBreak is on tomorrow. Love that film and haven't seen it in quite some") 
+```
+
+    ## [1] "Ohhhhh PointBreak is on tomorrow Love that film and havent seen it in quite some time"
+
 Q8. After the ice bucket challenge Louis will push his long wet hair out of his eyes with his little
 
 -   toes
 -   ears
 -   eyes
 -   fingers
+
+``` r
+ngrams("After the ice bucket challenge Louis will push his long wet hair out of his eyes with his little") 
+```
+
+    ## [1] "After the ice bucket challenge Louis will push his long wet hair out of his eyes with his little ?"
 
 Q9. Be grateful for the good times and keep the faith during the
 
@@ -68,9 +116,21 @@ Q9. Be grateful for the good times and keep the faith during the
 -   sad
 -   worse
 
+``` r
+ngrams("Be grateful for the good times and keep the faith during the") 
+```
+
+    ## [1] "Be grateful for the good times and keep the faith during the day"
+
 Q10. If this isn't the cutest thing you've ever seen, then you must be
 
 -   insane
 -   asleep
 -   callous
 -   insensitive
+
+``` r
+ngrams("If this isn't the cutest thing you've ever seen, then you must be") 
+```
+
+    ## [1] "If this isnt the cutest thing youve ever seen then you must be a"
