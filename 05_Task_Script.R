@@ -25,7 +25,8 @@ bigram <- function(input_words){
                     top_n(1, n) %>%
                     filter(row_number() == 1L) %>%
                     select(num_range("word", 2)) %>%
-                    as.character()
+                    as.character() -> out
+                    ifelse(out =="character(0)", "?", return(out))
 }
 
 trigram <- function(input_words){
@@ -37,7 +38,7 @@ trigram <- function(input_words){
                     filter(row_number() == 1L) %>%
                     select(num_range("word", 3)) %>%
                     as.character() -> out
-                    ifelse(nchar(out)==0, bigram(input_words[-1]), print(out))
+                    ifelse(out=="character(0)", bigram(input_words), return(out))
 }
 
 quadgram <- function(input_words){
@@ -49,20 +50,20 @@ quadgram <- function(input_words){
                     top_n(1, n) %>%
                     filter(row_number() == 1L) %>%
                     select(num_range("word", 4)) %>%
-                    as.character() %>%
-                    ifelse(nchar(out)==0, trigram(input_words[-1]), print(out))
+                    as.character() -> out
+                    ifelse(out=="character(0)", trigram(input_words), return(out))
 }
 
 
 #' User Input
-input <- data_frame(text = c("in case of the"))
+input <- data_frame(text = c("teh"))
 
 #' Logic to Predict
 input_count <- str_count(input, boundary("word"))
 input_words <- unlist(str_split(input, boundary("word")))
 
 
-ifelse(input_count == 1, bigram(input_words), 
+ifelse(input_count == 1, y= bigram(input_words), 
   ifelse (input_count == 2, trigram(input_words), quadgram(input_words)))
 
 
