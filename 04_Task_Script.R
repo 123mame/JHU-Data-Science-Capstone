@@ -140,7 +140,7 @@ saveRDS(tri_words, "./clean_repos/tri_words.rds")
 saveRDS(quad_words, "./clean_repos/quad_words.rds")
 
 #' Clear workspace, time load
-#rm(list= ls())
+# rm(list= ls())
 
 go <- Sys.time()
 library(tidyverse)
@@ -153,7 +153,7 @@ stop <- Sys.time()
 (how_long <- stop - go)
 
 #' User Input
-input <- data_frame(text = c("wok wok wok"))
+input <- data_frame(text = c("in case of"))
 
 #' Logic to Predict
 input_count <- str_count(input, boundary("word"))
