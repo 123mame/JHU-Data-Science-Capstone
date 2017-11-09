@@ -12,10 +12,15 @@ suppressPackageStartupMessages({
   library(stringr)
 })
 
-# Training Data
-bi_words <- readRDS("./clean_repos/bi_words.rds")
-tri_words  <- readRDS("./clean_repos/tri_words.rds")
-quad_words <- readRDS("./clean_repos/quad_words.rds")
+# # Training Data
+# bi_words <- readRDS("./clean_repos/bi_words.rds")
+# tri_words  <- readRDS("./clean_repos/tri_words.rds")
+# quad_words <- readRDS("./clean_repos/quad_words.rds")
+
+# Alternate Data
+bi_words <- readRDS("./clean_repos/bi_words_fast.rds")
+tri_words  <- readRDS("./clean_repos/tri_words_fast.rds")
+quad_words <- readRDS("./clean_repos/quad_words_fast.rds")
 
 # Ngram Matching Functions
 bigram <- function(input_words){
