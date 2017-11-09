@@ -36,7 +36,7 @@ twitter <- data_frame(text = twitter)
 #' ## Sample the data
 #+ DataSampling
 set.seed(1001)
-sample_pct <- 0.15
+sample_pct <- 0.20
 
 blogs_sample <- blogs %>%
   sample_n(., nrow(blogs)*sample_pct)
