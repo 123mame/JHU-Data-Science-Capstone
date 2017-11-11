@@ -139,7 +139,7 @@ saveRDS(bi_words, "./clean_repos/bi_words.rds")
 saveRDS(tri_words, "./clean_repos/tri_words.rds")
 saveRDS(quad_words, "./clean_repos/quad_words.rds")
 
-#' Clear workspace, time load
+#' ## Clear workspace, time load
 # rm(list= ls())
 
 go <- Sys.time()
@@ -152,15 +152,26 @@ quad_words <- readRDS("./clean_repos/quad_words.rds")
 stop <- Sys.time()
 (how_long <- stop - go)
 
+#' ## What does the distribution on ngrams look like?
+#' Suggests there may be a better way. See `04A_Task_Script.R`
+disty = data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover_50)),
+                             rep("trigrams",  nrow(trigram_cover_50)),
+                             rep("quadgrams", nrow(quadgram_cover_50))), 
+                   number = c(bigram_cover_50$n, trigram_cover_50$n, quadgram_cover_50$n))
+
+disty$ngram <- as.factor(disty$ngram)
+ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log10()
+
+#' ## Start ngram matching script
+
 #' User Input
 input <- data_frame(text = c("in case of"))
 
-#' Logic to Predict
+#' Process input
 input_count <- str_count(input, boundary("word"))
 input_words <- unlist(str_split(input, boundary("word")))
-y <- paste0(rep("word", input_count), 1:input_count)
 
-
+#' Logic to Predict
 if (input_count == 1) {
   filter(bi_words, 
          word1==input_words[1]) %>% 
@@ -191,17 +202,6 @@ if (input_count == 1) {
   }
 }
 
-
-# Simple Logic Test; What if no match
-filter(quad_words,
-        word1==input_words[input_count-2],
-        word2==input_words[input_count-1],
-        word3==input_words[input_count]) %>%
-          top_n(1, n) %>%
-          filter(row_number() == 1L) %>%
-          select(num_range("word", input_count+1)) %>%
-          as.character()
-
 #' Program output
 
-
+#' end
