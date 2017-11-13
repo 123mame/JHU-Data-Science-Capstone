@@ -51,6 +51,11 @@ repo_sample <- bind_rows(mutate(blogs_sample, source = "blogs"),
                          mutate(twitter_sample, source = "twitter")) 
 repo_sample$source <- as.factor(repo_sample$source)
 
+#' Clean up
+rm(list = c("blogs", "blogs_file", "blogs_sample","news", "news_file",     
+            "news_sample", "sample_pct", "twitter","twitter_file", 
+            "twitter_sample"))
+
 #' ## Clean the data
 #' Create filters: stopwords, profanity, non-alphanumeric's, url's, repeated letters(+3x)
 #+ DataCleaning
@@ -69,6 +74,8 @@ clean_sample <-  repo_sample %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>% 
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
 
+rm(list = c("repo_sample"))
+
 #' ## Create all n-grams
 #' Bigrams
 bigram_repo <- clean_sample  %>%
@@ -86,20 +93,23 @@ quadgram_repo <- clean_sample  %>%
 #' Bigrams
 bigram_cover <- bigram_repo %>%
   count(bigram) %>%  
-  arrange(desc(n)) %>%  
-  filter(n > 1)
+  filter(n > 1) %>%
+  arrange(desc(n))  
+rm(list = c("bigram_repo"))
 
 #' Trigrams
 trigram_cover <- trigram_repo %>%
   count(trigram) %>%  
-  arrange(desc(n)) %>%  
-  filter(n > 1)
+  filter(n > 1) %>%
+  arrange(desc(n))  
+rm(list = c("trigram_repo"))
 
 #' Quadgrams
 quadgram_cover <- quadgram_repo %>%
   count(quadgram) %>%  
-  arrange(desc(n)) %>%  
-  filter(n > 1)
+  filter(n > 1) %>%
+  arrange(desc(n))  
+rm(list = c("quadgram_repo"))
 
 #' ## What does the distribution on ngrams look like?
 disty = data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover)),
@@ -131,15 +141,15 @@ quad_words
 #' Clear workspace, time load
 # rm(list= ls())
 
-go <- Sys.time()
-library(tidyverse)
-library(stringr)
-bi_words <- readRDS("./clean_repos/bi_words_fast.rds")
-tri_words  <- readRDS("./clean_repos/tri_words_fast.rds")
-quad_words <- readRDS("./clean_repos/quad_words_fast.rds")
-
-stop <- Sys.time()
-(how_long <- stop - go)
+# go <- Sys.time()
+# library(tidyverse)
+# library(stringr)
+# bi_words <- readRDS("./clean_repos/bi_words_fast.rds")
+# tri_words  <- readRDS("./clean_repos/tri_words_fast.rds")
+# quad_words <- readRDS("./clean_repos/quad_words_fast.rds")
+# 
+# stop <- Sys.time()
+# (how_long <- stop - go)
 
 #' end
 

@@ -1,9 +1,12 @@
 #' ---
-#' title: 'Task 04: Prediction Model'
+#' title: 'Task 04: Working toward a Prediction Model'
 #' author: "Mark Blackmore"
 #' date: "`r format(Sys.Date())`"
 #' output: github_document
 #' ---
+
+#' This script creates the ngram files used to predict ngrams based on user input.
+#' These files are used by prediction functions found in `05_Task_Script.R`
 
 #+ setup, echo=FALSE
 suppressPackageStartupMessages({
