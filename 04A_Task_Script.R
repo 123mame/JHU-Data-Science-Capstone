@@ -36,7 +36,7 @@ twitter <- data_frame(text = twitter)
 #' ## Sample the data
 #+ DataSampling
 set.seed(1001)
-sample_pct <- 0.05
+sample_pct <- 0.25
 
 blogs_sample <- blogs %>%
   sample_n(., nrow(blogs)*sample_pct)
@@ -134,22 +134,22 @@ quad_words <- quadgram_cover %>%
 quad_words
 
 #' Save separated words for prediction
-# saveRDS(bi_words, "./clean_repos/bi_words_fast.rds")
-# saveRDS(tri_words, "./clean_repos/tri_words_fast.rds")
-# saveRDS(quad_words, "./clean_repos/quad_words_fast.rds")
+saveRDS(bi_words, "./clean_repos/bi_words_fast.rds")
+saveRDS(tri_words, "./clean_repos/tri_words_fast.rds")
+saveRDS(quad_words, "./clean_repos/quad_words_fast.rds")
 
 #' Clear workspace, time load
-# rm(list= ls())
+rm(list= ls())
 
-# go <- Sys.time()
-# library(tidyverse)
-# library(stringr)
-# bi_words <- readRDS("./clean_repos/bi_words_fast.rds")
-# tri_words  <- readRDS("./clean_repos/tri_words_fast.rds")
-# quad_words <- readRDS("./clean_repos/quad_words_fast.rds")
-# 
-# stop <- Sys.time()
-# (how_long <- stop - go)
+go <- Sys.time()
+library(tidyverse)
+library(stringr)
+bi_words <- readRDS("./clean_repos/bi_words_fast.rds")
+tri_words  <- readRDS("./clean_repos/tri_words_fast.rds")
+quad_words <- readRDS("./clean_repos/quad_words_fast.rds")
+
+stop <- Sys.time()
+(how_long <- stop - go)
 
 #' end
 

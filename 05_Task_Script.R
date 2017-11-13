@@ -79,7 +79,7 @@ ngrams <- function(input){
 }
 
 #' User Input and Program Ouput
-input <- "Where do we go from"
+input <- "In case of a"
 ngrams(input)
 
 #' Time it
