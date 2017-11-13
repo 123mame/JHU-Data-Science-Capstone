@@ -1,5 +1,5 @@
 #' ---
-#' title: 'Task 05: Creative Exploration'
+#' title: 'Task 05: Prediction Model'
 #' author: "Mark Blackmore"
 #' date: "`r format(Sys.Date())`"
 #' output: github_document
@@ -17,7 +17,7 @@ suppressPackageStartupMessages({
 # tri_words  <- readRDS("./clean_repos/tri_words.rds")
 # quad_words <- readRDS("./clean_repos/quad_words.rds")
 
-# Alternate Data
+# Alternate Training Data
 bi_words <- readRDS("./clean_repos/bi_words_fast.rds")
 tri_words  <- readRDS("./clean_repos/tri_words_fast.rds")
 quad_words <- readRDS("./clean_repos/quad_words_fast.rds")

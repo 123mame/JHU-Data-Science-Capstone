@@ -153,7 +153,7 @@ stop <- Sys.time()
 (how_long <- stop - go)
 
 #' ## What does the distribution on ngrams look like?
-#' Suggests there may be a better way. See `04A_Task_Script.R`
+#' Suggests there may be a better way to subset. See `04A_Task_Script.R`
 disty = data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover_50)),
                              rep("trigrams",  nrow(trigram_cover_50)),
                              rep("quadgrams", nrow(quadgram_cover_50))), 
@@ -162,46 +162,3 @@ disty = data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover_50)),
 disty$ngram <- as.factor(disty$ngram)
 ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log10()
 
-#' ## Start ngram matching script
-
-#' User Input
-input <- data_frame(text = c("in case of"))
-
-#' Process input
-input_count <- str_count(input, boundary("word"))
-input_words <- unlist(str_split(input, boundary("word")))
-
-#' Logic to Predict
-if (input_count == 1) {
-  filter(bi_words, 
-         word1==input_words[1]) %>% 
-    top_n(1, n) %>%
-    filter(row_number() == 1L) %>%
-    select(num_range("word", input_count+1)) %>%
-    as.character()
-} else {
-    
-  if (input_count == 2){
-    filter(tri_words, 
-           word1==input_words[1], 
-           word2==input_words[2])  %>% 
-      top_n(1, n) %>%
-      filter(row_number() == 1L) %>%
-      select(num_range("word", input_count+1)) %>%
-      as.character()
-    
-  } else {    
-  filter(quad_words, 
-        word1==input_words[input_count-2], 
-        word2==input_words[input_count-1], 
-        word3==input_words[input_count])  %>% 
-    top_n(1, n) %>%
-    filter(row_number() == 1L) %>%
-    select(num_range("word", input_count+1)) %>%
-    as.character()
-  }
-}
-
-#' Program output
-
-#' end

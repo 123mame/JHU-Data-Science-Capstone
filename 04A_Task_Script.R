@@ -36,7 +36,7 @@ twitter <- data_frame(text = twitter)
 #' ## Sample the data
 #+ DataSampling
 set.seed(1001)
-sample_pct <- 0.20
+sample_pct <- 0.05
 
 blogs_sample <- blogs %>%
   sample_n(., nrow(blogs)*sample_pct)
@@ -83,23 +83,32 @@ quadgram_repo <- clean_sample  %>%
   unnest_tokens(quadgram, text, token = "ngrams", n = 4)
 
 #' ## Reduce n-grams files
-#' Bigram upper tail
+#' Bigrams
 bigram_cover <- bigram_repo %>%
   count(bigram) %>%  
   arrange(desc(n)) %>%  
   filter(n > 1)
 
-#' Trigram upper tail
+#' Trigrams
 trigram_cover <- trigram_repo %>%
   count(trigram) %>%  
   arrange(desc(n)) %>%  
   filter(n > 1)
 
-#' Quadgram upper tail
+#' Quadgrams
 quadgram_cover <- quadgram_repo %>%
   count(quadgram) %>%  
   arrange(desc(n)) %>%  
   filter(n > 1)
+
+#' ## What does the distribution on ngrams look like?
+disty = data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover)),
+                             rep("trigrams",  nrow(trigram_cover)),
+                             rep("quadgrams", nrow(quadgram_cover))), 
+                   number = c(bigram_cover$n, trigram_cover$n, quadgram_cover$n))
+disty
+disty$ngram <- as.factor(disty$ngram)
+ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log10()
 
 #' ## Separate words
 bi_words <- bigram_cover %>%
@@ -115,9 +124,9 @@ quad_words <- quadgram_cover %>%
 quad_words
 
 #' Save separated words for prediction
-saveRDS(bi_words, "./clean_repos/bi_words_fast.rds")
-saveRDS(tri_words, "./clean_repos/tri_words_fast.rds")
-saveRDS(quad_words, "./clean_repos/quad_words_fast.rds")
+# saveRDS(bi_words, "./clean_repos/bi_words_fast.rds")
+# saveRDS(tri_words, "./clean_repos/tri_words_fast.rds")
+# saveRDS(quad_words, "./clean_repos/quad_words_fast.rds")
 
 #' Clear workspace, time load
 # rm(list= ls())

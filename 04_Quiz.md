@@ -42,7 +42,7 @@ Q3. Hey sunshine, can you follow me and make me the
 ngrams("Hey sunshine, can you follow me and make me the")  
 ```
 
-    ## [1] "Hey sunshine can you follow me and make me the most"
+    ## [1] "Hey sunshine can you follow me and make me the girl"
 
 Q4. Very early observations on the Bills game: Offense still struggling but the
 
@@ -68,7 +68,7 @@ Q5. Go on a romantic date at the
 ngrams("Go on a romantic date at the") 
 ```
 
-    ## [1] "Go on a romantic date at the caney"
+    ## [1] "Go on a romantic date at the end"
 
 Q6. Well I'm pretty sure my granny has some old bagpipes in her garage I'll dust them off and be on my
 
@@ -81,7 +81,7 @@ Q6. Well I'm pretty sure my granny has some old bagpipes in her garage I'll dust
 ngrams("Well I'm pretty sure my granny has some old bagpipes in her garage I'll dust them off and be on my") 
 ```
 
-    ## [1] "Well Im pretty sure my granny has some old bagpipes in her garage Ill dust them off and be on my own"
+    ## [1] "Well Im pretty sure my granny has some old bagpipes in her garage Ill dust them off and be on my way"
 
 Q7. Ohhhhh \#PointBreak is on tomorrow. Love that film and haven't seen it in quite some
 

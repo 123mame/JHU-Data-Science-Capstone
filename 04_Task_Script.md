@@ -1,7 +1,9 @@
-Task 04: Prediction Model
+Task 04: Working toward a Prediction Model
 ================
 Mark Blackmore
-2017-11-10
+2017-11-12
+
+This script creates the ngram files used to predict ngrams based on user input. These files are used by prediction functions found in `05_Task_Script.R`
 
 Load the Data
 -------------
@@ -260,94 +262,21 @@ stop <- Sys.time()
 (how_long <- stop - go)
 ```
 
-    ## Time difference of 6.940233 secs
+    ## Time difference of 5.459696 secs
 
 What does the distribution on ngrams look like?
 -----------------------------------------------
 
-Suggests there may be a better way. See `04A_Task_Script.R`
+Suggests there may be a better way to subset. See `04A_Task_Script.R`
 
 ``` r
 disty = data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover_50)),
                              rep("trigrams",  nrow(trigram_cover_50)),
                              rep("quadgrams", nrow(quadgram_cover_50))), 
                    number = c(bigram_cover_50$n, trigram_cover_50$n, quadgram_cover_50$n))
-disty
-```
 
-    ## # A tibble: 3,013,296 x 2
-    ##      ngram number
-    ##      <chr>  <int>
-    ##  1 bigrams  21934
-    ##  2 bigrams  20787
-    ##  3 bigrams  12556
-    ##  4 bigrams  10294
-    ##  5 bigrams   9776
-    ##  6 bigrams   8238
-    ##  7 bigrams   8073
-    ##  8 bigrams   7427
-    ##  9 bigrams   7119
-    ## 10 bigrams   6048
-    ## # ... with 3,013,286 more rows
-
-``` r
 disty$ngram <- as.factor(disty$ngram)
-
 ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log10()
 ```
 
 ![](04_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-17-1.png)
-
-Start ngram matching script
----------------------------
-
-User Input
-
-``` r
-input <- data_frame(text = c("in case of"))
-```
-
-Process input
-
-``` r
-input_count <- str_count(input, boundary("word"))
-input_words <- unlist(str_split(input, boundary("word")))
-```
-
-Logic to Predict
-
-``` r
-if (input_count == 1) {
-  filter(bi_words, 
-         word1==input_words[1]) %>% 
-    top_n(1, n) %>%
-    filter(row_number() == 1L) %>%
-    select(num_range("word", input_count+1)) %>%
-    as.character()
-} else {
-    
-  if (input_count == 2){
-    filter(tri_words, 
-           word1==input_words[1], 
-           word2==input_words[2])  %>% 
-      top_n(1, n) %>%
-      filter(row_number() == 1L) %>%
-      select(num_range("word", input_count+1)) %>%
-      as.character()
-    
-  } else {    
-  filter(quad_words, 
-        word1==input_words[input_count-2], 
-        word2==input_words[input_count-1], 
-        word3==input_words[input_count])  %>% 
-    top_n(1, n) %>%
-    filter(row_number() == 1L) %>%
-    select(num_range("word", input_count+1)) %>%
-    as.character()
-  }
-}
-```
-
-    ## [1] "emergency"
-
-Program output end
