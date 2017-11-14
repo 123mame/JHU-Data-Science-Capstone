@@ -12,12 +12,7 @@ suppressPackageStartupMessages({
   library(stringr)
 })
 
-# # Training Data
-# bi_words <- readRDS("./clean_repos/bi_words.rds")
-# tri_words  <- readRDS("./clean_repos/tri_words.rds")
-# quad_words <- readRDS("./clean_repos/quad_words.rds")
-
-# Alternate Training Data
+# Training Data
 bi_words <- readRDS("./clean_repos/bi_words_fast.rds")
 tri_words  <- readRDS("./clean_repos/tri_words_fast.rds")
 quad_words <- readRDS("./clean_repos/quad_words_fast.rds")
