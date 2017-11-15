@@ -58,10 +58,7 @@ rm(list = c("blogs", "blogs_file", "blogs_sample","news", "news_file",
 
 #' ## Clean the data
 #' Create filters: stopwords, profanity, non-alphanumeric's, url's, repeated letters(+3x)
-#+ DataCleaning
-data("stop_words")
-swear_words <- read_delim("./data/final/en_US/en_US.swearWords.csv", delim = "\n", col_names = FALSE)
-swear_words <- unnest_tokens(swear_words, word, X1)
+#+ Data Cleaning
 replace_reg <- "[^[:alpha:][:space:]]*"
 replace_url <- "http[^[:space:]]*"
 replace_aaa <- "\\b(?=\\w*(\\w)\\1)\\w+\\b"  

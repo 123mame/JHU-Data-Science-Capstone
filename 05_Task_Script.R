@@ -5,19 +5,19 @@
 #' output: github_document
 #' ---
 
-#' setup
+#' Setup
 go <- Sys.time()
 suppressPackageStartupMessages({
   library(tidyverse)
   library(stringr)
 })
 
-# Training Data
+#' Load Training Data
 bi_words <- readRDS("./clean_repos/bi_words_fast.rds")
 tri_words  <- readRDS("./clean_repos/tri_words_fast.rds")
 quad_words <- readRDS("./clean_repos/quad_words_fast.rds")
 
-# Ngram Matching Functions
+#' Create Ngram Matching Functions
 bigram <- function(input_words){
                     num <- length(input_words)
                     filter(bi_words, 
@@ -54,7 +54,7 @@ quadgram <- function(input_words){
                     ifelse(out=="character(0)", trigram(input_words), return(out))
 }
 
-#' Data Cleaning and Input Function; Calls the matching functions
+#' Create User Input and Data Cleaning Function; Calls the matching functions
 ngrams <- function(input){
   # Create a dataframe
   input <- data_frame(text = input)
