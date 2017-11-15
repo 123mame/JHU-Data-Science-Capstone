@@ -57,7 +57,7 @@ rm(list = c("blogs", "blogs_file", "blogs_sample","news", "news_file",
             "twitter_sample"))
 
 #' ## Clean the data
-#' Create filters: stopwords, profanity, non-alphanumeric's, url's, repeated letters(+3x)
+#' Create filters: non-alphanumeric's, url's, repeated letters(+3x)
 #+ Data Cleaning
 replace_reg <- "[^[:alpha:][:space:]]*"
 replace_url <- "http[^[:space:]]*"
@@ -74,6 +74,7 @@ clean_sample <-  repo_sample %>%
 rm(list = c("repo_sample"))
 
 #' ## Create all n-grams
+#+ Ngrams 
 #' Bigrams
 bigram_repo <- clean_sample  %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
@@ -87,6 +88,7 @@ quadgram_repo <- clean_sample  %>%
   unnest_tokens(quadgram, text, token = "ngrams", n = 4)
 
 #' ## Reduce n-grams files
+#+ ReduceNgrams 
 #' Bigrams
 bigram_cover <- bigram_repo %>%
   count(bigram) %>%  
@@ -109,6 +111,7 @@ quadgram_cover <- quadgram_repo %>%
 rm(list = c("quadgram_repo"))
 
 #' ## What does the distribution on ngrams look like?
+#+ DistyPlot
 disty = data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover)),
                              rep("trigrams",  nrow(trigram_cover)),
                              rep("quadgrams", nrow(quadgram_cover))), 
@@ -118,6 +121,7 @@ disty$ngram <- as.factor(disty$ngram)
 ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log10()
 
 #' ## Separate words
+#+ NgramWords 
 bi_words <- bigram_cover %>%
   separate(bigram, c("word1", "word2"), sep = " ")
 bi_words
