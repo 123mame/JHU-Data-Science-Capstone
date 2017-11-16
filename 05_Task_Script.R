@@ -13,9 +13,9 @@ suppressPackageStartupMessages({
 })
 
 #' Load Training Data
-bi_words <- readRDS("./clean_repos/bi_words_fast.rds")
-tri_words  <- readRDS("./clean_repos/tri_words_fast.rds")
-quad_words <- readRDS("./clean_repos/quad_words_fast.rds")
+bi_words <- readRDS("./clean_repos/bi_words_fast_small.rds")
+tri_words  <- readRDS("./clean_repos/tri_words_fast_small.rds")
+quad_words <- readRDS("./clean_repos/quad_words_fast_small.rds")
 
 #' Create Ngram Matching Functions
 bigram <- function(input_words){
