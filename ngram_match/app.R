@@ -24,14 +24,21 @@ ui <- fluidPage(
       
       # Show a plot of the generated distribution
       mainPanel(
-        textInput("text", h3("Text input"), 
-                  value = "Enter a word or phrase"))   
+        textInput("user_input", h3("Text input"), 
+                  value = "Enter a word or phrase"),
+        br(),
+        textOutput("ngram_output")
+        )   
    )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
    
+  output$ngram_output <- renderText({
+    "run the ngram code here"
+  })
+  
 }
   
 # Run the application 
