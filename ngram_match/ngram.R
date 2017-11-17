@@ -5,13 +5,13 @@
 #' output: github_document
 #' ---
 
-#' Setup
-suppressPackageStartupMessages({
-  library(tidyverse)
-  library(stringr)
-})
+#' Setup - moved to top of app
+# suppressPackageStartupMessages({
+#   library(tidyverse)
+#   library(stringr)
+# })
 
-#' Load Training Data
+#' Load Training Data - moved to top of app
 bi_words <- readRDS("./app_data/bi_words_fast.rds")
 tri_words  <- readRDS("./app_data/tri_words_fast.rds")
 quad_words <- readRDS("./app_data/quad_words_fast.rds")

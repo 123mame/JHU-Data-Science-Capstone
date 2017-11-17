@@ -8,9 +8,15 @@
 #
 
 library(shiny)
+suppressPackageStartupMessages({
+   library(tidyverse)
+   library(stringr)
+ })
+
+#' Source ngram matching function
 source("ngram.R")
 
-# Define UI for application that draws a histogram
+#' Define UI for application that draws a histogram
 ui <- fluidPage(
    
    # Application title
@@ -20,20 +26,23 @@ ui <- fluidPage(
    sidebarLayout(
       sidebarPanel(
         h3("Instructions"), 
-        helpText("Explain how to use the program.")
+        p("What happens if I do this. Will the text wrap?  1. Can I enumerate?"),
+        helpText("This app predicts."),
+        h5("1. Enter some words or a phrase in the text box."),
+        h5("2. ")
       ),
       
       # Show a plot of the generated distribution
       mainPanel(
         textInput("user_input", h3("Your Input:"), 
-                  value = "Enter a word or words"),
+                  value = "Your words"),
         h3("Suggested Phrase:"),
         textOutput("ngram_output")
         )   
    )
 )
 
-# Define server logic required to draw a histogram
+#' Define server logic required to draw a histogram
 server <- function(input, output) {
    
   output$ngram_output <- renderText({
@@ -42,6 +51,6 @@ server <- function(input, output) {
   
 }
   
-# Run the application 
+#' Run the application 
 shinyApp(ui = ui, server = server)
 
