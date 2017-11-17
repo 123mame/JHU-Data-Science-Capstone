@@ -112,13 +112,14 @@ rm(list = c("quadgram_repo"))
 
 #' ## What does the distribution on ngrams look like?
 #+ DistyPlot
-# disty <- data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover)),
-#                              rep("trigrams",  nrow(trigram_cover)),
-#                              rep("quadgrams", nrow(quadgram_cover))), 
-#                    number = c(bigram_cover$n, trigram_cover$n, quadgram_cover$n))
-# disty
-# disty$ngram <- as.factor(disty$ngram)
-# ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log10()
+disty <- data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover)),
+                             rep("trigrams",  nrow(trigram_cover)),
+                             rep("quadgrams", nrow(quadgram_cover))),
+                   number = c(bigram_cover$n, trigram_cover$n, quadgram_cover$n))
+disty
+disty$ngram <- as.factor(disty$ngram)
+ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log10()
+ggsave("ngrams.png")
 
 #' ## Separate words
 #+ NgramWords 
@@ -135,17 +136,17 @@ quad_words <- quadgram_cover %>%
 quad_words
 
 #' Save separated words for prediction
-saveRDS(bi_words, "./clean_repos/bi_words_fast_small.rds")
-saveRDS(tri_words, "./clean_repos/tri_words_fast_small.rds")
-saveRDS(quad_words, "./clean_repos/quad_words_fast_small.rds")
+saveRDS(bi_words, "./clean_repos/bi_words_fast.rds")
+saveRDS(tri_words, "./clean_repos/tri_words_fast.rds")
+saveRDS(quad_words, "./clean_repos/quad_words_fast.rds")
 
 #' Clear workspace, time load
 rm(list= ls())
 
 go <- Sys.time()
-bi_words <- readRDS("./clean_repos/bi_words_fast_small.rds")
-tri_words  <- readRDS("./clean_repos/tri_words_fast_small.rds")
-quad_words <- readRDS("./clean_repos/quad_words_fast_small.rds")
+bi_words <- readRDS("./clean_repos/bi_words_fast.rds")
+tri_words  <- readRDS("./clean_repos/tri_words_fast.rds")
+quad_words <- readRDS("./clean_repos/quad_words_fast.rds")
 
 stop <- Sys.time()
 (how_long <- stop - go)
