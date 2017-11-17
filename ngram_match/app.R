@@ -37,7 +37,8 @@ ui <- fluidPage(
         textInput("user_input", h3("Your Input:"), 
                   value = "Your words"),
         h3("Suggested Phrase:"),
-        textOutput("ngram_output")
+        h4(em(span(textOutput("ngram_output"), style="color:blue")))
+        
         )   
    )
 )
