@@ -8,6 +8,7 @@
 #
 
 library(shiny)
+source("ngram.R")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -24,9 +25,9 @@ ui <- fluidPage(
       
       # Show a plot of the generated distribution
       mainPanel(
-        textInput("user_input", h3("Text input"), 
-                  value = "Enter a word or phrase"),
-        br(),
+        textInput("user_input", h3("Your Input:"), 
+                  value = "Enter a word or words"),
+        h3("Suggested Phrase:"),
         textOutput("ngram_output")
         )   
    )
@@ -36,7 +37,7 @@ ui <- fluidPage(
 server <- function(input, output) {
    
   output$ngram_output <- renderText({
-    "run the ngram code here"
+      ngrams(input$user_input)
   })
   
 }
