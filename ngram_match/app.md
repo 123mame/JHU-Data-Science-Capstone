@@ -1,24 +1,30 @@
-#' ---
-#' title: 'Task 06: Data Product'
-#' author: "Mark Blackmore"
-#' date: "`r format(Sys.Date())`"
-#' output: github_document
-#' ---
+Task 06: Data Product
+================
+Mark Blackmore
+2017-11-18
 
-#' ## Shiny App 
-#' This script creates a Shiny App that takes a word or phrase input in a text box
-#' and outputs the a predicted next word. 
+Shiny App
+---------
 
+This script creates a Shiny App that takes a word or phrase input in a text box and outputs the a predicted next word.
+
+``` r
 library(shiny)
 suppressPackageStartupMessages({
    library(tidyverse)
    library(stringr)
  })
+```
 
-#' Source ngram matching function
+Source ngram matching function
+
+``` r
 source("ngram.R")
+```
 
-#' Define UI for application that draws a histogram
+Define UI for application that draws a histogram
+
+``` r
 ui <- fluidPage(
    
    # Application title
@@ -28,7 +34,7 @@ ui <- fluidPage(
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
       sidebarPanel(
-        h3("Instructions:"), 
+        h3("Instructions"), 
         h5("1. Enter a word or words in the text box."),
         h5("2. The prediction prints below it in blue."),
         h5("3. No need to hit enter of submit."),
@@ -47,8 +53,11 @@ ui <- fluidPage(
         )   
    )
 )
+```
 
-#' Define server logic required to draw a histogram
+Define server logic required to draw a histogram
+
+``` r
 server <- function(input, output) {
    
   output$ngram_output <- renderText({
@@ -56,7 +65,15 @@ server <- function(input, output) {
   })
   
 }
-  
-#' Run the application 
-shinyApp(ui = ui, server = server)
+```
 
+Run the application
+
+``` r
+shinyApp(ui = ui, server = server)
+```
+
+<!--html_preserve-->
+Shiny applications not supported in static R Markdown documents
+
+<!--/html_preserve-->

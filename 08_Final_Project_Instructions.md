@@ -1,7 +1,7 @@
 Task 8: Final Project Instructions
 ================
 Mark Blackmore
-November 17, 2017
+2017-11-18
 
 Instructions
 ------------

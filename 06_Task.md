@@ -1,7 +1,7 @@
 Task 6: Data Product
 ================
 Mark Blackmore
-November 14, 2017
+2017-11-18
 
 The goal of this exercise is to create a product to highlight the prediction algorithm that you have built and to provide an interface that can be accessed by others via a Shiny app..
 
