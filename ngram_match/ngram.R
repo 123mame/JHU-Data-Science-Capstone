@@ -66,8 +66,6 @@ ngrams <- function(input){
   input_words <- unlist(str_split(input, boundary("word")))
   input_words <- tolower(input_words)
   # Call the matching functions
-  # out <- ifelse(input_count == 1, bigram(input_words), 
-  #             ifelse (input_count == 2, trigram(input_words), quadgram(input_words)))
   out <- ifelse(input_count == 0, "Please input a phrase",
                 ifelse(input_count == 1, bigram(input_words),
                        ifelse(input_count == 2, trigram(input_words), quadgram(input_words))))
