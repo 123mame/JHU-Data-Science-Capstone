@@ -1,9 +1,9 @@
 Task 05: Prediction Model
 ================
 Mark Blackmore
-2017-11-14
+2017-11-18
 
-setup
+Setup
 
 ``` r
 go <- Sys.time()
@@ -11,13 +11,19 @@ suppressPackageStartupMessages({
   library(tidyverse)
   library(stringr)
 })
+```
 
-# Training Data
+Load Training Data
+
+``` r
 bi_words <- readRDS("./clean_repos/bi_words_fast.rds")
 tri_words  <- readRDS("./clean_repos/tri_words_fast.rds")
 quad_words <- readRDS("./clean_repos/quad_words_fast.rds")
+```
 
-# Ngram Matching Functions
+Create Ngram Matching Functions
+
+``` r
 bigram <- function(input_words){
                     num <- length(input_words)
                     filter(bi_words, 
@@ -55,7 +61,7 @@ quadgram <- function(input_words){
 }
 ```
 
-Data Cleaning and Input Function; Calls the matching functions
+Create User Input and Data Cleaning Function; Calls the matching functions
 
 ``` r
 ngrams <- function(input){
@@ -70,10 +76,10 @@ ngrams <- function(input){
   input_words <- unlist(str_split(input, boundary("word")))
   input_words <- tolower(input_words)
   # Call the matching functions
-  y <- ifelse(input_count == 1, bigram(input_words), 
+  out <- ifelse(input_count == 1, bigram(input_words), 
               ifelse (input_count == 2, trigram(input_words), quadgram(input_words)))
   # Output
-  paste(input, y, sep = " ")
+  return(out)
 }
 ```
 
@@ -84,7 +90,7 @@ input <- "In case of a"
 ngrams(input)
 ```
 
-    ## [1] "In case of a fire"
+    ## [1] "new"
 
 Time it
 
@@ -93,4 +99,4 @@ stop <- Sys.time()
 (how_long <- stop - go)
 ```
 
-    ## Time difference of 13.83419 secs
+    ## Time difference of 2.905607 secs

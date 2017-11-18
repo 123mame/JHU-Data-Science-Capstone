@@ -16,7 +16,7 @@ Q1. The guy in front of me just bought a pound of bacon, a bouquet, and a case o
 ngrams("The guy in front of me just bought a pound of bacon, a bouquet, and a case of")  
 ```
 
-    ## [1] "The guy in front of me just bought a pound of bacon a bouquet and a case of the"
+    ## [1] "the"
 
 Q2. You're the reason why I smile everyday. Can you follow me please? It would mean the
 
@@ -29,7 +29,7 @@ Q2. You're the reason why I smile everyday. Can you follow me please? It would m
 ngrams("You're the reason why I smile everyday. Can you follow me please? It would mean the")  
 ```
 
-    ## [1] "Youre the reason why I smile everyday Can you follow me please It would mean the world"
+    ## [1] "world"
 
 Q3. Hey sunshine, can you follow me and make me the
 
@@ -42,7 +42,7 @@ Q3. Hey sunshine, can you follow me and make me the
 ngrams("Hey sunshine, can you follow me and make me the")  
 ```
 
-    ## [1] "Hey sunshine can you follow me and make me the girl"
+    ## [1] "most"
 
 Q4. Very early observations on the Bills game: Offense still struggling but the
 
@@ -55,7 +55,7 @@ Q4. Very early observations on the Bills game: Offense still struggling but the
 ngrams("Very early observations on the Bills game: Offense still struggling but the") 
 ```
 
-    ## [1] "Very early observations on the Bills game Offense still struggling but the is"
+    ## [1] "is"
 
 Q5. Go on a romantic date at the
 
@@ -68,7 +68,7 @@ Q5. Go on a romantic date at the
 ngrams("Go on a romantic date at the") 
 ```
 
-    ## [1] "Go on a romantic date at the end"
+    ## [1] "end"
 
 Q6. Well I'm pretty sure my granny has some old bagpipes in her garage I'll dust them off and be on my
 
@@ -81,7 +81,7 @@ Q6. Well I'm pretty sure my granny has some old bagpipes in her garage I'll dust
 ngrams("Well I'm pretty sure my granny has some old bagpipes in her garage I'll dust them off and be on my") 
 ```
 
-    ## [1] "Well Im pretty sure my granny has some old bagpipes in her garage Ill dust them off and be on my way"
+    ## [1] "way"
 
 Q7. Ohhhhh \#PointBreak is on tomorrow. Love that film and haven't seen it in quite some
 
@@ -94,7 +94,7 @@ Q7. Ohhhhh \#PointBreak is on tomorrow. Love that film and haven't seen it in qu
 ngrams("Ohhhhh #PointBreak is on tomorrow. Love that film and haven't seen it in quite some") 
 ```
 
-    ## [1] "Ohhhhh PointBreak is on tomorrow Love that film and havent seen it in quite some time"
+    ## [1] "time"
 
 Q8. After the ice bucket challenge Louis will push his long wet hair out of his eyes with his little
 
@@ -107,7 +107,7 @@ Q8. After the ice bucket challenge Louis will push his long wet hair out of his 
 ngrams("After the ice bucket challenge Louis will push his long wet hair out of his eyes with his little") 
 ```
 
-    ## [1] "After the ice bucket challenge Louis will push his long wet hair out of his eyes with his little ?"
+    ## [1] "?"
 
 Q9. Be grateful for the good times and keep the faith during the
 
@@ -120,7 +120,7 @@ Q9. Be grateful for the good times and keep the faith during the
 ngrams("Be grateful for the good times and keep the faith during the") 
 ```
 
-    ## [1] "Be grateful for the good times and keep the faith during the day"
+    ## [1] "day"
 
 Q10. If this isn't the cutest thing you've ever seen, then you must be
 
@@ -133,4 +133,4 @@ Q10. If this isn't the cutest thing you've ever seen, then you must be
 ngrams("If this isn't the cutest thing you've ever seen, then you must be") 
 ```
 
-    ## [1] "If this isnt the cutest thing youve ever seen then you must be a"
+    ## [1] "a"

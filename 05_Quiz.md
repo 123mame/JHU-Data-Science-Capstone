@@ -16,7 +16,7 @@ Q1. When you breathe, I want to be the air for you. I'll be there for you, I'd l
 ngrams("When you breathe, I want to be the air for you. I'll be there for you, I'd live and I'd")
 ```
 
-    ## [1] "When you breathe I want to be the air for you Ill be there for you Id live and Id like"
+    ## [1] "like"
 
 Q2. Guy at my table's wife got up to go to the bathroom and I asked about dessert and he started telling me about his
 
@@ -29,7 +29,7 @@ Q2. Guy at my table's wife got up to go to the bathroom and I asked about desser
 ngrams("Guy at my table's wife got up to go to the bathroom and I asked about dessert and he started telling me about his")
 ```
 
-    ## [1] "Guy at my tables wife got up to go to the bathroom and I asked about dessert and he started telling me about his own"
+    ## [1] "own"
 
 Q3. I'd give anything to see arctic monkeys this
 
@@ -42,7 +42,7 @@ Q3. I'd give anything to see arctic monkeys this
 ngrams("I'd give anything to see arctic monkeys this")
 ```
 
-    ## [1] "Id give anything to see arctic monkeys this is"
+    ## [1] "is"
 
 Q4. Talking to your mom has the same effect as a hug and helps reduce your
 
@@ -55,7 +55,7 @@ Q4. Talking to your mom has the same effect as a hug and helps reduce your
 ngrams("Talking to your mom has the same effect as a hug and helps reduce your")
 ```
 
-    ## [1] "Talking to your mom has the same effect as a hug and helps reduce your own"
+    ## [1] "own"
 
 Q5. When you were in Holland you were like 1 inch away from me but you hadn't time to take a
 
@@ -68,7 +68,7 @@ Q5. When you were in Holland you were like 1 inch away from me but you hadn't ti
 ngrams("When you were in Holland you were like 1 inch away from me but you hadn't time to take a")
 ```
 
-    ## [1] "When you were in Holland you were like  inch away from me but you hadnt time to take a break"
+    ## [1] "break"
 
 Q6. I'd just like all of these questions answered, a presentation of evidence, and a jury to settle the
 
@@ -81,7 +81,7 @@ Q6. I'd just like all of these questions answered, a presentation of evidence, a
 ngrams("I'd just like all of these questions answered, a presentation of evidence, and a jury to settle the")
 ```
 
-    ## [1] "Id just like all of these questions answered a presentation of evidence and a jury to settle the of"
+    ## [1] "of"
 
 Q7. I can't deal with unsymetrical things. I can't even hold an uneven number of bags of groceries in each
 
@@ -94,7 +94,7 @@ Q7. I can't deal with unsymetrical things. I can't even hold an uneven number of
 ngrams("I can't deal with unsymetrical things. I can't even hold an uneven number of bags of groceries in each")
 ```
 
-    ## [1] "I cant deal with unsymetrical things I cant even hold an uneven number of bags of groceries in each of"
+    ## [1] "of"
 
 Q8. Every inch of you is perfect from the bottom to the
 
@@ -107,7 +107,7 @@ Q8. Every inch of you is perfect from the bottom to the
 ngrams("Every inch of you is perfect from the bottom to the")
 ```
 
-    ## [1] "Every inch of you is perfect from the bottom to the of"
+    ## [1] "of"
 
 Q9. I'm thankful my childhood was filled with imagination and bruises from playing
 
@@ -120,7 +120,7 @@ Q9. I'm thankful my childhood was filled with imagination and bruises from playi
 ngrams("I'm thankful my childhood was filled with imagination and bruises from playing ")
 ```
 
-    ## [1] "Im thankful my childhood was filled with imagination and bruises from playing  with"
+    ## [1] "with"
 
 Q10. I like how the same people are in almost all of Adam Sandler's
 
@@ -133,4 +133,4 @@ Q10. I like how the same people are in almost all of Adam Sandler's
 ngrams("I like how the same people are in almost all of Adam Sandler's")
 ```
 
-    ## [1] "I like how the same people are in almost all of Adam Sandlers ?"
+    ## [1] "?"

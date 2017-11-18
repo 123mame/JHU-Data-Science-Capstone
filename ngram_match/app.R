@@ -21,22 +21,23 @@ ui <- fluidPage(
    
    # Application title
    titlePanel("Text Prediction Model"),
+   p("A Shiny app that takes as input a phrase (multiple words) in a text box input and outputs a prediction of the next word."),
    
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
       sidebarPanel(
         h3("Instructions"), 
-        p("What happens if I do this. Will the text wrap?  1. Can I enumerate?"),
         helpText("This app predicts."),
-        h5("1. Enter some words or a phrase in the text box."),
-        h5("2. ")
+        h5("1. Enter a word or words in the text box."),
+        h5("2. The prediction prints below it in blue."),
+        h5("3. A question mark means no prediction, typically do to input mis-spelling")
       ),
       
       # Show a plot of the generated distribution
       mainPanel(
         textInput("user_input", h3("Your Input:"), 
                   value = "Your words"),
-        h3("Suggested Phrase:"),
+        h3("Predicted Next Word:"),
         h4(em(span(textOutput("ngram_output"), style="color:blue")))
         
         )   
