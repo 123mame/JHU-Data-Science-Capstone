@@ -1,22 +1,28 @@
-#' ---
-#' title: "Ngram Function for Shiny App"
-#' author: "Mark Blackmore"
-#' date: "`r format(Sys.Date())`"
-#' output: github_document
-#' ---
+Ngram Function for Shiny App
+================
+Mark Blackmore
+2017-11-18
 
-#' Setup - moved to top of app
+Setup - moved to top of app
+
+``` r
 # suppressPackageStartupMessages({
 #   library(tidyverse)
 #   library(stringr)
 # })
+```
 
-#' Load Training Data, created by `04A_Task_Script.R`
+Load Training Data, created by `04A_Task_Script.R`
+
+``` r
 bi_words <- readRDS("./app_data/bi_words_fast.rds")
 tri_words  <- readRDS("./app_data/tri_words_fast.rds")
 quad_words <- readRDS("./app_data/quad_words_fast.rds")
+```
 
-#' Create Ngram Matching Functions
+Create Ngram Matching Functions
+
+``` r
 bigram <- function(input_words){
   num <- length(input_words)
   filter(bi_words, 
@@ -52,8 +58,11 @@ quadgram <- function(input_words){
     as.character() -> out
   ifelse(out=="character(0)", trigram(input_words), return(out))
 }
+```
 
-#' Create User Input and Data Cleaning Function; Calls the matching functions
+Create User Input and Data Cleaning Function; Calls the matching functions
+
+``` r
 ngrams <- function(input){
   # Create a dataframe
   input <- data_frame(text = input)
@@ -71,3 +80,4 @@ ngrams <- function(input){
   # Output
   paste(input, y, sep = " ")
 }
+```
