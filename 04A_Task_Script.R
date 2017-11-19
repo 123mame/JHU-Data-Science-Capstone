@@ -119,7 +119,34 @@ disty <- data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover)),
 disty
 disty$ngram <- as.factor(disty$ngram)
 ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log10()
-ggsave("ngrams.png")
+ggsave("./ngram_match/www/ngrams.png")
+
+quadgram_cover %>%
+  top_n(20, n) %>%
+  mutate(quadgram = reorder(quadgram, n)) %>%
+  ggplot(aes(quadgram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+ggsave("./ngram_match/www/quadgrams.png")
+
+trigram_cover %>%
+  top_n(20, n) %>%
+  mutate(trigram = reorder(trigram, n)) %>%
+  ggplot(aes(trigram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+ggsave("./ngram_match/www/trigrams.png")
+
+bigram_cover %>%
+  top_n(20, n) %>%
+  mutate(bigram = reorder(bigram, n)) %>%
+  ggplot(aes(bigram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+ggsave("./ngram_match/www/bigrams.png")
 
 #' ## Separate words
 #+ NgramWords 
@@ -141,7 +168,7 @@ saveRDS(tri_words, "./clean_repos/tri_words_fast.rds")
 saveRDS(quad_words, "./clean_repos/quad_words_fast.rds")
 
 #' Clear workspace, time load
-rm(list= ls())
+# rm(list= ls())
 
 go <- Sys.time()
 bi_words <- readRDS("./clean_repos/bi_words_fast.rds")

@@ -28,7 +28,7 @@ ui <- fluidPage(
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
       sidebarPanel(
-        h3("Instructions:"), 
+        h2("Instructions:"), 
         h5("1. Enter a word or words in the text box."),
         h5("2. The prediction prints below it in blue."),
         h5("3. No need to hit enter of submit."),
@@ -42,7 +42,14 @@ ui <- fluidPage(
         textInput("user_input", h3("Your Input:"), 
                   value = "Your words"),
         h3("Predicted Next Word:"),
-        h4(em(span(textOutput("ngram_output"), style="color:blue")))
+        h4(em(span(textOutput("ngram_output"), style="color:blue"))),
+        br(),
+        br(),
+        br(),
+        h3("Top Ngrams in the Model"),
+        img(src = "quadgrams.png", height = 400, width = 600),
+        img(src = "trigrams.png", height = 400, width = 600),
+        img(src = "bigrams.png", height = 400, width = 600)
         
         )   
    )
