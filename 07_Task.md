@@ -1,7 +1,7 @@
 Task 7: Slide Deck
 ================
 Mark Blackmore
-2017-11-18
+2017-11-19
 
 The goal of this exercise is to "pitch" your data product to your boss or an investor. The slide deck is constrained to be 5 slides or less and should: (1) explain how your model works, (2) describe its predictive performance quantitatively and (3) show off the app and how it works.
 

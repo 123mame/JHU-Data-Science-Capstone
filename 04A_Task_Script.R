@@ -167,16 +167,13 @@ saveRDS(bi_words, "./clean_repos/bi_words_fast.rds")
 saveRDS(tri_words, "./clean_repos/tri_words_fast.rds")
 saveRDS(quad_words, "./clean_repos/quad_words_fast.rds")
 
-#' Clear workspace, time load
-# rm(list= ls())
+#' Save data for the Shiny App
 
 go <- Sys.time()
-bi_words <- readRDS("./clean_repos/bi_words_fast.rds")
-tri_words  <- readRDS("./clean_repos/tri_words_fast.rds")
-quad_words <- readRDS("./clean_repos/quad_words_fast.rds")
+bi_words <- readRDS("./ngram_match/app_data/bi_words_fast.rds")
+tri_words  <- readRDS("./ngram_match/app_data/tri_words_fast.rds")
+quad_words <- readRDS("./ngram_match/add_data/quad_words_fast.rds")
 
-stop <- Sys.time()
-(how_long <- stop - go)
 
 #' end
 
