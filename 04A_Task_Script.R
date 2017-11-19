@@ -162,18 +162,9 @@ quad_words <- quadgram_cover %>%
   separate(quadgram, c("word1", "word2", "word3", "word4"), sep = " ")
 quad_words
 
-#' Save separated words for prediction
-saveRDS(bi_words, "./clean_repos/bi_words_fast.rds")
-saveRDS(tri_words, "./clean_repos/tri_words_fast.rds")
-saveRDS(quad_words, "./clean_repos/quad_words_fast.rds")
-
 #' Save data for the Shiny App
-
-go <- Sys.time()
-bi_words <- readRDS("./ngram_match/app_data/bi_words_fast.rds")
-tri_words  <- readRDS("./ngram_match/app_data/tri_words_fast.rds")
-quad_words <- readRDS("./ngram_match/add_data/quad_words_fast.rds")
-
-
+saveRDS(bi_words, "./ngram_match/app_data/bi_words_fast.rds")
+saveRDS(tri_words, "./ngram_match/app_data/tri_words_fast.rds")
+saveRDS(quad_words,"./ngram_match/app_data/quad_words_fast.rds")
 #' end
 

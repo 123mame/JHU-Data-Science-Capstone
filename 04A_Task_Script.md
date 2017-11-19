@@ -1,7 +1,7 @@
 Task 04A: Fast Ngram Files
 ================
 Mark Blackmore
-2017-11-15
+2017-11-19
 
 Load the Data
 -------------
@@ -35,7 +35,7 @@ Sample the data
 
 ``` r
 set.seed(1001)
-sample_pct <- 0.05
+sample_pct <- 0.10
 
 blogs_sample <- blogs %>%
   sample_n(., nrow(blogs)*sample_pct)
@@ -117,7 +117,7 @@ Bigrams
 ``` r
 bigram_cover <- bigram_repo %>%
   count(bigram) %>%  
-  filter(n > 1) %>%
+  filter(n > 10) %>%
   arrange(desc(n))  
 rm(list = c("bigram_repo"))
 ```
@@ -127,7 +127,7 @@ Trigrams
 ``` r
 trigram_cover <- trigram_repo %>%
   count(trigram) %>%  
-  filter(n > 1) %>%
+  filter(n > 10) %>%
   arrange(desc(n))  
 rm(list = c("trigram_repo"))
 ```
@@ -137,7 +137,7 @@ Quadgrams
 ``` r
 quadgram_cover <- quadgram_repo %>%
   count(quadgram) %>%  
-  filter(n > 1) %>%
+  filter(n > 10) %>%
   arrange(desc(n))  
 rm(list = c("quadgram_repo"))
 ```
@@ -146,27 +146,27 @@ What does the distribution on ngrams look like?
 -----------------------------------------------
 
 ``` r
-disty = data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover)),
+disty <- data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover)),
                              rep("trigrams",  nrow(trigram_cover)),
-                             rep("quadgrams", nrow(quadgram_cover))), 
+                             rep("quadgrams", nrow(quadgram_cover))),
                    number = c(bigram_cover$n, trigram_cover$n, quadgram_cover$n))
 disty
 ```
 
-    ## # A tibble: 815,038 x 2
+    ## # A tibble: 148,719 x 2
     ##      ngram number
     ##      <chr>  <int>
-    ##  1 bigrams  21934
-    ##  2 bigrams  20787
-    ##  3 bigrams  12556
-    ##  4 bigrams  10294
-    ##  5 bigrams   9776
-    ##  6 bigrams   8238
-    ##  7 bigrams   8073
-    ##  8 bigrams   7427
-    ##  9 bigrams   7119
-    ## 10 bigrams   6048
-    ## # ... with 815,028 more rows
+    ##  1 bigrams  44296
+    ##  2 bigrams  41480
+    ##  3 bigrams  25015
+    ##  4 bigrams  20646
+    ##  5 bigrams  19953
+    ##  6 bigrams  16338
+    ##  7 bigrams  16290
+    ##  8 bigrams  14462
+    ##  9 bigrams  14357
+    ## 10 bigrams  12060
+    ## # ... with 148,709 more rows
 
 ``` r
 disty$ngram <- as.factor(disty$ngram)
@@ -174,6 +174,66 @@ ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log1
 ```
 
 ![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-1.png)
+
+``` r
+ggsave("./ngram_match/www/ngrams.png")
+```
+
+    ## Saving 7 x 5 in image
+
+``` r
+quadgram_cover %>%
+  top_n(20, n) %>%
+  mutate(quadgram = reorder(quadgram, n)) %>%
+  ggplot(aes(quadgram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+```
+
+![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-2.png)
+
+``` r
+ggsave("./ngram_match/www/quadgrams.png")
+```
+
+    ## Saving 7 x 5 in image
+
+``` r
+trigram_cover %>%
+  top_n(20, n) %>%
+  mutate(trigram = reorder(trigram, n)) %>%
+  ggplot(aes(trigram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+```
+
+![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-3.png)
+
+``` r
+ggsave("./ngram_match/www/trigrams.png")
+```
+
+    ## Saving 7 x 5 in image
+
+``` r
+bigram_cover %>%
+  top_n(20, n) %>%
+  mutate(bigram = reorder(bigram, n)) %>%
+  ggplot(aes(bigram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+```
+
+![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-4.png)
+
+``` r
+ggsave("./ngram_match/www/bigrams.png")
+```
+
+    ## Saving 7 x 5 in image
 
 Separate words
 --------------
@@ -184,20 +244,20 @@ bi_words <- bigram_cover %>%
 bi_words
 ```
 
-    ## # A tibble: 334,906 x 3
+    ## # A tibble: 87,239 x 3
     ##    word1 word2     n
     ##  * <chr> <chr> <int>
-    ##  1    of   the 21934
-    ##  2    in   the 20787
-    ##  3    to   the 12556
-    ##  4   for   the 10294
-    ##  5    on   the  9776
-    ##  6     c     e  8238
-    ##  7    to    be  8073
-    ##  8    at   the  7427
-    ##  9   and   the  7119
-    ## 10    in     a  6048
-    ## # ... with 334,896 more rows
+    ##  1    of   the 44296
+    ##  2    in   the 41480
+    ##  3    to   the 25015
+    ##  4   for   the 20646
+    ##  5    on   the 19953
+    ##  6     c     e 16338
+    ##  7    to    be 16290
+    ##  8    at   the 14462
+    ##  9   and   the 14357
+    ## 10    in     a 12060
+    ## # ... with 87,229 more rows
 
 ``` r
 tri_words <- trigram_cover %>%
@@ -205,20 +265,20 @@ tri_words <- trigram_cover %>%
 tri_words
 ```
 
-    ## # A tibble: 343,851 x 4
+    ## # A tibble: 51,539 x 4
     ##     word1 word2 word3     n
     ##  *  <chr> <chr> <chr> <int>
-    ##  1    one    of   the  1734
-    ##  2      a   lot    of  1471
-    ##  3 thanks   for   the  1247
-    ##  4     to    be     a   907
-    ##  5  going    to    be   855
-    ##  6    the    of   the   841
-    ##  7    the   end    of   782
-    ##  8      i  want    to   776
-    ##  9    out    of   the   742
-    ## 10     it   was     a   739
-    ## # ... with 343,841 more rows
+    ##  1    one    of   the  3543
+    ##  2      a   lot    of  2929
+    ##  3 thanks   for   the  2501
+    ##  4     to    be     a  1888
+    ##  5  going    to    be  1825
+    ##  6    the    of   the  1814
+    ##  7      i  want    to  1629
+    ##  8    the   end    of  1522
+    ##  9    out    of   the  1520
+    ## 10     it   was     a  1511
+    ## # ... with 51,529 more rows
 
 ``` r
 quad_words <- quadgram_cover %>%
@@ -226,45 +286,27 @@ quad_words <- quadgram_cover %>%
 quad_words
 ```
 
-    ## # A tibble: 136,281 x 5
-    ##     word1 word2 word3 word4     n
-    ##  *  <chr> <chr> <chr> <chr> <int>
-    ##  1    the   end    of   the   434
-    ##  2     at   the   end    of   356
-    ##  3    the  rest    of   the   339
-    ##  4    for   the first  time   295
-    ##  5     at   the  same  time   272
-    ##  6     is   one    of   the   248
-    ##  7     is going    to    be   224
-    ##  8    one    of   the  most   216
-    ##  9   when    it comes    to   184
-    ## 10 thanks   for   the    rt   182
-    ## # ... with 136,271 more rows
+    ## # A tibble: 9,941 x 5
+    ##    word1 word2 word3 word4     n
+    ##  * <chr> <chr> <chr> <chr> <int>
+    ##  1   the   end    of   the   806
+    ##  2    at   the   end    of   656
+    ##  3   the  rest    of   the   651
+    ##  4   for   the first  time   613
+    ##  5    at   the  same  time   506
+    ##  6    is going    to    be   482
+    ##  7    is   one    of   the   446
+    ##  8   one    of   the  most   435
+    ##  9  when    it comes    to   419
+    ## 10 going    to    be     a   376
+    ## # ... with 9,931 more rows
 
-Save separated words for prediction
-
-``` r
-# saveRDS(bi_words, "./clean_repos/bi_words_fast.rds")
-# saveRDS(tri_words, "./clean_repos/tri_words_fast.rds")
-# saveRDS(quad_words, "./clean_repos/quad_words_fast.rds")
-```
-
-Clear workspace, time load
+Save data for the Shiny App
 
 ``` r
-rm(list= ls())
-
-go <- Sys.time()
-library(tidyverse)
-library(stringr)
-bi_words <- readRDS("./clean_repos/bi_words_fast.rds")
-tri_words  <- readRDS("./clean_repos/tri_words_fast.rds")
-quad_words <- readRDS("./clean_repos/quad_words_fast.rds")
-
-stop <- Sys.time()
-(how_long <- stop - go)
+saveRDS(bi_words, "./ngram_match/app_data/bi_words_fast.rds")
+saveRDS(tri_words, "./ngram_match/app_data/tri_words_fast.rds")
+saveRDS(quad_words,"./ngram_match/app_data/quad_words_fast.rds")
 ```
-
-    ## Time difference of 4.827095 secs
 
 end
