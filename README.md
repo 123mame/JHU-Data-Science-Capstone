@@ -12,7 +12,7 @@
 [Task 4:   Prediction Model](04_Task.md)  
 [Task 5:   Creative Exploration](05_Task.md)  
 [Task 6:   Data Product](06_Task.md)  
-[Task 7:   Slide Deck](07_Task.md)
+[Task 7:   Slide Deck](07_Task.md)  
 [Task 8:   Final Project](08_Task.md)
 
 ### Task Scripts  
