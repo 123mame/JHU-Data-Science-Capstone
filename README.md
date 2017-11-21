@@ -1,37 +1,38 @@
-## Welcome to GitHub Pages
+## JHU Data Science Specialization Capstone Project
 
-You can use the [editor on GitHub](https://github.com/mark-blackmore/JHU-Data-Science-Capstone/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+[Project Overview](00_project_overview.md)  
+[Sylllabus](00_syllabus.md)  
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Task Instructions
+[Task 0:   Understanding the Problem](00_Task.md)  
+[Task 1:   Getting and Cleaning the Data](01_Task.md)  
+[Task 2:   Exploratory Data Analysis](02_Task.md)  
+[Task 3:   Modeling](03_Task.md)  
+[Task 3A:  Milestone Report](03_Milestone_Instructions.md)  
+[Task 4:   Prediction Model](04_Task.md)  
+[Task 5:   Creative Exploration](05_Task.md)  
+[Task 6:   Data Product](06_Task.md)  
+[Task 7:   Slide Deck](07_Task.md)
+[Task 8:   Final Project](08_Task.md)
 
-### Markdown
+### Task Scripts  
+[Task 0:   Exploring the `tm` Package](00_Task_Script.md)  
+[Task 1:   Getting and Cleaning the Data](01_Task_Script.md)  
+[Task 2:   Exploratory Data Analysis](02_Task_Script.md)  
+[Task 3A:  Milestone Report](03_Milestone_Report.md)  
+[Task 4:   Working toward a Prediction Model](04_Task_Script.md)  
+[Task 04A: Fast Ngram Files](04A_Task_Script.md)  
+[Task 05:  Prediction Model](05_Task_Script.md)  
+[Task 06:  Shiny App](https://mblackmo.shinyapps.io/ngram_match/)  
+[Task 06A: Shiny App Source Code](./ngram_match/)    
+[Task 07:  Slide Presentation](07_Task_SlideDeck-rpubs.html)  
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### Quizzes  
+[Quiz 1](01_Quiz.md)  
+[Quiz 2](04_Quiz.md)  
+[Quiz 3](05_Quiz.md)  
 
-```markdown
-Syntax highlighted code block
+### References
+[Tidy Data](http://vita.had.co.nz/papers/tidy-data.html)  
+[Text Mining with R: A Tidy Approach](http://tidytextmining.com/index.html)  
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/mark-blackmore/JHU-Data-Science-Capstone/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
