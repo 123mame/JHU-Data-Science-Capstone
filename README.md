@@ -1,4 +1,4 @@
-## JHU Data Science Specialization Capstone Project
+## JHU Data Science Capstone Project
 
 [Project Overview](00_project_overview.md)  
 [Sylllabus](00_syllabus.md)  
