@@ -1,7 +1,7 @@
 Task 04A: Fast Ngram Files
 ================
 Mark Blackmore
-2017-11-19
+2017-11-21
 
 Load the Data
 -------------
@@ -310,3 +310,52 @@ saveRDS(quad_words,"./ngram_match/app_data/quad_words_fast.rds")
 ```
 
 end
+---
+
+#### Session info:
+
+``` r
+sessionInfo()
+```
+
+    ## R version 3.4.2 (2017-09-28)
+    ## Platform: x86_64-w64-mingw32/x64 (64-bit)
+    ## Running under: Windows 10 x64 (build 15063)
+    ## 
+    ## Matrix products: default
+    ## 
+    ## locale:
+    ## [1] LC_COLLATE=English_United States.1252 
+    ## [2] LC_CTYPE=English_United States.1252   
+    ## [3] LC_MONETARY=English_United States.1252
+    ## [4] LC_NUMERIC=C                          
+    ## [5] LC_TIME=English_United States.1252    
+    ## 
+    ## attached base packages:
+    ## [1] stats     graphics  grDevices utils     datasets  methods   base     
+    ## 
+    ## other attached packages:
+    ##  [1] bindrcpp_0.2       ngram_3.0.3        wordcloud_2.5     
+    ##  [4] RColorBrewer_1.1-2 knitr_1.17         stringr_1.2.0     
+    ##  [7] dplyr_0.7.4        purrr_0.2.3        readr_1.1.1       
+    ## [10] tidyr_0.7.1        tibble_1.3.4       ggplot2_2.2.1     
+    ## [13] tidyverse_1.1.1    tidytext_0.1.4    
+    ## 
+    ## loaded via a namespace (and not attached):
+    ##  [1] tidyselect_0.2.2  slam_0.1-40       reshape2_1.4.2   
+    ##  [4] haven_1.1.0       lattice_0.20-35   colorspace_1.3-2 
+    ##  [7] htmltools_0.3.6   SnowballC_0.5.1   yaml_2.1.14      
+    ## [10] rlang_0.1.2       foreign_0.8-69    glue_1.1.1       
+    ## [13] modelr_0.1.1      readxl_1.0.0      bindr_0.1        
+    ## [16] plyr_1.8.4        munsell_0.4.3     gtable_0.2.0     
+    ## [19] cellranger_1.1.0  rvest_0.3.2       psych_1.7.8      
+    ## [22] evaluate_0.10.1   labeling_0.3      forcats_0.2.0    
+    ## [25] parallel_3.4.2    broom_0.4.2       tokenizers_0.1.4 
+    ## [28] Rcpp_0.12.13      backports_1.1.1   scales_0.5.0     
+    ## [31] jsonlite_1.5      mnormt_1.5-5      hms_0.3          
+    ## [34] digest_0.6.12     stringi_1.1.5     grid_3.4.2       
+    ## [37] rprojroot_1.2     tools_3.4.2       magrittr_1.5     
+    ## [40] lazyeval_0.2.0    janeaustenr_0.1.5 pkgconfig_2.0.1  
+    ## [43] Matrix_1.2-11     xml2_1.1.1        lubridate_1.6.0  
+    ## [46] assertthat_0.2.0  rmarkdown_1.6     httr_1.3.1       
+    ## [49] R6_2.2.2          nlme_3.1-131      compiler_3.4.2
