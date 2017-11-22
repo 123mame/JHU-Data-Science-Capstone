@@ -5,7 +5,7 @@
 #' output: github_document
 #' ---
 #'
-#' ## 1. Introduction
+#' ## 01. Introduction
 #' This script uses the tidy data principles applied to text mining, as outlined in
 #' [Text Mining with R: A Tidy Approach](http://tidytextmining.com/).  
 #' 
@@ -22,7 +22,7 @@ suppressPackageStartupMessages({
 })
 start_time <- Sys.time()
 
-#' ## 2. Data loading and cleaning 
+#' ## 02. Data loading and cleaning 
 #+ DataLoading
 
 #' English Repository Files
@@ -129,7 +129,7 @@ tidy_repo <- clean_sample %>%
   anti_join(swear_words) %>%
   anti_join(stop_words)
 
-#' ## 3. Most frequent words and word distributions
+#' ## 03. Most frequent words and word distributions
 
 #' Word counts: Number of unique words in repo
 (repo_count <- tidy_repo %>%
@@ -152,7 +152,7 @@ cover_90 <- tidy_repo %>%
   filter(coverage <= 0.9)
 nrow(cover_90)
 
-#' ## 4. Word distributions  
+#' ## 04. Word distributions  
 #' Word distribution
 cover_90 %>%
   top_n(20, proportion) %>%
@@ -189,7 +189,7 @@ saveRDS(tidy_repo, "./clean_repos/tidy_repo.rds")
 saveRDS(cover_90, "./clean_repos/cover_90.rds")
 rm(tidy_repo, cover_50, cover_90)
 
-#' ## 5. Bigrams  
+#' ## 05. Bigrams  
 #' Create bigrams by source using `unnest_tokens`
 
 bigram_repo <- clean_sample  %>%
@@ -215,7 +215,7 @@ bigram_cover_90 %>%
 
 saveRDS(bigram_cover_90, "./clean_repos/bigram_cover_90.rds")
 
-#' ## 6. Trigrams  
+#' ## 06. Trigrams  
 #' Create Trigrams by source using `unnest_tokens`
 #+ trigrams
 
@@ -242,7 +242,7 @@ trigram_cover_90 %>%
 
 saveRDS(trigram_cover_90, "./clean_repos/trigram_cover_90.rds")
 
-#' ## 7. Quadgrams  
+#' ## 07. Quadgrams  
 #' Create quadgrams by source using `unnest_tokens`
 #+ quadgrams
 

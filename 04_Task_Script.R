@@ -155,7 +155,7 @@ quad_words <- readRDS("./clean_repos/quad_words.rds")
 stop <- Sys.time()
 (how_long <- stop - go)
 
-#' ## What does the distribution on ngrams look like?
+#' ## What does the distribution of ngrams look like?
 #' Suggests there may be a better way to subset. See `04A_Task_Script.R`
 disty = data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover_50)),
                              rep("trigrams",  nrow(trigram_cover_50)),
@@ -165,3 +165,7 @@ disty = data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover_50)),
 disty$ngram <- as.factor(disty$ngram)
 ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log10()
 
+#' -------------
+#'  
+#' #### Session info:
+sessionInfo()

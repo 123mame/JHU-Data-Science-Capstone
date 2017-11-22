@@ -80,3 +80,8 @@ ngrams(input)
 #' Time it
 stop <- Sys.time()
 (how_long <- stop - go)
+
+#' -------------
+#'  
+#' #### Session info:
+sessionInfo()

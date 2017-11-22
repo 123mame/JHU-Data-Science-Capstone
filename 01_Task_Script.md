@@ -1,10 +1,10 @@
 Task 1: Getting and Cleaning the Data
 ================
 Mark Blackmore
-2017-10-23
+2017-11-21
 
-1. Download and explore the data
---------------------------------
+01. Download and explore the data
+---------------------------------
 
 Create a data directory
 
@@ -103,11 +103,11 @@ kable(repo_summary)
 | f\_names |   f\_size|  f\_lines|    n\_char|  n\_words|  pct\_n\_char|  pct\_lines|  pct\_words|
 |:---------|---------:|---------:|----------:|---------:|-------------:|-----------:|-----------:|
 | blogs    |  200.4242|    899288|  206824505|  37334131|          0.36|        0.21|        0.35|
-| news     |  196.2775|   1010242|  203223159|  34372530|          0.36|        0.24|        0.32|
-| twitter  |  159.3641|   2360148|  162096031|  34372530|          0.28|        0.55|        0.32|
+| news     |  196.2775|   1010242|  203223154|  34372528|          0.36|        0.24|        0.32|
+| twitter  |  159.3641|   2360148|  162096031|  34372528|          0.28|        0.55|        0.32|
 
-2. Sample the data and save the sample
---------------------------------------
+02. Sample the data and save the sample
+---------------------------------------
 
 Compute sample sizes in terms of lines
 
@@ -135,8 +135,8 @@ writeLines(repo_sample, "./data/final/en_US/en_US.repo_sample.txt")
 saveRDS(repo_sample, file = "./data/final/en_US/repo_sample.rds" )
 ```
 
-3. Clean the sample data
-------------------------
+03. Clean the sample data
+-------------------------
 
 Use `tm` to create and clean the corpus
 
@@ -203,8 +203,8 @@ Save clean corpus
 saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.rds" )
 ```
 
-4. Initial Exploratory Data Analysis
-------------------------------------
+04. Initial Exploratory Data Analysis
+-------------------------------------
 
 Convert to document term matrix
 
@@ -301,7 +301,7 @@ end <- Sys.time()
 (ellapsed <- end - start)
 ```
 
-    ## Time difference of 1.743895 mins
+    ## Time difference of 3.089694 mins
 
 ------------------------------------------------------------------------
 

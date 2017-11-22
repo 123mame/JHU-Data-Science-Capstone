@@ -1,15 +1,15 @@
 Task 2: Exploratory Data Analysis
 ================
 Mark Blackmore
-2017-10-25
+2017-11-21
 
-1. Introduction
----------------
+01. Introduction
+----------------
 
 This script uses the tidy data principles applied to text mining, as outlined in [Text Mining with R: A Tidy Approach](http://tidytextmining.com/).
 
-2. Data loading and cleaning
-----------------------------
+02. Data loading and cleaning
+-----------------------------
 
 English Repository Files
 
@@ -177,8 +177,8 @@ tidy_repo <- clean_sample %>%
     ## Joining, by = "word"
     ## Joining, by = "word"
 
-3. Most frequent words and word distributions
----------------------------------------------
+03. Most frequent words and word distributions
+----------------------------------------------
 
 Word counts: Number of unique words in repo
 
@@ -218,8 +218,8 @@ nrow(cover_90)
 
     ## [1] 18097
 
-4. Word distributions
----------------------
+04. Word distributions
+----------------------
 
 Word distribution
 
@@ -274,8 +274,8 @@ saveRDS(cover_90, "./clean_repos/cover_90.rds")
 rm(tidy_repo, cover_50, cover_90)
 ```
 
-5. Bigrams
-----------
+05. Bigrams
+-----------
 
 Create bigrams by source using `unnest_tokens`
 
@@ -316,8 +316,8 @@ bigram_cover_90 %>%
 saveRDS(bigram_cover_90, "./clean_repos/bigram_cover_90.rds")
 ```
 
-6. Trigrams
------------
+06. Trigrams
+------------
 
 Create Trigrams by source using `unnest_tokens`
 
@@ -358,8 +358,8 @@ trigram_cover_90 %>%
 saveRDS(trigram_cover_90, "./clean_repos/trigram_cover_90.rds")
 ```
 
-7. Quadgrams
-------------
+07. Quadgrams
+-------------
 
 Create quadgrams by source using `unnest_tokens`
 
@@ -425,7 +425,7 @@ end <- Sys.time()
 (run_time <- end - start_time)
 ```
 
-    ## Time difference of 14.39052 mins
+    ## Time difference of 20.20473 mins
 
 ------------------------------------------------------------------------
 
