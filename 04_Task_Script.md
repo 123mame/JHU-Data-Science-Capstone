@@ -1,7 +1,7 @@
 Task 04: Working toward a Prediction Model
 ================
 Mark Blackmore
-2017-11-12
+2017-11-21
 
 This script creates the ngram files used to predict ngrams based on user input. These files are used by prediction functions found in `05_Task_Script.R`
 
@@ -262,9 +262,9 @@ stop <- Sys.time()
 (how_long <- stop - go)
 ```
 
-    ## Time difference of 5.459696 secs
+    ## Time difference of 5.786803 secs
 
-What does the distribution on ngrams look like?
+What does the distribution of ngrams look like?
 -----------------------------------------------
 
 Suggests there may be a better way to subset. See `04A_Task_Script.R`
@@ -280,3 +280,53 @@ ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log1
 ```
 
 ![](04_Task_Script_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-17-1.png)
+
+------------------------------------------------------------------------
+
+#### Session info:
+
+``` r
+sessionInfo()
+```
+
+    ## R version 3.4.2 (2017-09-28)
+    ## Platform: x86_64-w64-mingw32/x64 (64-bit)
+    ## Running under: Windows 10 x64 (build 15063)
+    ## 
+    ## Matrix products: default
+    ## 
+    ## locale:
+    ## [1] LC_COLLATE=English_United States.1252 
+    ## [2] LC_CTYPE=English_United States.1252   
+    ## [3] LC_MONETARY=English_United States.1252
+    ## [4] LC_NUMERIC=C                          
+    ## [5] LC_TIME=English_United States.1252    
+    ## 
+    ## attached base packages:
+    ## [1] stats     graphics  grDevices utils     datasets  methods   base     
+    ## 
+    ## other attached packages:
+    ##  [1] bindrcpp_0.2       ngram_3.0.3        wordcloud_2.5     
+    ##  [4] RColorBrewer_1.1-2 knitr_1.17         stringr_1.2.0     
+    ##  [7] dplyr_0.7.4        purrr_0.2.3        readr_1.1.1       
+    ## [10] tidyr_0.7.1        tibble_1.3.4       ggplot2_2.2.1     
+    ## [13] tidyverse_1.1.1    tidytext_0.1.4    
+    ## 
+    ## loaded via a namespace (and not attached):
+    ##  [1] tidyselect_0.2.2  slam_0.1-40       reshape2_1.4.2   
+    ##  [4] haven_1.1.0       lattice_0.20-35   colorspace_1.3-2 
+    ##  [7] htmltools_0.3.6   SnowballC_0.5.1   yaml_2.1.14      
+    ## [10] rlang_0.1.2       foreign_0.8-69    glue_1.1.1       
+    ## [13] modelr_0.1.1      readxl_1.0.0      bindr_0.1        
+    ## [16] plyr_1.8.4        munsell_0.4.3     gtable_0.2.0     
+    ## [19] cellranger_1.1.0  rvest_0.3.2       psych_1.7.8      
+    ## [22] evaluate_0.10.1   forcats_0.2.0     parallel_3.4.2   
+    ## [25] broom_0.4.2       tokenizers_0.1.4  Rcpp_0.12.13     
+    ## [28] backports_1.1.1   scales_0.5.0      jsonlite_1.5     
+    ## [31] mnormt_1.5-5      hms_0.3           digest_0.6.12    
+    ## [34] stringi_1.1.5     grid_3.4.2        rprojroot_1.2    
+    ## [37] tools_3.4.2       magrittr_1.5      lazyeval_0.2.0   
+    ## [40] janeaustenr_0.1.5 pkgconfig_2.0.1   Matrix_1.2-11    
+    ## [43] xml2_1.1.1        lubridate_1.6.0   assertthat_0.2.0 
+    ## [46] rmarkdown_1.6     httr_1.3.1        R6_2.2.2         
+    ## [49] nlme_3.1-131      compiler_3.4.2
