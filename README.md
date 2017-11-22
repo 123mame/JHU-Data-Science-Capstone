@@ -24,7 +24,7 @@
 [Task 04A: Fast Ngram Files](04A_Task_Script.md)  
 [Task 05: Prediction Model](05_Task_Script.md)  
 [Task 06: Shiny App](https://mblackmo.shinyapps.io/ngram_match/)  
-[Task 06A: Shiny App Source Code](./ngram_match/)    
+[Task 06A: Shiny App Source Code](./ngram_match/app.md)    
 [Task 07: Slide Presentation](07_Task_SlideDeck-rpubs.html)  
 
 ### Quizzes  
