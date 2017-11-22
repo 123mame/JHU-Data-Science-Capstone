@@ -142,4 +142,3 @@ knitr::kable(head(quadgrams_separated))
 
 Notice in the guad-gram table, that the 4-grams are separated by word and arranged by relative frequency. When the user inputs three words, the model matches those words and then finds the fourth word with the greatest relative frequency.  Cases where there is no match, or where more than three words are entered, will have random completion.
 
-
