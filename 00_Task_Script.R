@@ -2,14 +2,18 @@
 #' title: Exploring the `tm` Package
 #' author: "Mark Blackmore"
 #' date: "`r format(Sys.Date())`"
-#' output: github_document
+#' output: 
+#'   github_document:
+#'     toc: true
+#'     toc_depth: 2
 #' ---
+#'
+#' ## Introduction
 #'
 #' This document works through several examples in the article:  
 #' [Text mining infrastucture in R](http://www.jstatsoft.org/v25/i05/)  
 #'
-#' This is one of the references cited in the course document:   
-#' *Task 0: Understanding the Problem* 
+#' This is one of the references cited in the course document: *Task 0: Understanding the Problem* 
 
 library(tm)
 
@@ -113,6 +117,6 @@ inspect(DocumentTermMatrix(reuters,
 
 #' -------------
 #'  
-#' #### Session info:
+#' #### Session info
 #+ show-sessionInfo
 sessionInfo()

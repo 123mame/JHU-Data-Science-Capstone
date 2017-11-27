@@ -2,7 +2,9 @@
 #' title: 'Task 04: Working toward a Prediction Model'
 #' author: "Mark Blackmore"
 #' date: "`r format(Sys.Date())`"
-#' output: github_document
+#' output: 
+#'   github_document:
+#'     toc: true
 #' ---
 
 #' This script creates the ngram files used to predict ngrams based on user input.
@@ -72,26 +74,26 @@ clean_sample <-  repo_sample %>%
   mutate(text = str_replace_all(text, replace_aaa, "")) %>% 
   mutate(text = iconv(text, "ASCII//TRANSLIT"))
 
-#' ## Create all n-grams
-#' Unigrams
+#' ## Create all n-grams  
+#' Unigrams  
 tidy_repo <- clean_sample %>%
   unnest_tokens(word, text) %>%
   anti_join(swear_words) %>%
   anti_join(stop_words)
 
-#' Bigrams
+#' Bigrams  
 bigram_repo <- clean_sample  %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
 
-#' Trigrams
+#' Trigrams  
 trigram_repo <- clean_sample  %>%
   unnest_tokens(trigram, text, token = "ngrams", n = 3)
 
-#' Quadgrams
+#' Quadgrams  
 quadgram_repo <- clean_sample  %>%
   unnest_tokens(quadgram, text, token = "ngrams", n = 4)
 
-#' ## Reduce n-grams to top 50% of CDF
+#' ## Reduce n-grams to top 50% of CDF  
 #' Unigram upper half
 cover_50 <- tidy_repo %>%
   count(word) %>%  
@@ -155,7 +157,7 @@ quad_words <- readRDS("./clean_repos/quad_words.rds")
 stop <- Sys.time()
 (how_long <- stop - go)
 
-#' ## What does the distribution of ngrams look like?
+#' ## What does the distribution of ngrams look like?  
 #' Suggests there may be a better way to subset. See `04A_Task_Script.R`
 disty = data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover_50)),
                              rep("trigrams",  nrow(trigram_cover_50)),
@@ -167,5 +169,5 @@ ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log1
 
 #' -------------
 #'  
-#' #### Session info:
+#' ## Session info
 sessionInfo()

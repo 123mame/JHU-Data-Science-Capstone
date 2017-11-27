@@ -1,15 +1,25 @@
 Task 2: Exploratory Data Analysis
 ================
 Mark Blackmore
-2017-11-21
+2017-11-27
 
-01. Introduction
-----------------
+-   [Introduction](#introduction)
+-   [Data Loading and Summarizing](#data-loading-and-summarizing)
+-   [Data Sampling and Cleaning](#data-sampling-and-cleaning)
+-   [Most frequent words and word distributions](#most-frequent-words-and-word-distributions)
+-   [Word distributions](#word-distributions)
+-   [Bigrams](#bigrams)
+-   [Trigrams](#trigrams)
+-   [Quadgrams](#quadgrams)
+-   [Session info](#session-info)
+
+Introduction
+------------
 
 This script uses the tidy data principles applied to text mining, as outlined in [Text Mining with R: A Tidy Approach](http://tidytextmining.com/).
 
-02. Data loading and cleaning
------------------------------
+Data Loading and Summarizing
+----------------------------
 
 English Repository Files
 
@@ -107,7 +117,8 @@ news    <- data_frame(text = news)
 twitter <- data_frame(text = twitter)
 ```
 
-Sample the data
+Data Sampling and Cleaning
+--------------------------
 
 ``` r
 set.seed(1001)
@@ -177,8 +188,8 @@ tidy_repo <- clean_sample %>%
     ## Joining, by = "word"
     ## Joining, by = "word"
 
-03. Most frequent words and word distributions
-----------------------------------------------
+Most frequent words and word distributions
+------------------------------------------
 
 Word counts: Number of unique words in repo
 
@@ -218,8 +229,8 @@ nrow(cover_90)
 
     ## [1] 18097
 
-04. Word distributions
-----------------------
+Word distributions
+------------------
 
 Word distribution
 
@@ -274,8 +285,8 @@ saveRDS(cover_90, "./clean_repos/cover_90.rds")
 rm(tidy_repo, cover_50, cover_90)
 ```
 
-05. Bigrams
------------
+Bigrams
+-------
 
 Create bigrams by source using `unnest_tokens`
 
@@ -316,8 +327,8 @@ bigram_cover_90 %>%
 saveRDS(bigram_cover_90, "./clean_repos/bigram_cover_90.rds")
 ```
 
-06. Trigrams
-------------
+Trigrams
+--------
 
 Create Trigrams by source using `unnest_tokens`
 
@@ -358,8 +369,8 @@ trigram_cover_90 %>%
 saveRDS(trigram_cover_90, "./clean_repos/trigram_cover_90.rds")
 ```
 
-07. Quadgrams
--------------
+Quadgrams
+---------
 
 Create quadgrams by source using `unnest_tokens`
 
@@ -425,11 +436,12 @@ end <- Sys.time()
 (run_time <- end - start_time)
 ```
 
-    ## Time difference of 20.20473 mins
+    ## Time difference of 15.94087 mins
 
 ------------------------------------------------------------------------
 
-#### Session info:
+Session info
+------------
 
 ``` r
 sessionInfo()       

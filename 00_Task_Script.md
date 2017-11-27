@@ -1,13 +1,19 @@
 Exploring the `tm` Package
 ================
 Mark Blackmore
-2017-10-18
+2017-11-27
+
+-   [Introduction](#introduction)
+-   [Example with `ovid`](#example-with-ovid)
+-   [Example with `Reuters-21578`](#example-with-reuters-21578)
+
+Introduction
+------------
 
 This document works through several examples in the article:
 [Text mining infrastucture in R](http://www.jstatsoft.org/v25/i05/)
 
-This is one of the references cited in the course document:
-*Task 0: Understanding the Problem*
+This is one of the references cited in the course document: *Task 0: Understanding the Problem*
 
 ``` r
 library(tm)
@@ -46,7 +52,7 @@ meta(ovid[[1]])
 ```
 
     ##   author       : character(0)
-    ##   datetimestamp: 2017-10-18 17:38:19
+    ##   datetimestamp: 2017-11-27 21:12:57
     ##   description  : character(0)
     ##   heading      : character(0)
     ##   id           : ovid_1.txt
@@ -59,7 +65,7 @@ meta(ovid[[1]])
 ```
 
     ##   author       : character(0)
-    ##   datetimestamp: 2017-10-18 17:38:19
+    ##   datetimestamp: 2017-11-27 21:12:57
     ##   description  : character(0)
     ##   heading      : character(0)
     ##   id           : content
@@ -73,7 +79,7 @@ ovid[[1]][2]
 
     ## $meta
     ##   author       : character(0)
-    ##   datetimestamp: 2017-10-18 17:38:19
+    ##   datetimestamp: 2017-11-27 21:12:57
     ##   description  : character(0)
     ##   heading      : character(0)
     ##   id           : content
@@ -101,7 +107,7 @@ c(ovid[1:2], ovid[3:4])
     ## 
     ## $content$meta
     ##   author       : Publius Ovidius Naso
-    ##   datetimestamp: 2017-10-18 17:38:19
+    ##   datetimestamp: 2017-11-27 21:12:57
     ##   description  : character(0)
     ##   heading      : character(0)
     ##   id           : ovid_1.txt
@@ -386,7 +392,7 @@ inspect(DocumentTermMatrix(reuters,
 
 ------------------------------------------------------------------------
 
-#### Session info:
+#### Session info
 
 ``` r
 sessionInfo()

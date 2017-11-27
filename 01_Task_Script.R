@@ -2,7 +2,9 @@
 #' title: "Task 1: Getting and Cleaning the Data"
 #' author: "Mark Blackmore"
 #' date: "`r format(Sys.Date())`"
-#' output: github_document
+#' output: 
+#'   github_document:
+#'     toc: true
 #' ---
 #'
 #+ startup, echo = FALSE
@@ -20,7 +22,7 @@ suppressPackageStartupMessages({
 })  
 start <- Sys.time()
 
-#' ## 01. Download and explore the data
+#' ## Download and explore the data
 #'
 #' Create a data directory  
 if (!file.exists("data")) {
@@ -84,7 +86,7 @@ repo_summary <- repo_summary %>% mutate(pct_lines = round(f_lines/sum(f_lines), 
 repo_summary <- repo_summary %>% mutate(pct_words = round(n_words/sum(n_words), 2))
 kable(repo_summary)
 
-#' ## 02. Sample the data and save the sample
+#' ## Sample the data and save the sample
 #' 
 #' Compute sample sizes in terms of lines
 sample_pct = 0.05
@@ -103,8 +105,8 @@ repo_sample    <- c(blogs_sample, news_sample, twitter_sample)
 writeLines(repo_sample, "./data/final/en_US/en_US.repo_sample.txt")
 saveRDS(repo_sample, file = "./data/final/en_US/repo_sample.rds" )
 
-#' ## 03.  Clean the sample data
-
+#' ## Clean the sample data
+#'
 #' Use `tm` to create and clean the corpus
 clean_sample <- Corpus(VectorSource(repo_sample))
 print(as.character(clean_sample[[1]]))
@@ -140,7 +142,8 @@ print(as.character(clean_sample[[1]]))
 #' Save clean corpus  
 saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.rds" )
 
-#' ## 04. Initial Exploratory Data Analysis
+#' ## Initial Exploratory Data Analysis  
+#' 
 #' Convert to document term matrix
 docterm_corpus <- DocumentTermMatrix(clean_sample)
 dim(docterm_corpus)
@@ -175,5 +178,5 @@ end <- Sys.time()
 
 #' -------------
 #'  
-#' #### Session info:
+#' ## Session info
 sessionInfo()

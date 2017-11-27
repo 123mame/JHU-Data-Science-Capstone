@@ -1,10 +1,16 @@
 Task 1: Getting and Cleaning the Data
 ================
 Mark Blackmore
-2017-11-21
+2017-11-27
 
-01. Download and explore the data
----------------------------------
+-   [Download and explore the data](#download-and-explore-the-data)
+-   [Sample the data and save the sample](#sample-the-data-and-save-the-sample)
+-   [Clean the sample data](#clean-the-sample-data)
+-   [Initial Exploratory Data Analysis](#initial-exploratory-data-analysis)
+-   [Session info](#session-info)
+
+Download and explore the data
+-----------------------------
 
 Create a data directory
 
@@ -106,8 +112,8 @@ kable(repo_summary)
 | news     |  196.2775|   1010242|  203223154|  34372528|          0.36|        0.24|        0.32|
 | twitter  |  159.3641|   2360148|  162096031|  34372528|          0.28|        0.55|        0.32|
 
-02. Sample the data and save the sample
----------------------------------------
+Sample the data and save the sample
+-----------------------------------
 
 Compute sample sizes in terms of lines
 
@@ -135,8 +141,8 @@ writeLines(repo_sample, "./data/final/en_US/en_US.repo_sample.txt")
 saveRDS(repo_sample, file = "./data/final/en_US/repo_sample.rds" )
 ```
 
-03. Clean the sample data
--------------------------
+Clean the sample data
+---------------------
 
 Use `tm` to create and clean the corpus
 
@@ -203,8 +209,8 @@ Save clean corpus
 saveRDS(clean_sample, file = "./data/final/en_US/clean_sample.rds" )
 ```
 
-04. Initial Exploratory Data Analysis
--------------------------------------
+Initial Exploratory Data Analysis
+---------------------------------
 
 Convert to document term matrix
 
@@ -301,11 +307,12 @@ end <- Sys.time()
 (ellapsed <- end - start)
 ```
 
-    ## Time difference of 3.089694 mins
+    ## Time difference of 2.203485 mins
 
 ------------------------------------------------------------------------
 
-#### Session info:
+Session info
+------------
 
 ``` r
 sessionInfo()

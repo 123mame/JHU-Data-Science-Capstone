@@ -2,10 +2,12 @@
 #' title: "Task 2: Exploratory Data Analysis"
 #' author: "Mark Blackmore"
 #' date: "`r format(Sys.Date())`"
-#' output: github_document
+#' output: 
+#'   github_document:
+#'     toc: true
 #' ---
 #'
-#' ## 01. Introduction
+#' ## Introduction
 #' This script uses the tidy data principles applied to text mining, as outlined in
 #' [Text Mining with R: A Tidy Approach](http://tidytextmining.com/).  
 #' 
@@ -22,7 +24,7 @@ suppressPackageStartupMessages({
 })
 start_time <- Sys.time()
 
-#' ## 02. Data loading and cleaning 
+#' ## Data Loading and Summarizing
 #+ DataLoading
 
 #' English Repository Files
@@ -84,7 +86,7 @@ blogs   <- data_frame(text = blogs)
 news    <- data_frame(text = news)
 twitter <- data_frame(text = twitter)
 
-#' Sample the data
+#' ## Data Sampling and Cleaning
 #+ DataSampling
 set.seed(1001)
 sample_pct <- 0.1
@@ -129,7 +131,7 @@ tidy_repo <- clean_sample %>%
   anti_join(swear_words) %>%
   anti_join(stop_words)
 
-#' ## 03. Most frequent words and word distributions
+#' ## Most frequent words and word distributions
 
 #' Word counts: Number of unique words in repo
 (repo_count <- tidy_repo %>%
@@ -152,7 +154,7 @@ cover_90 <- tidy_repo %>%
   filter(coverage <= 0.9)
 nrow(cover_90)
 
-#' ## 04. Word distributions  
+#' ## Word distributions  
 #' Word distribution
 cover_90 %>%
   top_n(20, proportion) %>%
@@ -189,7 +191,7 @@ saveRDS(tidy_repo, "./clean_repos/tidy_repo.rds")
 saveRDS(cover_90, "./clean_repos/cover_90.rds")
 rm(tidy_repo, cover_50, cover_90)
 
-#' ## 05. Bigrams  
+#' ## Bigrams  
 #' Create bigrams by source using `unnest_tokens`
 
 bigram_repo <- clean_sample  %>%
@@ -215,7 +217,7 @@ bigram_cover_90 %>%
 
 saveRDS(bigram_cover_90, "./clean_repos/bigram_cover_90.rds")
 
-#' ## 06. Trigrams  
+#' ## Trigrams    
 #' Create Trigrams by source using `unnest_tokens`
 #+ trigrams
 
@@ -242,7 +244,7 @@ trigram_cover_90 %>%
 
 saveRDS(trigram_cover_90, "./clean_repos/trigram_cover_90.rds")
 
-#' ## 07. Quadgrams  
+#' ## Quadgrams  
 #' Create quadgrams by source using `unnest_tokens`
 #+ quadgrams
 
@@ -279,6 +281,6 @@ end <- Sys.time()
 
 #' -------------
 #'  
-#' #### Session info:
+#' ## Session info
 #+ show-sessionInfo
 sessionInfo()       
