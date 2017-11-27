@@ -1,7 +1,7 @@
 Task 05: Prediction Model
 ================
 Mark Blackmore
-2017-11-21
+2017-11-27
 
 Setup
 
@@ -99,11 +99,12 @@ stop <- Sys.time()
 (how_long <- stop - go)
 ```
 
-    ## Time difference of 3.177036 secs
+    ## Time difference of 3.601568 secs
 
 ------------------------------------------------------------------------
 
-#### Session info:
+Session info
+------------
 
 ``` r
 sessionInfo()

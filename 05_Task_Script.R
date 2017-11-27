@@ -83,5 +83,5 @@ stop <- Sys.time()
 
 #' -------------
 #'  
-#' #### Session info:
+#' ## Session info
 sessionInfo()

@@ -168,8 +168,8 @@ quad_words
 saveRDS(bi_words, "./ngram_match/app_data/bi_words_fast.rds")
 saveRDS(tri_words, "./ngram_match/app_data/tri_words_fast.rds")
 saveRDS(quad_words,"./ngram_match/app_data/quad_words_fast.rds")
-#' end
+#' 
 #' -------------
 #'  
-#' #### Session info
+#' ## Session info
 sessionInfo()

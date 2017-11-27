@@ -1,7 +1,16 @@
 Task 04A: Fast Ngram Files
 ================
 Mark Blackmore
-2017-11-21
+2017-11-27
+
+-   [Load the Data](#load-the-data)
+-   [Sample the data](#sample-the-data)
+-   [Clean the data](#clean-the-data)
+-   [Create all n-grams](#create-all-n-grams)
+-   [Reduce n-grams files](#reduce-n-grams-files)
+-   [What does the distribution on ngrams look like?](#what-does-the-distribution-on-ngrams-look-like)
+-   [Separate words](#separate-words)
+-   [Session info](#session-info)
 
 Load the Data
 -------------
@@ -309,10 +318,10 @@ saveRDS(tri_words, "./ngram_match/app_data/tri_words_fast.rds")
 saveRDS(quad_words,"./ngram_match/app_data/quad_words_fast.rds")
 ```
 
-end
----
+------------------------------------------------------------------------
 
-#### Session info:
+Session info
+------------
 
 ``` r
 sessionInfo()
