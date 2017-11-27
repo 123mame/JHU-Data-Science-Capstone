@@ -1,7 +1,17 @@
 Task 04: Working toward a Prediction Model
 ================
 Mark Blackmore
-2017-11-21
+2017-11-27
+
+-   [Load the Data](#load-the-data)
+-   [Sample the data](#sample-the-data)
+-   [Clean the data](#clean-the-data)
+-   [Create all n-grams](#create-all-n-grams)
+-   [Reduce n-grams to top 50% of CDF](#reduce-n-grams-to-top-50-of-cdf)
+-   [Separate words](#separate-words)
+-   [Clear workspace, time load](#clear-workspace-time-load)
+-   [What does the distribution of ngrams look like?](#what-does-the-distribution-of-ngrams-look-like)
+-   [Session info](#session-info)
 
 This script creates the ngram files used to predict ngrams based on user input. These files are used by prediction functions found in `05_Task_Script.R`
 
@@ -262,7 +272,7 @@ stop <- Sys.time()
 (how_long <- stop - go)
 ```
 
-    ## Time difference of 5.786803 secs
+    ## Time difference of 5.579002 secs
 
 What does the distribution of ngrams look like?
 -----------------------------------------------
@@ -283,7 +293,8 @@ ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log1
 
 ------------------------------------------------------------------------
 
-#### Session info:
+Session info
+------------
 
 ``` r
 sessionInfo()

@@ -2,7 +2,9 @@
 #' title: 'Task 04A: Fast Ngram Files'
 #' author: "Mark Blackmore"
 #' date: "`r format(Sys.Date())`"
-#' output: github_document
+#' output: 
+#'   github_document:
+#'     toc: true
 #' ---
 
 #+ setup, echo=FALSE
@@ -169,5 +171,5 @@ saveRDS(quad_words,"./ngram_match/app_data/quad_words_fast.rds")
 #' end
 #' -------------
 #'  
-#' #### Session info:
+#' #### Session info
 sessionInfo()
