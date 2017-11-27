@@ -1,9 +1,14 @@
 ## JHU Data Science Capstone Project
 
+### The Completed App
+A Shiny App for predicting the next word in a string.  
+[The App](https://mblackmo.shinyapps.io/ngram_match/)  
+
+### The Project
 [Project Overview](00_project_overview.md)  
 [Sylllabus](00_syllabus.md)  
 
-### Task Instructions
+### Project Task Instructions
 [Task 0: Understanding the Problem](00_Task.md)  
 [Task 1: Getting and Cleaning the Data](01_Task.md)  
 [Task 2: Exploratory Data Analysis](02_Task.md)  
@@ -15,7 +20,7 @@
 [Task 7: Slide Deck](07_Task.md)  
 [Task 8: Final Project](08_Task.md)
 
-### Task Scripts  
+### Project Task Scripts  
 [Task 0: Exploring the `tm` Package](00_Task_Script.md)  
 [Task 1: Getting and Cleaning the Data](01_Task_Script.md)  
 [Task 2: Exploratory Data Analysis](02_Task_Script.md)  
@@ -27,7 +32,7 @@
 [Task 06A: Shiny App Source Code](./ngram_match/app.md)    
 [Task 07: Slide Presentation](07_Task_SlideDeck-rpubs.html)  
 
-### Quizzes  
+### Course Quizzes  
 [Quiz 1](01_Quiz.md)  
 [Quiz 2](04_Quiz.md)  
 [Quiz 3](05_Quiz.md)  
