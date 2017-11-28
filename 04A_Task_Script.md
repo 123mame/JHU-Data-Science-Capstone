@@ -1,11 +1,11 @@
 Task 04A: Fast Ngram Files
 ================
 Mark Blackmore
-2017-11-27
+2017-11-28
 
 -   [Load the Data](#load-the-data)
 -   [Sample the data](#sample-the-data)
--   [Clean the data](#clean-the-data)
+-   [Clean the sample data](#clean-the-sample-data)
 -   [Create all n-grams](#create-all-n-grams)
 -   [Reduce n-grams files](#reduce-n-grams-files)
 -   [What does the distribution on ngrams look like?](#what-does-the-distribution-on-ngrams-look-like)
@@ -31,7 +31,7 @@ news    <- readLines(news_file,  skipNul = TRUE)
 twitter <- readLines(twitter_file, skipNul = TRUE)
 ```
 
-Read the data files into dataframes
+Create dataframes
 
 ``` r
 blogs   <- data_frame(text = blogs)
@@ -71,8 +71,8 @@ rm(list = c("blogs", "blogs_file", "blogs_sample","news", "news_file",
             "twitter_sample"))
 ```
 
-Clean the data
---------------
+Clean the sample data
+---------------------
 
 Create filters: non-alphanumeric's, url's, repeated letters(+3x)
 
@@ -118,6 +118,13 @@ quadgram_repo <- clean_sample  %>%
   unnest_tokens(quadgram, text, token = "ngrams", n = 4)
 ```
 
+Quingrams
+
+``` r
+quingram_repo <- clean_sample  %>%
+  unnest_tokens(quingram, text, token = "ngrams", n = 5)
+```
+
 Reduce n-grams files
 --------------------
 
@@ -151,18 +158,30 @@ quadgram_cover <- quadgram_repo %>%
 rm(list = c("quadgram_repo"))
 ```
 
+Quingrams
+
+``` r
+quingram_cover <- quingram_repo %>%
+  count(quingram) %>%  
+  filter(n > 10) %>%
+  arrange(desc(n))  
+rm(list = c("quingram_repo"))
+```
+
 What does the distribution on ngrams look like?
 -----------------------------------------------
 
 ``` r
 disty <- data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover)),
                              rep("trigrams",  nrow(trigram_cover)),
-                             rep("quadgrams", nrow(quadgram_cover))),
-                   number = c(bigram_cover$n, trigram_cover$n, quadgram_cover$n))
+                             rep("quadgrams", nrow(quadgram_cover)),
+                             rep("quingrams", nrow(quingram_cover))),
+                   number = c(bigram_cover$n, trigram_cover$n, quadgram_cover$n,
+                              quingram_cover$n))
 disty
 ```
 
-    ## # A tibble: 148,719 x 2
+    ## # A tibble: 150,036 x 2
     ##      ngram number
     ##      <chr>  <int>
     ##  1 bigrams  44296
@@ -175,7 +194,7 @@ disty
     ##  8 bigrams  14462
     ##  9 bigrams  14357
     ## 10 bigrams  12060
-    ## # ... with 148,709 more rows
+    ## # ... with 150,026 more rows
 
 ``` r
 disty$ngram <- as.factor(disty$ngram)
@@ -191,6 +210,24 @@ ggsave("./ngram_match/www/ngrams.png")
     ## Saving 7 x 5 in image
 
 ``` r
+quingram_cover %>%
+  top_n(20, n) %>%
+  mutate(quingram = reorder(quingram, n)) %>%
+  ggplot(aes(quingram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+```
+
+![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-2.png)
+
+``` r
+ggsave("./ngram_match/www/quingrams.png")
+```
+
+    ## Saving 7 x 5 in image
+
+``` r
 quadgram_cover %>%
   top_n(20, n) %>%
   mutate(quadgram = reorder(quadgram, n)) %>%
@@ -200,7 +237,7 @@ quadgram_cover %>%
   coord_flip()
 ```
 
-![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-2.png)
+![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-3.png)
 
 ``` r
 ggsave("./ngram_match/www/quadgrams.png")
@@ -218,7 +255,7 @@ trigram_cover %>%
   coord_flip()
 ```
 
-![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-3.png)
+![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-4.png)
 
 ``` r
 ggsave("./ngram_match/www/trigrams.png")
@@ -236,7 +273,7 @@ bigram_cover %>%
   coord_flip()
 ```
 
-![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-4.png)
+![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-5.png)
 
 ``` r
 ggsave("./ngram_match/www/bigrams.png")
@@ -310,12 +347,34 @@ quad_words
     ## 10 going    to    be     a   376
     ## # ... with 9,931 more rows
 
+``` r
+quin_words <- quingram_cover %>%
+  separate(quingram, c("word1", "word2", "word3", "word4", "word5"), sep = " ")
+quin_words
+```
+
+    ## # A tibble: 1,317 x 6
+    ##    word1 word2 word3 word4 word5     n
+    ##  * <chr> <chr> <chr> <chr> <chr> <int>
+    ##  1    at   the   end    of   the   371
+    ##  2   for   the first  time    in   145
+    ##  3   the   end    of   the   day   128
+    ##  4   for   the  rest    of   the   124
+    ##  5    by   the   end    of   the   122
+    ##  6 thank   you    so  much   for   108
+    ##  7 there   are     a   lot    of   108
+    ##  8   its going    to    be     a    98
+    ##  9   let    me  know    if   you    94
+    ## 10    is going    to    be     a    93
+    ## # ... with 1,307 more rows
+
 Save data for the Shiny App
 
 ``` r
 saveRDS(bi_words, "./ngram_match/app_data/bi_words_fast.rds")
 saveRDS(tri_words, "./ngram_match/app_data/tri_words_fast.rds")
 saveRDS(quad_words,"./ngram_match/app_data/quad_words_fast.rds")
+saveRDS(quin_words,"./ngram_match/app_data/quin_words_fast.rds")
 ```
 
 ------------------------------------------------------------------------

@@ -89,6 +89,10 @@ trigram_repo <- clean_sample  %>%
 quadgram_repo <- clean_sample  %>%
   unnest_tokens(quadgram, text, token = "ngrams", n = 4)
 
+#' Quingrams
+quingram_repo <- clean_sample  %>%
+  unnest_tokens(quingram, text, token = "ngrams", n = 5)
+
 #' ## Reduce n-grams files
 #+ ReduceNgrams 
 #' Bigrams
@@ -112,16 +116,35 @@ quadgram_cover <- quadgram_repo %>%
   arrange(desc(n))  
 rm(list = c("quadgram_repo"))
 
+#' Quingrams
+quingram_cover <- quingram_repo %>%
+  count(quingram) %>%  
+  filter(n > 10) %>%
+  arrange(desc(n))  
+rm(list = c("quingram_repo"))
+
+
 #' ## What does the distribution on ngrams look like?
 #+ DistyPlot
 disty <- data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover)),
                              rep("trigrams",  nrow(trigram_cover)),
-                             rep("quadgrams", nrow(quadgram_cover))),
-                   number = c(bigram_cover$n, trigram_cover$n, quadgram_cover$n))
+                             rep("quadgrams", nrow(quadgram_cover)),
+                             rep("quingrams", nrow(quingram_cover))),
+                   number = c(bigram_cover$n, trigram_cover$n, quadgram_cover$n,
+                              quingram_cover$n))
 disty
 disty$ngram <- as.factor(disty$ngram)
 ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log10()
 ggsave("./ngram_match/www/ngrams.png")
+
+quingram_cover %>%
+  top_n(20, n) %>%
+  mutate(quingram = reorder(quingram, n)) %>%
+  ggplot(aes(quingram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+ggsave("./ngram_match/www/quingrams.png")
 
 quadgram_cover %>%
   top_n(20, n) %>%
@@ -164,10 +187,15 @@ quad_words <- quadgram_cover %>%
   separate(quadgram, c("word1", "word2", "word3", "word4"), sep = " ")
 quad_words
 
+quin_words <- quingram_cover %>%
+  separate(quingram, c("word1", "word2", "word3", "word4", "word5"), sep = " ")
+quin_words
+
 #' Save data for the Shiny App
 saveRDS(bi_words, "./ngram_match/app_data/bi_words_fast.rds")
 saveRDS(tri_words, "./ngram_match/app_data/tri_words_fast.rds")
 saveRDS(quad_words,"./ngram_match/app_data/quad_words_fast.rds")
+saveRDS(quin_words,"./ngram_match/app_data/quin_words_fast.rds")
 #' 
 #' -------------
 #'  
