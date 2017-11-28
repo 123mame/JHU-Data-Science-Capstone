@@ -8,7 +8,7 @@ A Shiny App for predicting the next word in a string.
 [Project Overview](00_project_overview.md)  
 [Sylllabus](00_syllabus.md)  
 
-### Project Task Instructions
+### Project Tasks - Instructions
 [Task 0: Understanding the Problem](00_Task.md)  
 [Task 1: Getting and Cleaning the Data](01_Task.md)  
 [Task 2: Exploratory Data Analysis](02_Task.md)  
@@ -20,7 +20,7 @@ A Shiny App for predicting the next word in a string.
 [Task 7: Slide Deck](07_Task.md)  
 [Task 8: Final Project](08_Task.md)
 
-### Project Task Scripts  
+### Project Scripts - Solutions
 [Task 0: Exploring the `tm` Package](00_Task_Script.md)  
 [Task 1: Getting and Cleaning the Data](01_Task_Script.md)  
 [Task 2: Exploratory Data Analysis](02_Task_Script.md)  
