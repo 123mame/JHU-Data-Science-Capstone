@@ -1,6 +1,6 @@
 ## JHU Data Science Capstone Project
 
-### The Completed App
+### The Completed Project
 A Shiny App for predicting the next word in a string.  
 [The App](https://mblackmo.shinyapps.io/ngram_match/)  
 
