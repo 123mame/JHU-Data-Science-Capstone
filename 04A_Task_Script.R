@@ -30,7 +30,7 @@ blogs   <- readLines(blogs_file, skipNul = TRUE)
 news    <- readLines(news_file,  skipNul = TRUE)
 twitter <- readLines(twitter_file, skipNul = TRUE)
 
-#' Read the data files into dataframes
+#' Create dataframes
 blogs   <- data_frame(text = blogs)
 news    <- data_frame(text = news)
 twitter <- data_frame(text = twitter)
@@ -58,7 +58,7 @@ rm(list = c("blogs", "blogs_file", "blogs_sample","news", "news_file",
             "news_sample", "sample_pct", "twitter","twitter_file", 
             "twitter_sample"))
 
-#' ## Clean the data
+#' ## Clean the sample data
 #' Create filters: non-alphanumeric's, url's, repeated letters(+3x)
 #+ Data Cleaning
 replace_reg <- "[^[:alpha:][:space:]]*"
