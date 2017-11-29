@@ -117,6 +117,6 @@ inspect(DocumentTermMatrix(reuters,
 
 #' -------------
 #'  
-#' #### Session info
+#' ## Session info
 #+ show-sessionInfo
 sessionInfo()

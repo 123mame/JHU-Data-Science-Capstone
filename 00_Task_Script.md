@@ -1,11 +1,12 @@
 Exploring the `tm` Package
 ================
 Mark Blackmore
-2017-11-27
+2017-11-28
 
 -   [Introduction](#introduction)
 -   [Example with `ovid`](#example-with-ovid)
 -   [Example with `Reuters-21578`](#example-with-reuters-21578)
+-   [Session info](#session-info)
 
 Introduction
 ------------
@@ -52,7 +53,7 @@ meta(ovid[[1]])
 ```
 
     ##   author       : character(0)
-    ##   datetimestamp: 2017-11-27 21:12:57
+    ##   datetimestamp: 2017-11-29 00:50:06
     ##   description  : character(0)
     ##   heading      : character(0)
     ##   id           : ovid_1.txt
@@ -65,7 +66,7 @@ meta(ovid[[1]])
 ```
 
     ##   author       : character(0)
-    ##   datetimestamp: 2017-11-27 21:12:57
+    ##   datetimestamp: 2017-11-29 00:50:06
     ##   description  : character(0)
     ##   heading      : character(0)
     ##   id           : content
@@ -79,7 +80,7 @@ ovid[[1]][2]
 
     ## $meta
     ##   author       : character(0)
-    ##   datetimestamp: 2017-11-27 21:12:57
+    ##   datetimestamp: 2017-11-29 00:50:06
     ##   description  : character(0)
     ##   heading      : character(0)
     ##   id           : content
@@ -107,7 +108,7 @@ c(ovid[1:2], ovid[3:4])
     ## 
     ## $content$meta
     ##   author       : Publius Ovidius Naso
-    ##   datetimestamp: 2017-11-27 21:12:57
+    ##   datetimestamp: 2017-11-29 00:50:06
     ##   description  : character(0)
     ##   heading      : character(0)
     ##   id           : ovid_1.txt
@@ -392,7 +393,8 @@ inspect(DocumentTermMatrix(reuters,
 
 ------------------------------------------------------------------------
 
-#### Session info
+Session info
+------------
 
 ``` r
 sessionInfo()
