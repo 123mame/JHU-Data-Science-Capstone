@@ -1,7 +1,7 @@
 Task 04A: Fast Ngram Files
 ================
 Mark Blackmore
-2017-11-28
+2017-11-30
 
 -   [Load the Data](#load-the-data)
 -   [Sample the data](#sample-the-data)
@@ -118,11 +118,11 @@ quadgram_repo <- clean_sample  %>%
   unnest_tokens(quadgram, text, token = "ngrams", n = 4)
 ```
 
-Quingrams
+Quintgrams
 
 ``` r
-quingram_repo <- clean_sample  %>%
-  unnest_tokens(quingram, text, token = "ngrams", n = 5)
+quintgram_repo <- clean_sample  %>%
+  unnest_tokens(quintgram, text, token = "ngrams", n = 5)
 ```
 
 Reduce n-grams files
@@ -158,26 +158,26 @@ quadgram_cover <- quadgram_repo %>%
 rm(list = c("quadgram_repo"))
 ```
 
-Quingrams
+Quintgrams
 
 ``` r
-quingram_cover <- quingram_repo %>%
-  count(quingram) %>%  
+quintgram_cover <- quintgram_repo %>%
+  count(quintgram) %>%  
   filter(n > 10) %>%
   arrange(desc(n))  
-rm(list = c("quingram_repo"))
+rm(list = c("quintgram_repo"))
 ```
 
 What does the distribution on ngrams look like?
 -----------------------------------------------
 
 ``` r
-disty <- data_frame(ngram = c(rep("bigrams",   nrow(bigram_cover)),
+disty <- data_frame(ngram = c(rep("bigrams",  nrow(bigram_cover)),
                              rep("trigrams",  nrow(trigram_cover)),
                              rep("quadgrams", nrow(quadgram_cover)),
-                             rep("quingrams", nrow(quingram_cover))),
-                   number = c(bigram_cover$n, trigram_cover$n, quadgram_cover$n,
-                              quingram_cover$n))
+                             rep("quintgrams", nrow(quintgram_cover))),
+                    number = c(bigram_cover$n,  trigram_cover$n, 
+                              quadgram_cover$n, quintgram_cover$n))
 disty
 ```
 
@@ -210,19 +210,20 @@ ggsave("./ngram_match/www/ngrams.png")
     ## Saving 7 x 5 in image
 
 ``` r
-quingram_cover %>%
+quintgram_cover %>%
   top_n(20, n) %>%
-  mutate(quingram = reorder(quingram, n)) %>%
-  ggplot(aes(quingram, n)) +
+  mutate(quintgram = reorder(quintgram, n)) %>%
+  ggplot(aes(quintgram, n)) +
   geom_col() +
   xlab(NULL) +
-  coord_flip()
+  coord_flip() +
+  ggtitle("Quintgrams")
 ```
 
 ![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-2.png)
 
 ``` r
-ggsave("./ngram_match/www/quingrams.png")
+ggsave("./ngram_match/www/quintgrams.png")
 ```
 
     ## Saving 7 x 5 in image
@@ -234,7 +235,8 @@ quadgram_cover %>%
   ggplot(aes(quadgram, n)) +
   geom_col() +
   xlab(NULL) +
-  coord_flip()
+  coord_flip() +
+  ggtitle("Quadgrams")
 ```
 
 ![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-3.png)
@@ -252,7 +254,8 @@ trigram_cover %>%
   ggplot(aes(trigram, n)) +
   geom_col() +
   xlab(NULL) +
-  coord_flip()
+  coord_flip() +
+  ggtitle("Trigrams")
 ```
 
 ![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-4.png)
@@ -270,7 +273,8 @@ bigram_cover %>%
   ggplot(aes(bigram, n)) +
   geom_col() +
   xlab(NULL) +
-  coord_flip()
+  coord_flip() +
+  ggtitle("Bigrams")
 ```
 
 ![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-5.png)
@@ -348,9 +352,9 @@ quad_words
     ## # ... with 9,931 more rows
 
 ``` r
-quin_words <- quingram_cover %>%
-  separate(quingram, c("word1", "word2", "word3", "word4", "word5"), sep = " ")
-quin_words
+quint_words <- quintgram_cover %>%
+  separate(quintgram, c("word1", "word2", "word3", "word4", "word5"), sep = " ")
+quint_words
 ```
 
     ## # A tibble: 1,317 x 6
@@ -374,7 +378,7 @@ Save data for the Shiny App
 saveRDS(bi_words, "./ngram_match/app_data/bi_words_fast.rds")
 saveRDS(tri_words, "./ngram_match/app_data/tri_words_fast.rds")
 saveRDS(quad_words,"./ngram_match/app_data/quad_words_fast.rds")
-saveRDS(quin_words,"./ngram_match/app_data/quin_words_fast.rds")
+saveRDS(quint_words,"./ngram_match/app_data/quint_words_fast.rds")
 ```
 
 ------------------------------------------------------------------------
@@ -403,27 +407,25 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ##  [1] bindrcpp_0.2       ngram_3.0.3        wordcloud_2.5     
-    ##  [4] RColorBrewer_1.1-2 knitr_1.17         stringr_1.2.0     
-    ##  [7] dplyr_0.7.4        purrr_0.2.3        readr_1.1.1       
-    ## [10] tidyr_0.7.1        tibble_1.3.4       ggplot2_2.2.1     
-    ## [13] tidyverse_1.1.1    tidytext_0.1.4    
+    ##  [1] bindrcpp_0.2    knitr_1.17      stringr_1.2.0   dplyr_0.7.4    
+    ##  [5] purrr_0.2.3     readr_1.1.1     tidyr_0.7.1     tibble_1.3.4   
+    ##  [9] ggplot2_2.2.1   tidyverse_1.1.1 tidytext_0.1.4 
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] tidyselect_0.2.2  slam_0.1-40       reshape2_1.4.2   
-    ##  [4] haven_1.1.0       lattice_0.20-35   colorspace_1.3-2 
-    ##  [7] htmltools_0.3.6   SnowballC_0.5.1   yaml_2.1.14      
-    ## [10] rlang_0.1.2       foreign_0.8-69    glue_1.1.1       
-    ## [13] modelr_0.1.1      readxl_1.0.0      bindr_0.1        
-    ## [16] plyr_1.8.4        munsell_0.4.3     gtable_0.2.0     
-    ## [19] cellranger_1.1.0  rvest_0.3.2       psych_1.7.8      
-    ## [22] evaluate_0.10.1   labeling_0.3      forcats_0.2.0    
-    ## [25] parallel_3.4.2    broom_0.4.2       tokenizers_0.1.4 
-    ## [28] Rcpp_0.12.13      backports_1.1.1   scales_0.5.0     
-    ## [31] jsonlite_1.5      mnormt_1.5-5      hms_0.3          
-    ## [34] digest_0.6.12     stringi_1.1.5     grid_3.4.2       
-    ## [37] rprojroot_1.2     tools_3.4.2       magrittr_1.5     
-    ## [40] lazyeval_0.2.0    janeaustenr_0.1.5 pkgconfig_2.0.1  
-    ## [43] Matrix_1.2-11     xml2_1.1.1        lubridate_1.6.0  
-    ## [46] assertthat_0.2.0  rmarkdown_1.6     httr_1.3.1       
-    ## [49] R6_2.2.2          nlme_3.1-131      compiler_3.4.2
+    ##  [1] Rcpp_0.12.13      cellranger_1.1.0  compiler_3.4.2   
+    ##  [4] plyr_1.8.4        bindr_0.1         forcats_0.2.0    
+    ##  [7] tokenizers_0.1.4  tools_3.4.2       digest_0.6.12    
+    ## [10] lubridate_1.6.0   jsonlite_1.5      gtable_0.2.0     
+    ## [13] evaluate_0.10.1   nlme_3.1-131      lattice_0.20-35  
+    ## [16] pkgconfig_2.0.1   rlang_0.1.2       Matrix_1.2-11    
+    ## [19] psych_1.7.8       yaml_2.1.14       parallel_3.4.2   
+    ## [22] haven_1.1.0       xml2_1.1.1        httr_1.3.1       
+    ## [25] janeaustenr_0.1.5 hms_0.3           tidyselect_0.2.2 
+    ## [28] rprojroot_1.2     grid_3.4.2        glue_1.1.1       
+    ## [31] R6_2.2.2          readxl_1.0.0      foreign_0.8-69   
+    ## [34] rmarkdown_1.6     modelr_0.1.1      reshape2_1.4.2   
+    ## [37] magrittr_1.5      scales_0.5.0      backports_1.1.1  
+    ## [40] SnowballC_0.5.1   htmltools_0.3.6   rvest_0.3.2      
+    ## [43] assertthat_0.2.0  mnormt_1.5-5      colorspace_1.3-2 
+    ## [46] labeling_0.3      stringi_1.1.5     lazyeval_0.2.0   
+    ## [49] munsell_0.4.3     broom_0.4.2
