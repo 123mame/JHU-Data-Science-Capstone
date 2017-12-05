@@ -1,7 +1,7 @@
 Task 04A: Fast Ngram Files
 ================
 Mark Blackmore
-2017-11-30
+2017-12-05
 
 -   [Load the Data](#load-the-data)
 -   [Sample the data](#sample-the-data)
@@ -125,6 +125,13 @@ quintgram_repo <- clean_sample  %>%
   unnest_tokens(quintgram, text, token = "ngrams", n = 5)
 ```
 
+Sextgrams
+
+``` r
+sextgram_repo <- clean_sample  %>%
+  unnest_tokens(sextgram, text, token = "ngrams", n = 6)
+```
+
 Reduce n-grams files
 --------------------
 
@@ -168,6 +175,16 @@ quintgram_cover <- quintgram_repo %>%
 rm(list = c("quintgram_repo"))
 ```
 
+Sextgrams
+
+``` r
+sextgram_cover <- sextgram_repo %>%
+  count(sextgram) %>%  
+  filter(n > 10) %>%
+  arrange(desc(n))  
+rm(list = c("sextgram_repo"))
+```
+
 What does the distribution on ngrams look like?
 -----------------------------------------------
 
@@ -175,13 +192,15 @@ What does the distribution on ngrams look like?
 disty <- data_frame(ngram = c(rep("bigrams",  nrow(bigram_cover)),
                              rep("trigrams",  nrow(trigram_cover)),
                              rep("quadgrams", nrow(quadgram_cover)),
-                             rep("quintgrams", nrow(quintgram_cover))),
+                             rep("quintgrams", nrow(quintgram_cover)),
+                             rep("sextgrams",  nrow(sextgram_cover))),
                     number = c(bigram_cover$n,  trigram_cover$n, 
-                              quadgram_cover$n, quintgram_cover$n))
+                              quadgram_cover$n, quintgram_cover$n,
+                              sextgram_cover$n))
 disty
 ```
 
-    ## # A tibble: 150,036 x 2
+    ## # A tibble: 150,271 x 2
     ##      ngram number
     ##      <chr>  <int>
     ##  1 bigrams  44296
@@ -194,17 +213,38 @@ disty
     ##  8 bigrams  14462
     ##  9 bigrams  14357
     ## 10 bigrams  12060
-    ## # ... with 150,026 more rows
+    ## # ... with 150,261 more rows
 
 ``` r
 disty$ngram <- as.factor(disty$ngram)
-ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log10()
+ggplot(data = disty, aes(y = number, x = reorder(ngram, -number))) +
+  geom_boxplot() + scale_y_log10() +
+  xlab("ngram")
 ```
 
 ![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-1.png)
 
 ``` r
 ggsave("./ngram_match/www/ngrams.png")
+```
+
+    ## Saving 7 x 5 in image
+
+``` r
+sextgram_cover %>%
+  top_n(15, n) %>%
+  mutate(sextgram = reorder(sextgram, n)) %>%
+  ggplot(aes(sextgram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip() +
+  ggtitle("Sextgrams")
+```
+
+![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-2.png)
+
+``` r
+ggsave("./ngram_match/www/sextgrams.png")
 ```
 
     ## Saving 7 x 5 in image
@@ -220,7 +260,7 @@ quintgram_cover %>%
   ggtitle("Quintgrams")
 ```
 
-![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-2.png)
+![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-3.png)
 
 ``` r
 ggsave("./ngram_match/www/quintgrams.png")
@@ -239,7 +279,7 @@ quadgram_cover %>%
   ggtitle("Quadgrams")
 ```
 
-![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-3.png)
+![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-4.png)
 
 ``` r
 ggsave("./ngram_match/www/quadgrams.png")
@@ -258,7 +298,7 @@ trigram_cover %>%
   ggtitle("Trigrams")
 ```
 
-![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-4.png)
+![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-5.png)
 
 ``` r
 ggsave("./ngram_match/www/trigrams.png")
@@ -277,7 +317,7 @@ bigram_cover %>%
   ggtitle("Bigrams")
 ```
 
-![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-5.png)
+![](04A_Task_Script_files/figure-markdown_github-ascii_identifiers/DistyPlot-6.png)
 
 ``` r
 ggsave("./ngram_match/www/bigrams.png")
