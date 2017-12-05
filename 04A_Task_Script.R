@@ -91,6 +91,11 @@ quadgram_repo <- clean_sample  %>%
 quintgram_repo <- clean_sample  %>%
   unnest_tokens(quintgram, text, token = "ngrams", n = 5)
 
+#' Sextgrams
+sextgram_repo <- clean_sample  %>%
+  unnest_tokens(sextgram, text, token = "ngrams", n = 6)
+
+
 #' ## Reduce n-grams files
 #+ ReduceNgrams 
 #' Bigrams
@@ -121,19 +126,39 @@ quintgram_cover <- quintgram_repo %>%
   arrange(desc(n))  
 rm(list = c("quintgram_repo"))
 
+#' Sextgrams
+sextgram_cover <- sextgram_repo %>%
+  count(sextgram) %>%  
+  filter(n > 10) %>%
+  arrange(desc(n))  
+rm(list = c("sextgram_repo"))
 
 #' ## What does the distribution on ngrams look like?
 #+ DistyPlot
 disty <- data_frame(ngram = c(rep("bigrams",  nrow(bigram_cover)),
                              rep("trigrams",  nrow(trigram_cover)),
                              rep("quadgrams", nrow(quadgram_cover)),
-                             rep("quintgrams", nrow(quintgram_cover))),
+                             rep("quintgrams", nrow(quintgram_cover)),
+                             rep("sextgrams",  nrow(sextgram_cover))),
                     number = c(bigram_cover$n,  trigram_cover$n, 
-                              quadgram_cover$n, quintgram_cover$n))
+                              quadgram_cover$n, quintgram_cover$n,
+                              sextgram_cover$n))
 disty
 disty$ngram <- as.factor(disty$ngram)
-ggplot(data = disty, aes(y = number, x = ngram)) + geom_boxplot() + scale_y_log10()
+ggplot(data = disty, aes(y = number, x = reorder(ngram, -number))) +
+  geom_boxplot() + scale_y_log10() +
+  xlab("ngram")
 ggsave("./ngram_match/www/ngrams.png")
+
+sextgram_cover %>%
+  top_n(15, n) %>%
+  mutate(sextgram = reorder(sextgram, n)) %>%
+  ggplot(aes(sextgram, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip() +
+  ggtitle("Sextgrams")
+ggsave("./ngram_match/www/sextgrams.png")
 
 quintgram_cover %>%
   top_n(20, n) %>%
