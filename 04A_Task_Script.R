@@ -161,7 +161,7 @@ sextgram_cover %>%
 ggsave("./ngram_match/www/sextgrams.png")
 
 quintgram_cover %>%
-  top_n(20, n) %>%
+  top_n(15, n) %>%
   mutate(quintgram = reorder(quintgram, n)) %>%
   ggplot(aes(quintgram, n)) +
   geom_col() +
@@ -171,7 +171,7 @@ quintgram_cover %>%
 ggsave("./ngram_match/www/quintgrams.png")
 
 quadgram_cover %>%
-  top_n(20, n) %>%
+  top_n(15, n) %>%
   mutate(quadgram = reorder(quadgram, n)) %>%
   ggplot(aes(quadgram, n)) +
   geom_col() +
@@ -181,7 +181,7 @@ quadgram_cover %>%
 ggsave("./ngram_match/www/quadgrams.png")
 
 trigram_cover %>%
-  top_n(20, n) %>%
+  top_n(15, n) %>%
   mutate(trigram = reorder(trigram, n)) %>%
   ggplot(aes(trigram, n)) +
   geom_col() +
@@ -191,7 +191,7 @@ trigram_cover %>%
 ggsave("./ngram_match/www/trigrams.png")
 
 bigram_cover %>%
-  top_n(20, n) %>%
+  top_n(15, n) %>%
   mutate(bigram = reorder(bigram, n)) %>%
   ggplot(aes(bigram, n)) +
   geom_col() +
@@ -218,11 +218,17 @@ quint_words <- quintgram_cover %>%
   separate(quintgram, c("word1", "word2", "word3", "word4", "word5"), sep = " ")
 quint_words
 
+sext_words <- sextgram_cover %>%
+  separate(sextgram, c("word1", "word2", "word3", "word4", "word5", "word6"), sep = " ")
+sext_words
+
+
 #' Save data for the Shiny App
 saveRDS(bi_words, "./ngram_match/app_data/bi_words_fast.rds")
 saveRDS(tri_words, "./ngram_match/app_data/tri_words_fast.rds")
 saveRDS(quad_words,"./ngram_match/app_data/quad_words_fast.rds")
 saveRDS(quint_words,"./ngram_match/app_data/quint_words_fast.rds")
+saveRDS(sext_words,"./ngram_match/app_data/sext_words_fast.rds")
 #' 
 #' -------------
 #'  

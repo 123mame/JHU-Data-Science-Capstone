@@ -1,7 +1,7 @@
 Task 04A: Fast Ngram Files
 ================
 Mark Blackmore
-2017-12-05
+2017-12-07
 
 -   [Load the Data](#load-the-data)
 -   [Sample the data](#sample-the-data)
@@ -251,7 +251,7 @@ ggsave("./ngram_match/www/sextgrams.png")
 
 ``` r
 quintgram_cover %>%
-  top_n(20, n) %>%
+  top_n(15, n) %>%
   mutate(quintgram = reorder(quintgram, n)) %>%
   ggplot(aes(quintgram, n)) +
   geom_col() +
@@ -270,7 +270,7 @@ ggsave("./ngram_match/www/quintgrams.png")
 
 ``` r
 quadgram_cover %>%
-  top_n(20, n) %>%
+  top_n(15, n) %>%
   mutate(quadgram = reorder(quadgram, n)) %>%
   ggplot(aes(quadgram, n)) +
   geom_col() +
@@ -289,7 +289,7 @@ ggsave("./ngram_match/www/quadgrams.png")
 
 ``` r
 trigram_cover %>%
-  top_n(20, n) %>%
+  top_n(15, n) %>%
   mutate(trigram = reorder(trigram, n)) %>%
   ggplot(aes(trigram, n)) +
   geom_col() +
@@ -308,7 +308,7 @@ ggsave("./ngram_match/www/trigrams.png")
 
 ``` r
 bigram_cover %>%
-  top_n(20, n) %>%
+  top_n(15, n) %>%
   mutate(bigram = reorder(bigram, n)) %>%
   ggplot(aes(bigram, n)) +
   geom_col() +
@@ -412,6 +412,27 @@ quint_words
     ## 10    is going    to    be     a    93
     ## # ... with 1,307 more rows
 
+``` r
+sext_words <- sextgram_cover %>%
+  separate(sextgram, c("word1", "word2", "word3", "word4", "word5", "word6"), sep = " ")
+sext_words
+```
+
+    ## # A tibble: 235 x 7
+    ##    word1    word2    word3 word4 word5 word6     n
+    ##  * <chr>    <chr>    <chr> <chr> <chr> <chr> <int>
+    ##  1    at      the      end    of   the   day   107
+    ##  2     c        c        c     c     c     c    63
+    ##  3    on      the    other  side    of   the    57
+    ##  4    me       me       me    me    me    me    40
+    ##  5  this       is    going    to    be     a    36
+    ##  6  cake     cake     cake  cake  cake  cake    34
+    ##  7     i     just finished     a    mi   run    34
+    ##  8  just finished        a    mi   run  with    33
+    ##  9 thank      you       so  much   for   the    28
+    ## 10   let       me     know  what   you think    27
+    ## # ... with 225 more rows
+
 Save data for the Shiny App
 
 ``` r
@@ -419,6 +440,7 @@ saveRDS(bi_words, "./ngram_match/app_data/bi_words_fast.rds")
 saveRDS(tri_words, "./ngram_match/app_data/tri_words_fast.rds")
 saveRDS(quad_words,"./ngram_match/app_data/quad_words_fast.rds")
 saveRDS(quint_words,"./ngram_match/app_data/quint_words_fast.rds")
+saveRDS(sext_words,"./ngram_match/app_data/sext_words_fast.rds")
 ```
 
 ------------------------------------------------------------------------
